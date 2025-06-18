@@ -22,6 +22,9 @@ const poppins = Poppins({
 export default function RootLayout({ children }) {
   return (
     <html lang="en" className={`${inter.variable} ${poppins.variable}`}>
+      <head>
+        <meta name="robots" content="noindex"/>
+      </head>
       <body className="antialiased font-inter overflow-hidden">
         <Toaster
           position="top-center"
