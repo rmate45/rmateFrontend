@@ -1,0 +1,60 @@
+@import "tailwindcss";
+@import 'react-date-range/dist/styles.css'; 
+@import 'react-date-range/dist/theme/default.css'; 
+
+:root {
+  --background: #ffffff;
+  --foreground: #171717;
+  --font-inter: 'Inter', sans-serif;
+  --font-poppins: 'Poppins', sans-serif;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+}
+
+@theme {
+  --color-primary: #A934BD;
+  --color-dark: #31273E;
+  --color-headline: #454545;
+  --color-subheadline: #737373;
+  --color-gray: #D2D4D633;
+  --color-lightGray: #64748B;
+  --color-secondary: rgba(233, 201, 239, 1);
+  --color-formlable: #2C3345;
+  --color-activegreen: #3AC887;
+  --color-inactivered: #EC1B28;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: #0a0a0a;
+    --foreground: #ededed;
+  }
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-inter)
+}
+
+.poppins {
+  font-family: var(--font-poppins)
+}
+
+.custom-scrollbar {
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE/Edge */
+}
+
+.custom-scrollbar::-webkit-scrollbar {
+  display: none; /* Chrome/Safari */
+}
+
+.rdrCalendarWrapper, .rdrDateDisplayWrapper{
+      border-radius: 15px;
+}
