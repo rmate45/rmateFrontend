@@ -1,6 +1,7 @@
 import sendIcon from "../../assets/send.svg";
 import { useState } from "react";
 import api from "../../api/api";
+
 export const TextInput = ({
   value,
   onChange,
@@ -10,44 +11,37 @@ export const TextInput = ({
   const [isValid, setIsValid] = useState(true);
   const [validZipCode, setValidZipCode] = useState(null);
 
-
-const isValidZip = async (zip) => {
-
-    if (!zip || zip.length !== 5) {
+  const isValidZip = async (zip) => {
+    if (!zip || zip.length < 0 || zip.length > 6) {
       setIsValid(false);
+       window.scrollBy({ top: -window.innerHeight * 0.1, behavior: "smooth" });
       return;
-    }    
+    }
+
     try {
       const { data } = await api.post("/check-valid-zipcode", {
         zipcode: zip,
       });
 
-      // Assuming API returns { isValid: true/false }
-      setIsValid(data?.type == "success" ?? false);
-  
+      // Check server response
+      setIsValid(data?.type === "success");
+      setValidZipCode(null);
     } catch (error) {
       console.error("ZIP code validation failed", error);
-            setIsValid(true)
-
-          setValidZipCode(error?.response.data.message);
-
+      setIsValid(false);
+      setValidZipCode(error?.response?.data?.message || "ZIP code validation failed.");
     }
   };
-  console.log(validZipCode);
-  
- const handleChange = (rawValue) => {
-  setValidZipCode(null);
-  setIsValid(false)
-  console.log("test");
-  
+
+  const handleChange = (rawValue) => {
     const cleaned = validateAsZip ? rawValue.replace(/\D/g, "") : rawValue;
+
     onChange(cleaned);
+    setValidZipCode(null);
+    setIsValid(false);
 
     if (validateAsZip) {
-        console.log("test", cleaned);
-
-      // Fire validation only for 5-digit inputs
-      if (cleaned.length === 5) {
+      if (cleaned.length > 0 && cleaned.length <= 6) {
         isValidZip(cleaned);
       } else {
         setIsValid(false);
@@ -58,8 +52,7 @@ const isValidZip = async (zip) => {
   };
 
   const handleKeyDown = (e) => {
-    if (e.key === "Enter" && isValid) {
-
+    if (e.key === "Enter" && isValid && !validZipCode) {
       onSubmit();
     }
   };
@@ -70,15 +63,15 @@ const isValidZip = async (zip) => {
         <input
           type="text"
           inputMode={validateAsZip ? "numeric" : "text"}
-          pattern={validateAsZip ? "\\d{5}" : undefined}
-          maxLength={validateAsZip ? 5 : undefined}
+          pattern={validateAsZip ? "\\d{0,6}" : undefined}
+          maxLength={validateAsZip ? 6 : undefined}
           value={value}
           onChange={(e) => handleChange(e.target.value)}
           onKeyDown={handleKeyDown}
           placeholder={
-            validateAsZip ? "Enter a valid ZIP code" : "Type your answer here..."
+            validateAsZip ? "Enter ZIP code (3–6 digits)" : "Type your answer here..."
           }
-          className="w-full px-4 py-2 pr-10 border-2 border-gray-300 rounded-xl text-sm focus:outline-none focus:border-primary"
+          className={`w-full px-4 py-2 pr-10 border-2 border-gray-300 rounded-xl text-sm focus:outline-none focus:border-primary}`}
         />
         <button
           onClick={onSubmit}
@@ -88,10 +81,14 @@ const isValidZip = async (zip) => {
           <img src={sendIcon} alt="send" className="w-6 mt-4 mb-4" />
         </button>
       </div>
-      {validateAsZip && value.length > 0 && !isValid && (
-        <p className="text-red-500 text-sm">Please enter a valid 5-digit ZIP code.</p>
-      )}
-      {validZipCode != null && (
+
+      {/* {validateAsZip && value.length > 0 && !isValid && (
+        <p className="text-red-500 text-sm">
+          ZIP code must be between 3 and 6 digits.
+        </p>
+      )} */}
+
+      {validZipCode && (
         <p className="text-red-500 text-sm">{validZipCode}</p>
       )}
     </div>
