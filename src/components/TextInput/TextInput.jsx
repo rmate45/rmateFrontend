@@ -7,14 +7,16 @@ export const TextInput = ({
   onChange,
   onSubmit,
   validateAsZip = false,
+   onValidationError,
 }) => {
   const [isValid, setIsValid] = useState(true);
   const [validZipCode, setValidZipCode] = useState(null);
+// console.log(onValidationError,"onValidationError");
 
   const isValidZip = async (zip) => {
     if (!zip || zip.length < 0 || zip.length > 6) {
       setIsValid(false);
-       window.scrollBy({ top: -window.innerHeight * 0.1, behavior: "smooth" });
+        onValidationError?.();
       return;
     }
 
@@ -30,6 +32,7 @@ export const TextInput = ({
       console.error("ZIP code validation failed", error);
       setIsValid(false);
       setValidZipCode(error?.response?.data?.message || "ZIP code validation failed.");
+      onValidationError?.();
     }
   };
 
@@ -43,6 +46,7 @@ export const TextInput = ({
     if (validateAsZip) {
       if (cleaned.length > 0 && cleaned.length <= 6) {
         isValidZip(cleaned);
+          onValidationError?.();
       } else {
         setIsValid(false);
       }

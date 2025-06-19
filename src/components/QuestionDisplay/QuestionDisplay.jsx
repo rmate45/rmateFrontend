@@ -34,6 +34,7 @@ export const QuestionDisplay = ({
   onTextChange,
   onOptionClick,
   onTextSubmit,
+   onValidationError
 }) => {
   if (!currentQuestion || loading) return null;
   const [rangeValue, setRangeValue] = useState(20);
@@ -81,6 +82,7 @@ else{
           onChange={onTextChange}
           onSubmit={onTextSubmit}
           validateAsZip={shouldValidateZip}
+           onValidationError={onValidationError}
         
         />
       )}

@@ -8,7 +8,6 @@ import { InsightsSection } from "../components/InsightsSection/InsightsSection";
 import { AdvisorMeetingSection } from "../components/AdvisorMeetingSection/AdvisorMeetingSection.jsx";
 import { ContinueWithAiSection } from "../components/ContinueWithAiSection/ContinueWithAiSection";
 import api from "../api/api.js";
-
 const getRangeKeyFromValue = (value) => {
   if (value < 40) return "less_than_40";
   if (value >= 40 && value <= 49) return "40_49";
@@ -20,6 +19,7 @@ const getRangeKeyFromValue = (value) => {
 };
 
 const Quiz = () => {
+  
   const [currentQuestion, setCurrentQuestion] = useState(null);
   const [conversation, setConversation] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -306,6 +306,15 @@ const Quiz = () => {
   const handleStartQuiz2 = () => {
     console.log("Start Quiz 2 or advanced flow");
   };
+ const scrollUpOnValidationError = () => {
+  const chat = chatRef.current;
+  if (chat) {
+   chat.scrollTo({
+        top: chat.scrollHeight,
+        behavior: "smooth",
+      });
+  }
+};
 
   useEffect(() => {
     const chat = chatRef.current;
@@ -361,6 +370,7 @@ const Quiz = () => {
           <LoadingIndicator loading={loading} />
 
           <QuestionDisplay
+          onValidationError={scrollUpOnValidationError}
             currentQuestion={currentQuestion}
             loading={loading}
             textInput={textInput}
