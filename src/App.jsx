@@ -7,7 +7,7 @@ function App() {
     <>
       <Routes>
         {/* <Route path="/" element={<Navigate to="/quiz" replace />} /> */}
-        <Route path="/quiz" element={<Quiz />} />
+        <Route path="/" element={<Quiz />} />
       </Routes>
     </>
   );
