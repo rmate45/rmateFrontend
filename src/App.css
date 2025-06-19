@@ -1,0 +1,89 @@
+@import url("https://fonts.googleapis.com/css2?family=Rubik:ital,wght@0,300..900;1,300..900&display=swap");
+
+#root {
+  font-family: "Rubik", sans-serif;
+  max-width: 1280px;
+  margin: 0 auto;
+  text-align: center;
+}
+
+:root {
+  font-family: "Rubik", sans-serif;
+}
+
+@keyframes bounce-fast {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-8px); /* More bounce */
+  }
+}
+
+/* App.css - Explicitly use Rubik font */
+
+.app {
+  font-family: "Rubik", sans-serif;
+}
+
+/* Apply Rubik to all elements within the app */
+.app * {
+  font-family: "Rubik", sans-serif;
+}
+
+/* Or you can set it globally if App.css is your main stylesheet */
+body {
+  font-family: "Rubik", sans-serif;
+}
+
+/* All your existing App.css styles here */
+/* Update any existing font-family declarations to use Rubik */
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: "Rubik", sans-serif;
+}
+
+p,
+span,
+div,
+button,
+input,
+textarea {
+  font-family: "Rubik", sans-serif;
+}
+
+/* .custom-slider {
+  -webkit-appearance: none;
+  appearance: none;
+  height: 12px;
+  border-radius: 2px;
+  background-color: #ccc;
+  cursor: pointer;
+}
+
+.custom-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  height: 30px;
+  width: 30px;
+  border-radius: 100%;
+  background: #4892dc;
+  cursor: pointer;
+  border: none;
+  margin-top: -3px; 
+}
+
+.custom-slider::-moz-range-thumb {
+  height: 24px;
+  width: 24px;
+  border-radius: 4px;
+  background: #4892dc;
+  cursor: pointer;
+  border: none;
+} */
