@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState,useEffect } from "react";
 import { QuestionOptions } from "../QuestionOptions/QuestionOptions";
 import { RangeSlider } from "../RangeSlider/RangeSlider";
 import { TextInput } from "../TextInput/TextInput";
@@ -35,12 +35,33 @@ export const QuestionDisplay = ({
   onOptionClick,
   onTextSubmit,
 }) => {
+  if (!currentQuestion || loading) return null;
   const [rangeValue, setRangeValue] = useState(20);
   const [savedForRetiementRange, setSavedForRetirementRange] = useState(20000);
   const [yearAmountRange, setYearAmountRange] = useState(20000);
+ const isValidateZip =
+    currentQuestion?.questionText ===
+      "Where do you currently live? Please be as specific as possible (Address, Zip Code, Neighborhood, City, or State)" ||
+    currentQuestion?.questionText ===
+      "Where do you currently live? Please enter your zip code";
+const [shouldValidateZip,setShouldValidateZip] = useState(isValidateZip)
 
-  if (!currentQuestion || loading) return null;
+useEffect(() => {
+    const isValidateZip =
+      currentQuestion.questionText ===
+        "Where do you currently live? Please be as specific as possible (Address, Zip Code, Neighborhood, City, or State)" ||
+      currentQuestion.questionText ===
+        "Where do you currently live? Please enter your zip code";
+if(isValidateZip){
+   setShouldValidateZip(isValidateZip);
+}
+else{
+   setShouldValidateZip(false);
+}
+   
+  }, [currentQuestion]);
 
+ 
   return (
     <div className="mt-4">
       <div className="mb-2 text-sm border-2 border-secondary px-4 py-2 text-center rounded-xl text-gray-800 font-semibold max-w-sm">
@@ -59,33 +80,34 @@ export const QuestionDisplay = ({
           value={textInput}
           onChange={onTextChange}
           onSubmit={onTextSubmit}
+          validateAsZip={shouldValidateZip}
+        
         />
       )}
 
-      {currentQuestion.type === "range" &&
-        currentQuestion.quiz_no === 1 && (
-          <RangeSlider
-            min={currentQuestion.min || 20}
-            max={currentQuestion.max || 90}
-            value={rangeValue}
-            onChange={setRangeValue}
-            labelFormatter={(v) => v}
-            step={1}
-            onSubmit={() => {
-              const matchedOption = findMatchingOption(
-                currentQuestion.options,
-                rangeValue
-              );
-              if (matchedOption) {
-                onOptionClick({
-                  value: rangeValue,
-                  comment: matchedOption.comment,
-                  label: rangeValue,
-                });
-              }
-            }}
-          />
-        )}
+      {currentQuestion.type === "range" && currentQuestion.quiz_no === 1 && (
+        <RangeSlider
+          min={currentQuestion.min || 20}
+          max={currentQuestion.max || 90}
+          value={rangeValue}
+          onChange={setRangeValue}
+          labelFormatter={(v) => v}
+          step={1}
+          onSubmit={() => {
+            const matchedOption = findMatchingOption(
+              currentQuestion.options,
+              rangeValue
+            );
+            if (matchedOption) {
+              onOptionClick({
+                value: rangeValue,
+                comment: matchedOption.comment,
+                label: rangeValue,
+              });
+            }
+          }}
+        />
+      )}
 
       {currentQuestion.type === "range" &&
         currentQuestion.question_number === 5 && (

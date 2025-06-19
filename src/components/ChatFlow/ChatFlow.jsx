@@ -50,7 +50,7 @@ export const ChatFlow = ({
     try {
       setLoading(true);
       const response = await fetch(
-        `http://localhost:8000/api/v1/get-next-question?next_question=${questionNumber}&prime_value=${nextValue}`
+        `https://quiz-api.retiremate.com/api/v1/get-next-question?next_question=${questionNumber}&prime_value=${nextValue}`
       );
       const data = await response.json();
 

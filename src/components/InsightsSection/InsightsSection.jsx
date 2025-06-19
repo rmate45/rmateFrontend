@@ -1,6 +1,12 @@
 import React, { useState } from "react";
 
 export const InsightsSection = ({ onInsightSelect, insightsData }) => {
+
+
+  
+
+
+
   // Transform the dynamic data into the format expected by the component
   const transformInsightsData = (data) => {
     if (!data) return [];
@@ -107,7 +113,7 @@ export const InsightsSection = ({ onInsightSelect, insightsData }) => {
                 : "text-orange-600",
           },
         ],
-        years: data.howLongMoneyLast["Years Extra"],
+        years: data.howLongMoneyLast["How Long will my money last?"],
         detail: data.howLongMoneyLast["Message"] || "",
       });
     }

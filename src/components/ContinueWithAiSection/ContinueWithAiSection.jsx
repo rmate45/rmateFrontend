@@ -8,7 +8,7 @@ export const ContinueWithAiSection = ({ onStartQuiz2 }) => {
       </h2>
       <div className="text-center mb-6">
         <button
-          onClick={onStartQuiz2}
+          // onClick={onStartQuiz2}
           className="bg-secondary text-white px-8 py-3 rounded-full font-bold shadow hover:bg-green-400 transition"
         >
           Click for knowledge
