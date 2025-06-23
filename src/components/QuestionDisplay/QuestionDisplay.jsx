@@ -40,25 +40,7 @@ export const QuestionDisplay = ({
   const [rangeValue, setRangeValue] = useState(20);
   const [savedForRetiementRange, setSavedForRetirementRange] = useState(20000);
   const [yearAmountRange, setYearAmountRange] = useState(20000);
-  const isValidateZip =
-    currentQuestion?.questionText ===
-      "Where do you currently live? Please be as specific as possible (Address, Zip Code, Neighborhood, City, or State)" ||
-    currentQuestion?.questionText ===
-      "Where do you currently live? Please enter your zip code";
-  const [shouldValidateZip, setShouldValidateZip] = useState(isValidateZip);
-
-  useEffect(() => {
-    const isValidateZip =
-      currentQuestion.questionText ===
-        "Where do you currently live? Please be as specific as possible (Address, Zip Code, Neighborhood, City, or State)" ||
-      currentQuestion.questionText ===
-        "Where do you currently live? Please enter your zip code";
-    if (isValidateZip) {
-      setShouldValidateZip(isValidateZip);
-    } else {
-      setShouldValidateZip(false);
-    }
-  }, [currentQuestion]);
+  const isValidateZip = currentQuestion?.question_number === 2;
 
   return (
     <div className="mt-4">
@@ -78,14 +60,14 @@ export const QuestionDisplay = ({
           value={textInput}
           onChange={onTextChange}
           onSubmit={onTextSubmit}
-          validateAsZip={shouldValidateZip}
+          validateAsZip={isValidateZip}
           onValidationError={onValidationError}
         />
       )}
 
       {currentQuestion.type === "range" && currentQuestion.quiz_no === 1 && (
         <RangeSlider
-          min={currentQuestion.min || 20}
+          min={currentQuestion.min || 25}
           max={currentQuestion.max || 90}
           value={rangeValue}
           onChange={setRangeValue}

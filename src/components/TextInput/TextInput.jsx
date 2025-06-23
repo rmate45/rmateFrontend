@@ -11,55 +11,69 @@ export const TextInput = ({
 }) => {
   const [isValid, setIsValid] = useState(true);
   const [validZipCode, setValidZipCode] = useState(null);
-  // console.log(onValidationError,"onValidationError");
+  const [loading, setLoading] = useState(false);
 
-  const isValidZip = async (zip) => {
-    if (!zip || zip.length < 0 || zip.length > 6) {
+  const validateZip = async (zip) => {
+    if (!zip || zip.length < 3 || zip.length > 6) {
       setIsValid(false);
+      setValidZipCode("ZIP code must be between 3 and 6 digits.");
       onValidationError?.();
-      return;
+      return false;
     }
 
     try {
+      setLoading(true);
       const { data } = await api.post("/check-valid-zipcode", {
         zipcode: zip,
       });
-
-      // Check server response
       setIsValid(data?.type === "success");
+
+      if (data?.type !== "success") {
+        setValidZipCode("Invalid ZIP code.");
+        onValidationError?.();
+        return false;
+      }
+
       setValidZipCode(null);
+      return true;
     } catch (error) {
       console.error("ZIP code validation failed", error);
-      setIsValid(false);
       setValidZipCode(
         error?.response?.data?.message || "ZIP code validation failed."
       );
+      setIsValid(false);
       onValidationError?.();
+      return false;
+    } finally {
+      setLoading(false);
     }
   };
 
   const handleChange = (rawValue) => {
     const cleaned = validateAsZip ? rawValue.replace(/\D/g, "") : rawValue;
-
     onChange(cleaned);
+    setIsValid(true);
     setValidZipCode(null);
-    setIsValid(false);
+  };
 
+  const handleSubmit = async () => {
     if (validateAsZip) {
-      if (cleaned.length > 0 && cleaned.length <= 6) {
-        isValidZip(cleaned);
-        onValidationError?.();
+      const isZipValid = await validateZip(value);
+      if (isZipValid) onSubmit();
+    } else {
+      if (value.trim()) {
+        setIsValid(true);
+        onSubmit();
       } else {
         setIsValid(false);
+        onValidationError?.();
       }
-    } else {
-      setIsValid(!!cleaned.trim());
     }
   };
 
   const handleKeyDown = (e) => {
-    if (e.key === "Enter" && isValid && !validZipCode) {
-      onSubmit();
+    if (e.key === "Enter") {
+      handleSubmit();
     }
   };
 
@@ -79,22 +93,18 @@ export const TextInput = ({
               ? "Enter ZIP code (3–6 digits)"
               : "Type your answer here..."
           }
-          className={`w-full px-4 py-2 pr-10 border-2 border-gray-300 rounded-xl text-sm focus:outline-none focus:border-primary}`}
+          className={`w-full px-4 py-2 pr-10 border-2 rounded-xl text-sm focus:outline-none ${
+            isValid ? "border-gray-300" : "border-red-500"
+          }`}
         />
         <button
-          onClick={onSubmit}
-          disabled={!isValid || validZipCode !== null}
+          onClick={handleSubmit}
+          disabled={loading}
           className="absolute right-2 top-1/2 -translate-y-1/2 p-0 text-blue disabled:text-gray-400 disabled:cursor-not-allowed"
         >
           <img src={sendIcon} alt="send" className="w-6 mt-4 mb-4" />
         </button>
       </div>
-
-      {/* {validateAsZip && value.length > 0 && !isValid && (
-        <p className="text-red-500 text-sm">
-          ZIP code must be between 3 and 6 digits.
-        </p>
-      )} */}
 
       {validZipCode && <p className="text-red-500 text-sm">{validZipCode}</p>}
     </div>
