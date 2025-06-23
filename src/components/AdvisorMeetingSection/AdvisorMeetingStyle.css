@@ -1,0 +1,11 @@
+.slick-dots li button {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background-color: #d1d5db; /* gray-300 */
+  border: none;
+}
+
+.slick-dots li.slick-active button {
+  background-color: #1f2937; /* gray-800 */
+}

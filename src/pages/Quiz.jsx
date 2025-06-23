@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect, use } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import logo from "../assets/retiremate-logo.svg";
 import { ChatHeader } from "../components/ChatHeader/ChatHeader";
 import { ChatMessage } from "../components/ChatMessage/ChatMessage";

@@ -7,16 +7,16 @@ export const TextInput = ({
   onChange,
   onSubmit,
   validateAsZip = false,
-   onValidationError,
+  onValidationError,
 }) => {
   const [isValid, setIsValid] = useState(true);
   const [validZipCode, setValidZipCode] = useState(null);
-// console.log(onValidationError,"onValidationError");
+  // console.log(onValidationError,"onValidationError");
 
   const isValidZip = async (zip) => {
     if (!zip || zip.length < 0 || zip.length > 6) {
       setIsValid(false);
-        onValidationError?.();
+      onValidationError?.();
       return;
     }
 
@@ -31,7 +31,9 @@ export const TextInput = ({
     } catch (error) {
       console.error("ZIP code validation failed", error);
       setIsValid(false);
-      setValidZipCode(error?.response?.data?.message || "ZIP code validation failed.");
+      setValidZipCode(
+        error?.response?.data?.message || "ZIP code validation failed."
+      );
       onValidationError?.();
     }
   };
@@ -46,7 +48,7 @@ export const TextInput = ({
     if (validateAsZip) {
       if (cleaned.length > 0 && cleaned.length <= 6) {
         isValidZip(cleaned);
-          onValidationError?.();
+        onValidationError?.();
       } else {
         setIsValid(false);
       }
@@ -73,7 +75,9 @@ export const TextInput = ({
           onChange={(e) => handleChange(e.target.value)}
           onKeyDown={handleKeyDown}
           placeholder={
-            validateAsZip ? "Enter ZIP code (3–6 digits)" : "Type your answer here..."
+            validateAsZip
+              ? "Enter ZIP code (3–6 digits)"
+              : "Type your answer here..."
           }
           className={`w-full px-4 py-2 pr-10 border-2 border-gray-300 rounded-xl text-sm focus:outline-none focus:border-primary}`}
         />
@@ -92,9 +96,7 @@ export const TextInput = ({
         </p>
       )} */}
 
-      {validZipCode && (
-        <p className="text-red-500 text-sm">{validZipCode}</p>
-      )}
+      {validZipCode && <p className="text-red-500 text-sm">{validZipCode}</p>}
     </div>
   );
 };

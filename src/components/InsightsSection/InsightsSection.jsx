@@ -1,12 +1,6 @@
 import React, { useState } from "react";
 
 export const InsightsSection = ({ onInsightSelect, insightsData }) => {
-
-
-  
-
-
-
   // Transform the dynamic data into the format expected by the component
   const transformInsightsData = (data) => {
     if (!data) return [];
