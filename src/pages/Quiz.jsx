@@ -19,7 +19,6 @@ const getRangeKeyFromValue = (value) => {
 };
 
 const Quiz = () => {
-  
   const [currentQuestion, setCurrentQuestion] = useState(null);
   const [conversation, setConversation] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -306,15 +305,16 @@ const Quiz = () => {
   const handleStartQuiz2 = () => {
     console.log("Start Quiz 2 or advanced flow");
   };
- const scrollUpOnValidationError = () => {
-  const chat = chatRef.current;
-  if (chat) {
-   chat.scrollTo({
+  
+  const scrollUpOnValidationError = () => {
+    const chat = chatRef.current;
+    if (chat) {
+      chat.scrollTo({
         top: chat.scrollHeight,
         behavior: "smooth",
       });
-  }
-};
+    }
+  };
 
   useEffect(() => {
     const chat = chatRef.current;
@@ -370,7 +370,7 @@ const Quiz = () => {
           <LoadingIndicator loading={loading} />
 
           <QuestionDisplay
-          onValidationError={scrollUpOnValidationError}
+            onValidationError={scrollUpOnValidationError}
             currentQuestion={currentQuestion}
             loading={loading}
             textInput={textInput}
