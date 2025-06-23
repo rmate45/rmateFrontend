@@ -37,7 +37,7 @@ export const QuestionDisplay = ({
   onValidationError,
 }) => {
   if (!currentQuestion || loading) return null;
-  const [rangeValue, setRangeValue] = useState(20);
+  const [rangeValue, setRangeValue] = useState(25);
   const [savedForRetiementRange, setSavedForRetirementRange] = useState(20000);
   const [yearAmountRange, setYearAmountRange] = useState(20000);
   const isValidateZip = currentQuestion?.question_number === 2;
