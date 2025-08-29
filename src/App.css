@@ -1,100 +1,89 @@
 @import url("https://fonts.googleapis.com/css2?family=Rubik:ital,wght@0,300..900;1,300..900&display=swap");
-
-#root {
-  font-family: "Rubik", sans-serif;
-  max-width: 1280px;
-  margin: 0 auto;
+.App {
   text-align: center;
 }
 
-:root {
+.App-logo {
+  height: 40vmin;
+  pointer-events: none;
+}
+body * {
   font-family: "Rubik", sans-serif;
 }
 
-@keyframes bounce-fast {
-  0%,
-  100% {
-    transform: translateY(0);
+@media (prefers-reduced-motion: no-preference) {
+  .App-logo {
+    animation: App-logo-spin infinite 20s linear;
   }
-  50% {
-    transform: translateY(-8px); /* More bounce */
+}
+
+.App-header {
+  background-color: #282c34;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-size: calc(10px + 2vmin);
+  color: white;
+  font-family: "Rubik", sans-serif;
+}
+
+.App-link {
+  color: #61dafb;
+}
+
+@keyframes App-logo-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
   }
 }
-
-/* App.css - Explicitly use Rubik font */
-
-.app {
-  font-family: "Rubik", sans-serif;
+.st0 {
+  fill: #5cc37e;
 }
 
-/* Apply Rubik to all elements within the app */
-.app * {
-  font-family: "Rubik", sans-serif;
+.st1 {
+  fill: #0e6735;
 }
-
-/* Or you can set it globally if App.css is your main stylesheet */
-body {
-  font-family: "Rubik", sans-serif;
-}
-
-/* All your existing App.css styles here */
-/* Update any existing font-family declarations to use Rubik */
-
-h1,
-h2,
-h3,
-h4,
-h5,
-h6 {
-  font-family: "Rubik", sans-serif;
-}
-
-p,
-span,
-div,
-button,
-input,
-textarea {
-  font-family: "Rubik", sans-serif;
-}
-
-/* .custom-slider {
-  -webkit-appearance: none;
-  appearance: none;
-  height: 12px;
-  border-radius: 2px;
-  background-color: #ccc;
+.logoSvg {
+  width: 150px;
   cursor: pointer;
 }
-
-.custom-slider::-webkit-slider-thumb {
-  -webkit-appearance: none;
-  appearance: none;
-  height: 30px;
-  width: 30px;
-  border-radius: 100%;
-  background: #4892dc;
+header.header_wrapper {
+  box-shadow: 0px 0px 5px rgba(0, 0, 0, 10%);
+  background: #fff;
+}
+.header_wrapper a {
+  color: #0e6735;
+  font-size: 14px;
+  font-weight: 600;
   cursor: pointer;
-  border: none;
-  margin-top: -3px; 
 }
-
-.custom-slider::-moz-range-thumb {
-  height: 24px;
-  width: 24px;
-  border-radius: 4px;
-  background: #4892dc;
-  cursor: pointer;
-  border: none;
-} */
-ul.slick-dots li button:before {
-  font-size: 16px;
-  color: #4892dc;
+.send_image {
+  position: absolute !important;
+  top: 15px;
+  right: 2px;
 }
-ul.slick-dots li.slick-active button:before{
-   color: #4892dc;
+.save_text {
+  padding: 60px 0px;
+  text-align: center;
+  margin-top: 3rem;
 }
-/* ul.slick-dots {
-    position: absolute;
-    bottom: -14px;
-} */
+.save_text h3 {
+  display: inline-block;
+  text-align: left;
+}
+.footer {
+  padding: 2em 0;
+}
+div#root {
+  min-height: 100vh;
+}
+@media (max-width: 576px) {
+  .logoSvg {
+    width: 110px;
+  }
+}
