@@ -20,8 +20,19 @@ import phoneImage2 from '../assets/xl_media_image2.png';
 import { useNavigate } from 'react-router-dom';
 
 function WelcomePage() {
-    const [messgae, setMessage] = useState("");
+    const [message, setMessage] = useState("");
     const navigate = useNavigate();
+
+    const handleFormSubmit = (e) => {
+        e.preventDefault();
+        if (message.trim()) {
+            navigate('/quiz', { state: { title: message.trim() } });
+        }
+    };
+
+    const handleQuestionClick = (question) => {
+        navigate('/quiz', { state: { title: question } });
+    };
 
     return (
         <>
@@ -83,12 +94,10 @@ function WelcomePage() {
                 </Typography>
 
                 <Box sx={{ position: "relative", maxWidth: "550px", margin: "auto" }}>
-                    <form onSubmit={(e) => {
-                        e.preventDefault();
-                        navigate('/chat', { state: { title: messgae } });
-                    }}>
+                    <form onSubmit={handleFormSubmit}>
                         <TextField
                             onChange={(e) => setMessage(e.target.value)}
+                            value={message}
                             variant="outlined"
                             fullWidth
                             placeholder="Type your retirement question…"
@@ -147,9 +156,7 @@ function WelcomePage() {
                         'How much money should I save per month?',
                     ].map((question, idx) => (
                         <Button
-                            onClick={() => {
-                                navigate('/chat', { state: { title: question } });
-                            }}
+                            onClick={() => handleQuestionClick(question)}
                             key={idx}
                             variant="outlined"
                             sx={{

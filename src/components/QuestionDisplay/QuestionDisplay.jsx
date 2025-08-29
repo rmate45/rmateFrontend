@@ -3,30 +3,6 @@ import { QuestionOptions } from "../QuestionOptions/QuestionOptions";
 import { RangeSlider } from "../RangeSlider/RangeSlider";
 import { TextInput } from "../TextInput/TextInput";
 
-const findMatchingOption = (options, selectedValue) => {
-  for (const option of options) {
-    if (option.value === "less_than_40" && selectedValue < 40) return option;
-    if (option.value === "40_49" && selectedValue >= 40 && selectedValue <= 49)
-      return option;
-    if (option.value === "50_59" && selectedValue >= 50 && selectedValue <= 59)
-      return option;
-    if (option.value === "60_65" && selectedValue >= 60 && selectedValue <= 65)
-      return option;
-    if (option.value === "66_79" && selectedValue >= 66 && selectedValue <= 79)
-      return option;
-    if (option.value === "80+" && selectedValue >= 80) return option;
-  }
-  return null;
-};
-
-const matchRetirementSavedOption = (value) => {
-  if (value < 50000) return 0;
-  if (value >= 50000 && value <= 200000) return 1;
-  if (value > 200000 && value <= 500000) return 2;
-  if (value > 500000) return 3;
-  return -1;
-};
-
 export const QuestionDisplay = ({
   currentQuestion,
   loading,
@@ -34,13 +10,32 @@ export const QuestionDisplay = ({
   onTextChange,
   onOptionClick,
   onTextSubmit,
+  onMultiSelectSubmit,
   onValidationError,
 }) => {
+  const [selectedMultiOptions, setSelectedMultiOptions] = useState([]);
+  
   if (!currentQuestion || loading) return null;
-  const [rangeValue, setRangeValue] = useState(25);
-  const [savedForRetiementRange, setSavedForRetirementRange] = useState(20000);
-  const [yearAmountRange, setYearAmountRange] = useState(20000);
-  const isValidateZip = currentQuestion?.question_number === 2;
+
+  const isValidateZip = currentQuestion?.questionId === "Q7"; // Question 7 asks for zip code
+
+  const handleMultiSelectToggle = (option) => {
+    setSelectedMultiOptions(prev => {
+      const isSelected = prev.find(item => item.text === option.text);
+      if (isSelected) {
+        return prev.filter(item => item.text !== option.text);
+      } else {
+        return [...prev, option];
+      }
+    });
+  };
+
+  const handleMultiSelectSubmitClick = () => {
+    if (selectedMultiOptions.length > 0) {
+      onMultiSelectSubmit(selectedMultiOptions);
+      setSelectedMultiOptions([]);
+    }
+  };
 
   return (
     <div className="mt-4">
@@ -48,14 +43,8 @@ export const QuestionDisplay = ({
         {currentQuestion.questionText}
       </div>
 
-      {currentQuestion.type === "option" && currentQuestion.options && (
-        <QuestionOptions
-          options={currentQuestion.options}
-          onOptionClick={onOptionClick}
-        />
-      )}
-
-      {currentQuestion.type === "text" && (
+      {/* Free Text Input */}
+      {currentQuestion.inputType === "free_text" && (
         <TextInput
           value={textInput}
           onChange={onTextChange}
@@ -65,83 +54,50 @@ export const QuestionDisplay = ({
         />
       )}
 
-      {currentQuestion.type === "range" && currentQuestion.quiz_no === 1 && (
-        <RangeSlider
-          min={currentQuestion.min || 25}
-          max={currentQuestion.max || 90}
-          value={rangeValue}
-          onChange={setRangeValue}
-          labelFormatter={(v) => v}
-          step={1}
-          onSubmit={() => {
-            const matchedOption = findMatchingOption(
-              currentQuestion.options,
-              rangeValue
-            );
-            if (matchedOption) {
-              onOptionClick({
-                value: rangeValue,
-                comment: matchedOption.comment,
-                label: rangeValue,
-              });
-            }
-          }}
+      {/* Single Select Options */}
+      {currentQuestion.inputType === "single_select" && currentQuestion.options && (
+        <QuestionOptions
+          options={currentQuestion.options}
+          onOptionClick={onOptionClick}
         />
       )}
 
-      {currentQuestion.type === "range" &&
-        currentQuestion.question_number === 5 && (
-          <RangeSlider
-            min={20000}
-            max={500000}
-            value={savedForRetiementRange}
-            onChange={setSavedForRetirementRange}
-            labelFormatter={(v) =>
-              v >= 1000000
-                ? `$${(v / 1000000).toFixed(1)}M`
-                : `$${v?.toLocaleString()}`
-            }
-            step={5000} // adjustable for smoothness vs precision
-            onSubmit={() => {
-              const idx = matchRetirementSavedOption(savedForRetiementRange);
-              const matchedOption = currentQuestion.options[idx];
-              if (matchedOption) {
-                onOptionClick({
-                  value: savedForRetiementRange,
-                  comment: matchedOption.comment,
-                  label: `$${savedForRetiementRange}`,
-                });
-              }
-            }}
-          />
-        )}
-
-      {currentQuestion.type === "range" &&
-        currentQuestion.question_number === 6 && (
-          <RangeSlider
-            min={20000}
-            max={500000}
-            value={yearAmountRange}
-            onChange={setYearAmountRange}
-            labelFormatter={(v) =>
-              v >= 1000000
-                ? `$${(v / 1000000).toFixed(1)}M`
-                : `$${v?.toLocaleString()}`
-            }
-            step={5000} // adjustable for smoothness vs precision
-            onSubmit={() => {
-              const onlyOption = currentQuestion.options?.[0];
-              if (onlyOption) {
-                onOptionClick({
-                  value: yearAmountRange,
-                  comment: onlyOption.comment,
-
-                  label: `$${yearAmountRange}`,
-                });
-              }
-            }}
-          />
-        )}
+      {/* Multi Select Options */}
+      {currentQuestion.inputType === "multi_select" && currentQuestion.options && (
+        <div>
+          <div className="space-y-2 mb-4">
+            {currentQuestion.options.map((option, idx) => (
+              <button
+                key={idx}
+                onClick={() => handleMultiSelectToggle(option)}
+                className={`w-full p-3 text-left border-2 rounded-lg transition-all ${
+                  selectedMultiOptions.find(item => item.text === option.text)
+                    ? 'border-green-500 bg-green-50 text-green-700'
+                    : 'border-gray-300 hover:border-green-400'
+                }`}
+              >
+                <div className="flex items-center justify-between">
+                  <span>{option.text}</span>
+                  <span className="text-sm">
+                    {selectedMultiOptions.find(item => item.text === option.text) ? '✓' : '+'}
+                  </span>
+                </div>
+              </button>
+            ))}
+          </div>
+          
+          {selectedMultiOptions.length > 0 && (
+            <div className="text-center">
+              <button
+                onClick={handleMultiSelectSubmitClick}
+                className="px-6 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
+              >
+                Submit ({selectedMultiOptions.length} selected)
+              </button>
+            </div>
+          )}
+        </div>
+      )}
     </div>
   );
 };

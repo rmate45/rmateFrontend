@@ -1,119 +1,159 @@
 import React, { useState, useRef, useEffect } from "react";
+import { useLocation } from "react-router-dom";
 import logo from "../assets/retiremate-logo.svg";
 import { ChatHeader } from "../components/ChatHeader/ChatHeader";
 import { ChatMessage } from "../components/ChatMessage/ChatMessage";
 import { LoadingIndicator } from "../components/LoadingIndicator/LoadingIndicator";
 import { QuestionDisplay } from "../components/QuestionDisplay/QuestionDisplay";
-import { InsightsSection } from "../components/InsightsSection/InsightsSection";
-import { AdvisorMeetingSection } from "../components/AdvisorMeetingSection/AdvisorMeetingSection.jsx";
-import { ContinueWithAiSection } from "../components/ContinueWithAiSection/ContinueWithAiSection";
 import api from "../api/api.js";
-const getRangeKeyFromValue = (value) => {
-  if (value < 40) return "less_than_40";
-  if (value >= 40 && value <= 49) return "40_49";
-  if (value >= 50 && value <= 59) return "50_59";
-  if (value >= 60 && value <= 65) return "60_65";
-  if (value >= 66 && value <= 79) return "66_79";
-  if (value >= 80) return "80+";
-  return null;
-};
 
 const Quiz = () => {
+  const location = useLocation();
+  const initialText = location.state?.title || "";
+  
   const [currentQuestion, setCurrentQuestion] = useState(null);
   const [conversation, setConversation] = useState([]);
   const [loading, setLoading] = useState(true);
   const [textInput, setTextInput] = useState("");
   const chatRef = useRef(null);
-  const [primeValue, setPrimeValue] = useState(null);
-  const [questionNumber, setQuestionNumber] = useState(1);
+  const [questionNumber, setQuestionNumber] = useState(0);
   const [lastAnswerOption, setLastAnswerOption] = useState(null);
   const [lastQuestionText, setLastQuestionText] = useState(null);
   const [lastQuestionData, setLastQuestionData] = useState(null);
   const [canReload, setCanReload] = useState(false);
   const [isLastQuestion, setIsLastQuestion] = useState(false);
-  const [topic, setTopic] = useState(null);
   const overviewRef = useRef(null);
 
-  const [userRangeAnswers, setUserRangeAnswers] = useState({});
+  // New states for handling the flow
+  const [allQuestions, setAllQuestions] = useState([]);
+  const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
+  const [statements, setStatements] = useState([]);
+  const [flowInitialized, setFlowInitialized] = useState(false);
+  const [statementsShown, setStatementsShown] = useState(false);
+
   const [userAnswers, setUserAnswers] = useState({});
-  const [insightsData, setInightsData] = useState([]);
+  const [insightsData, setInsightsData] = useState([]);
 
-  const fetchFirstQuestion = async () => {
-    try {
-      setLoading(true);
-      const { data } = await api.get("/get-prime-questions");
+  // Initialize the flow when component mounts
+ useEffect(() => {
+    initializeFlow();
+}, []);
 
-      setConversation(
-        data?.data?.questions[0].system_greetings.map((greeting) => ({
-          type: "system",
-          text: greeting,
-        }))
-      );
-      setCurrentQuestion(data?.data?.questions[0]);
-    } catch (error) {
-      console.error("Error fetching first question:", error);
-    } finally {
-      setLoading(false);
+  const initializeFlow = async () => {
+  try {
+    setLoading(true);
+
+    // Show the user's selected question/text first
+    setConversation([
+      { type: "answer", text: initialText,  }
+    ]);
+
+    // Call first API to get statements
+    const statementsResponse = await api.get("/get-statements");
+
+    if (statementsResponse.data?.data && statementsResponse.data.data.length > 0) {
+      setStatements(statementsResponse.data.data);
+
+      // Start showing statements one by one
+      showStatementsSequentially(statementsResponse.data.data);
+    } else {
+      // If no statements, directly fetch questions
+      // fetchQuestions();
     }
-  };
+  } catch (error) {
+    console.error("Error fetching statements:", error);
+    // Try to fetch questions anyway
+    // fetchQuestions();
+  }
+};
 
-  useEffect(() => {
-    fetchFirstQuestion();
-  }, []);
+const showStatementsSequentially = (statementsData) => {
+  let index = 0;
 
-  const fetchNextQuestion = async (nextValue = primeValue) => {
-    if (isLastQuestion) {
-      setLoading(false);
-      setCurrentQuestion(null);
+  const showNext = () => {
+    const statement = statementsData[index];
+    if (!statement) {
+      // No more statements, fetch questions
+      setTimeout(fetchQuestions, 1000);
       return;
     }
 
+    setConversation(prev => [
+      ...prev,
+      { type: "system", text: statement.question }
+    ]);
+
+    index++;
+
+    if (index < statementsData.length) {
+      setTimeout(showNext, 1500);
+    } else {
+      setTimeout(fetchQuestions, 1000);
+    }
+  };
+
+  setTimeout(showNext, 1000);
+};
+
+  const fetchQuestions = async () => {
     try {
-      setLoading(true);
-      const { data } = await api.post("/get-next-question", {
-        next_question: questionNumber,
-        prime_value: nextValue,
-      });
+      const questionsResponse = await api.get("/get-intake-questions");
 
-      if (data?.data?.question) {
-        setCurrentQuestion(data.data.question);
-        setQuestionNumber((prev) => prev + 1);
-        setCanReload(true);
-
-        if (data.data.isLastQuestion) {
-          setIsLastQuestion(true);
-          setCanReload(false);
-
-          fetchCalculateData();
-        }
+      if (questionsResponse.data?.data && questionsResponse.data.data.length > 0) {
+        const sortedQuestions = questionsResponse.data.data.sort((a, b) => a.position - b.position);
+        setAllQuestions(sortedQuestions);
+        setCurrentQuestion(sortedQuestions[0]);
+        setCurrentQuestionIndex(0);
+        setQuestionNumber(1);
+        setStatementsShown(true);
       } else {
-        setCurrentQuestion(null);
-        setCanReload(false);
+        setConversation(prev => [
+          ...prev,
+          { type: "system", text: "No questions available for this topic." }
+        ]);
       }
     } catch (error) {
-      console.error("Error fetching next question:", error);
-      addToConversation(
-        "system",
-        "Something went wrong while fetching the next question. Please try again later."
-      );
-      setCanReload(false);
+      console.error("Error fetching questions:", error);
+      setConversation(prev => [
+        ...prev,
+        { type: "system", text: "Error loading questions. Please try again." }
+      ]);
     } finally {
       setLoading(false);
+      setFlowInitialized(true);
+    }
+  };
+
+  const moveToNextQuestion = () => {
+    const nextIndex = currentQuestionIndex + 1;
+    
+    if (nextIndex < allQuestions.length) {
+      setCurrentQuestionIndex(nextIndex);
+      setCurrentQuestion(allQuestions[nextIndex]);
+      setQuestionNumber(prev => prev + 1);
+      setCanReload(true);
+    } else {
+      // All questions completed
+      setCurrentQuestion(null);
+      setIsLastQuestion(true);
+      setCanReload(false);
+      fetchCalculateData();
     }
   };
 
   const fetchCalculateData = async () => {
     const payload = {
-      userRangeAnswers: {
-        ...userRangeAnswers,
-      },
       userAnswers: {
         ...userAnswers,
       },
+      initialText: initialText
     };
 
     try {
       setLoading(true);
+      
+      // Show completion message
+      addToConversation("system", "Thank you for completing the quiz! Calculating your retirement insights...");
 
       const { data } = await api.post("/calculate-results-level1", {
         details: {
@@ -121,66 +161,97 @@ const Quiz = () => {
         },
       });
 
-      if (data) {
-        setInightsData(data?.data);
+      if (data?.data) {
+        setInsightsData(data.data);
+        addToConversation("system", "Your personalized retirement analysis is ready!");
+      } else {
+        addToConversation("system", "Results calculated successfully!");
       }
     } catch (error) {
-      console.error("Error fetching next question:", error);
+      console.error("Error calculating results:", error);
       addToConversation(
         "system",
-        "Something went wrong while fetching the next question. Please try again later."
+        "Something went wrong while calculating results. Please try again later."
       );
     } finally {
       setLoading(false);
     }
   };
 
-  const storeAnswer = (questionText, value, displayLabel, isRange = false) => {
-    if (isRange) {
-      setUserRangeAnswers((prev) => ({
-        ...prev,
-        [questionText]: value,
-      }));
-    } else {
-      // Always store in userAnswers with display label
-      setUserAnswers((prev) => ({
-        ...prev,
-        [questionText]: displayLabel,
-      }));
-    }
+  const storeAnswer = (questionId, questionText, value, displayLabel) => {
+    setUserAnswers((prev) => ({
+      ...prev,
+      [questionId]: {
+        questionText: questionText,
+        answer: displayLabel,
+        value: value
+      }
+    }));
   };
 
   const handleOptionClick = async (option) => {
     addToConversation("question", currentQuestion.questionText);
-    addToConversation("answer", option.label);
+    addToConversation("answer", option.text);
     setLoading(true);
 
     // Store the answer
-    const isRangeQuestion = currentQuestion.type === "range";
     storeAnswer(
+      currentQuestion.questionId,
       currentQuestion.questionText,
-      option.value,
-      option.label,
-      isRangeQuestion
+      option.text,
+      option.text
     );
 
     setLastAnswerOption(option);
     setLastQuestionText(currentQuestion.questionText);
     setLastQuestionData(currentQuestion);
 
-    let nextPrimeValue = primeValue;
-    if (currentQuestion.quiz_no === 1) {
-      nextPrimeValue = getRangeKeyFromValue(option.value);
-      setPrimeValue(nextPrimeValue);
+    // Show comment if available
+    const comment = option.comment || currentQuestion.defaultComment;
+    if (comment && comment.trim()) {
+      setTimeout(() => {
+        addToConversation("comment", comment);
+      }, 1000);
     }
 
     setTimeout(() => {
-      addToConversation("comment", option.comment);
-    }, 1000);
+      moveToNextQuestion();
+      setLoading(false);
+    }, (comment && comment.trim()) ? 2500 : 1500);
+  };
+
+  const handleMultiSelectSubmit = (selectedOptions) => {
+    addToConversation("question", currentQuestion.questionText);
+    
+    const selectedTexts = selectedOptions.map(opt => opt.text);
+    const answerText = selectedTexts.join(", ");
+    addToConversation("answer", answerText);
+    
+    setLoading(true);
+
+    // Store the multi-select answer
+    storeAnswer(
+      currentQuestion.questionId,
+      currentQuestion.questionText,
+      selectedTexts,
+      answerText
+    );
+
+    setLastAnswerOption({ text: answerText, selectedOptions });
+    setLastQuestionText(currentQuestion.questionText);
+    setLastQuestionData(currentQuestion);
+
+    const comment = currentQuestion.defaultComment;
+    if (comment && comment.trim()) {
+      setTimeout(() => {
+        addToConversation("comment", comment);
+      }, 1000);
+    }
 
     setTimeout(() => {
-      fetchNextQuestion(nextPrimeValue);
-    }, 2500);
+      moveToNextQuestion();
+      setLoading(false);
+    }, (comment && comment.trim()) ? 2500 : 1500);
   };
 
   const handleTextSubmit = async () => {
@@ -192,42 +263,43 @@ const Quiz = () => {
     addToConversation("answer", textInput);
 
     // Store the text answer
-    storeAnswer(questionText, textInput, textInput, false);
+    storeAnswer(
+      currentQuestion.questionId,
+      questionText,
+      textInput,
+      textInput
+    );
 
     setLastQuestionText(questionText);
     setLastQuestionData(currentQuestion);
-    setLastAnswerOption({ label: textInput, value: textInput });
+    setLastAnswerOption({ text: textInput, value: textInput });
 
+    const userInput = textInput;
     setTextInput("");
     setLoading(true);
 
-    setTimeout(() => {
-      addToConversation("comment", currentQuestion.options[0].comment);
-    }, 1000);
+    const comment = currentQuestion.defaultComment;
+    if (comment && comment.trim()) {
+      setTimeout(() => {
+        addToConversation("comment", comment);
+      }, 1000);
+    }
 
     setTimeout(() => {
-      fetchNextQuestion(primeValue);
-    }, 2500);
+      moveToNextQuestion();
+      setLoading(false);
+    }, (comment && comment.trim()) ? 2500 : 1500);
   };
 
   const handleReloadAnswer = async () => {
     if (!lastAnswerOption || !lastQuestionText || !lastQuestionData) return;
 
     // Remove the last answer from stored data
-    const questionText = lastQuestionText;
-    const wasRangeQuestion = lastQuestionData.type === "range";
-
-    if (wasRangeQuestion) {
-      setUserRangeAnswers((prev) => {
-        const updated = { ...prev };
-        delete updated[questionText];
-        return updated;
-      });
-    }
+    const questionId = lastQuestionData.questionId;
 
     setUserAnswers((prev) => {
       const updated = { ...prev };
-      delete updated[questionText];
+      delete updated[questionId];
       return updated;
     });
 
@@ -250,8 +322,14 @@ const Quiz = () => {
       return updated;
     });
 
-    setQuestionNumber((prev) => prev - 1);
-    setCurrentQuestion(lastQuestionData);
+    // Go back to previous question
+    const prevIndex = currentQuestionIndex - 1;
+    if (prevIndex >= 0) {
+      setCurrentQuestionIndex(prevIndex);
+      setCurrentQuestion(allQuestions[prevIndex]);
+      setQuestionNumber(prev => prev - 1);
+    }
+    
     setCanReload(false);
     setLoading(false);
   };
@@ -268,13 +346,11 @@ const Quiz = () => {
       ]);
       setCurrentQuestion(null);
       setQuestionNumber(1);
-      setPrimeValue(null);
       setLastAnswerOption(null);
       setLastQuestionText(null);
       setLastQuestionData(null);
       setCanReload(false);
       setIsLastQuestion(false);
-      setTopic(selectedTopic);
 
       const { data } = await api.get(`/start-topic`, {
         params: { topic: selectedTopic },
@@ -302,10 +378,7 @@ const Quiz = () => {
     startNewChatWithTopic(insight.title);
   };
 
-  const handleStartQuiz2 = () => {
-    console.log("Start Quiz 2 or advanced flow");
-  };
-  
+
   const scrollUpOnValidationError = () => {
     const chat = chatRef.current;
     if (chat) {
@@ -332,13 +405,15 @@ const Quiz = () => {
     }
   }, [currentQuestion, isLastQuestion]);
 
-  if (loading && !currentQuestion) {
+  if (loading && conversation.length === 0) {
     return (
       <div className="bg-white min-h-screen flex flex-col items-center justify-center">
-        <div className="text-lg">Loading quiz...</div>
+        <div className="text-lg">Loading...</div>
       </div>
     );
   }
+
+  console.log( "conversation", conversation);
 
   return (
     <div className="bg-white px-4 min-h-screen flex flex-col items-center relative">
@@ -377,43 +452,37 @@ const Quiz = () => {
             onTextChange={setTextInput}
             onOptionClick={handleOptionClick}
             onTextSubmit={handleTextSubmit}
+            onMultiSelectSubmit={handleMultiSelectSubmit}
           />
 
-          <div id="overview" ref={overviewRef} className="scroll-mt-20"></div>
-          {!currentQuestion && isLastQuestion && (
-            <>
-              <hr className="my-8" />
-
-              <div className="space-y-4">
-                <h2 className="text-xl font-bold text-center">
-                  Your Financial Health Below
-                </h2>
-                <InsightsSection
-                  onStartQuiz2={handleStartQuiz2}
-                  onInsightSelect={handleInsightSelection}
-                  insightsData={insightsData}
-                />
-              </div>
-
-              <hr className="my-8" />
-
-              <AdvisorMeetingSection
-                onScheduleMeeting={() =>
-                  startNewChatWithTopic(
-                    "Schedule a free meeting with an advisor."
-                  )
-                }
-              />
-
-              <hr className="my-8" />
-
-              <ContinueWithAiSection
-                onStartQuiz2={() =>
-                  startNewChatWithTopic("Discover financial freedom.")
-                }
-              />
-            </>
+          {/* Show completion message and insights when quiz is done */}
+          {isLastQuestion && !loading && (
+            <div className="mt-6 p-4 bg-green-50 border border-green-200 rounded-lg">
+              <h3 className="text-lg font-semibold text-green-800 mb-2">Quiz Complete!</h3>
+              <p className="text-green-700 mb-4">
+                Thank you for providing your information. We're analyzing your responses to create a personalized retirement plan.
+              </p>
+              
+              {insightsData && insightsData.length > 0 && (
+                <div>
+                  <h4 className="font-medium text-green-800 mb-2">Your Retirement Insights:</h4>
+                  <div className="space-y-2">
+                    {insightsData.map((insight, idx) => (
+                      <div 
+                        key={idx} 
+                        className="p-2 bg-white border border-green-300 rounded cursor-pointer hover:bg-green-50"
+                        onClick={() => handleInsightSelection(insight)}
+                      >
+                        <span className="text-sm text-green-700">{insight.title || insight}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
           )}
+
+          <div id="overview" ref={overviewRef} className="scroll-mt-20"></div>
         </div>
       </div>
     </div>
