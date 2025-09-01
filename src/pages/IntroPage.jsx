@@ -1,118 +1,162 @@
-import React from "react";
-import Carousel from "../components/Carousel/Carousel";
+// IntroPage.js
+import React from 'react';
 
-const questions = [
-  { text: "How long will my savings last?", color: "#567257" },
-  { text: "What age can I retire?", color: "#8B5E57" },
-  { text: "How much money do I need to retire?", color: "#C1B9AF" },
-];
+// Import all the component modules
+import Header from '../components/Header/Header';
+import HeroSection from '../components/HeroSection/HeroSection';
+import SuggestedQuestions from '../components/SuggestedQuestions/SuggestedQuestions';
+import InsightsSection from '../components/InsightsSection/InsightsSection';
+import FeaturesSection from '../components/FeaturesSection/FeaturesSection';
+import QuestionsToAction from '../components/QuestionsToAction/QuestionsToAction';
+import ResourcesSection from '../components/ResourcesSection/ResourcesSection';
+import Footer from '../components/Footer/Footer';
+
+// Import assets
+import logo from "../assets/logo.png";
+import mic from "../assets/mic.png";
+import search from "../assets/search.png";
+import chat from "../assets/chat.png";
+import bookmark from "../assets/bookmark.png";
+import savings from "../assets/savings.png";
+import currency from "../assets/currency_exchange.png";
+import avatar from "../assets/Avatar.png";
 
 function IntroPage() {
+  // Data for components
+  const suggestedQuestions = [
+    { id: 1, text: "How long will my savings last?", color: "#567257" },
+    { id: 2, text: "What age can I retire?", color: "#896A58" },
+    { id: 3, text: "How much money do I need to retire?", color: "#ACAB9E" },
+  ];
+
+  const questionsAsked = [
+    { id: 1, text: "How does divorce impact my retirement benefits?" },
+    { id: 2, text: "What retirement benefits can I claim from a deceased or ex-spouse" },
+    { id: 3, text: "Should I increase contributions now that kids are older?" },
+  ];
+
+  const features = [
+    {
+      id: 1,
+      icon: bookmark,
+      description: "RetireMate has read all the best Retirement books, so you don't have to."
+    },
+    {
+      id: 2,
+      icon: currency,
+      description: "When laws and markets change, you'll be the first to know how it affects you and what you need to do."
+    },
+    {
+      id: 3,
+      icon: savings,
+      description: "Haven't saved enough? RetireMate will help you get on track and shows you all your options."
+    },
+    {
+      id: 4,
+      icon: chat,
+      description: "Want to speak with a Certified Financial Planner? RetireMate will help you find the right one for you."
+    }
+  ];
+
+  const testimonials = [
+    {
+      id: 1,
+      text: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamc. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamc...",
+      avatar: avatar,
+      name: "Lisa*",
+      title: "Full-Time Mom"
+    },
+    {
+      id: 2,
+      text: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamc. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamc...",
+      avatar: avatar,
+      name: "Lisa*",
+      title: "Full-Time Mom"
+    },
+    {
+      id: 3,
+      text: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamc. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamc...",
+      avatar: avatar,
+      name: "Lisa*",
+      title: "Full-Time Mom"
+    },
+    {
+      id: 4,
+      text: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamc. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamc...",
+      avatar: avatar,
+      name: "Lisa*",
+      title: "Full-Time Mom"
+    }
+  ];
+
+  // Event handlers
+  const handleLoginClick = () => {
+    console.log('Login clicked');
+    // Add your login logic here
+  };
+
+  const handleSearch = (query) => {
+    console.log('Search query:', query);
+    // Add your search logic here
+  };
+
+  const handleVoiceSearch = () => {
+    console.log('Voice search clicked');
+    // Add your voice search logic here
+  };
+
+  const handleQuestionClick = (question) => {
+    console.log('Question clicked:', question);
+    // Add your question click logic here
+  };
+
+  const handleBrowseAllClick = () => {
+    console.log('Browse all clicked');
+    // Add your browse all logic here
+  };
+
+  const handleFooterLinkClick = (link) => {
+    console.log('Footer link clicked:', link);
+    // Add your footer link logic here
+  };
+
   return (
     <>
-      {/* Banner */}
-      <div className="bg-[#567257] py-2 px-4 flex justify-between items-center">
-        <div className="max-w-[1800px] flex justify-between items-center mx-auto w-full">
+      <Header 
+        logo={logo} 
+        onLoginClick={handleLoginClick}
+      />
 
-        <h1 className="text-white font-bold text-lg">RetireMate®</h1>
-        <button className="border border-white text-white rounded-full px-4 py-1 hover:bg-white hover:text-[#567257] transition">
-          Log In
-        </button>
-        </div>
-      </div>
+      <HeroSection 
+        searchIcon={search}
+        micIcon={mic}
+        onSearch={handleSearch}
+        onVoiceSearch={handleVoiceSearch}
+      />
 
-      {/* Hero Section */}
-      <div className="bg-[#567257] text-white py-12 md:py-20 text-center px-2">
-        <div className="max-w-2xl mx-auto">
-          <h2 className="font-bold mb-2 text-3xl md:text-5xl">
-            Retirement is Scary.
-          </h2>
-          <p className="text-lg mb-6">
-            Get personalized answers to all your retirement questions
-          </p>
+      <SuggestedQuestions 
+        questions={suggestedQuestions}
+        onQuestionClick={handleQuestionClick}
+      />
 
-          {/* Search Input */}
-          <div className="bg-white rounded-full flex items-center px-3 py-2 max-w-lg mx-auto">
-            <input
-              type="text"
-              placeholder="Ask Anything"
-              className="flex-1 outline-none px-2 text-gray-700"
-            />
-            <button className="ml-2">
-              <span role="img" aria-label="mic">
-                🎤
-              </span>
-            </button>
-          </div>
-        </div>
-      </div>
+      <InsightsSection />
 
-      {/* Suggested Questions */}
-      <div className="text-center py-12 px-4">
-        <p className="mb-6 text-gray-700">
-          Don’t know where to start? Try one of these.
-        </p>
+      <FeaturesSection 
+        features={features}
+        testimonials={testimonials}
+      />
 
-      <div className="max-w-6xl mx-auto">
-        <Carousel
-          items={questions}
-          renderItem={(q) => (
-            <button
-              className="rounded-full px-6 py-3 text-white font-semibold whitespace-nowrap"
-              style={{ backgroundColor: q.color }}
-            >
-              {q.text}
-            </button>
-          )}
-        />
-        </div>
-      </div>
+      <QuestionsToAction 
+        questions={questionsAsked}
+        onQuestionClick={handleQuestionClick}
+        onBrowseAllClick={handleBrowseAllClick}
+      />
 
-      {/* Statement */}
-      <div className="text-center py-6">
-        <p className="font-medium text-gray-700 text-lg">
-          We believe personalized retirement advice should be free – for
-          everyone
-        </p>
-      </div>
+      <ResourcesSection />
 
-      {/* Insights Section */}
-      <div className="bg-[#E7C7C3] py-12 px-4">
-        <div className="max-w-6xl mx-auto">
-          <p className="text-center mb-10 font-medium text-lg">
-            RetireMate makes it easy to get the right answers <br /> to all your
-            retirement questions.
-          </p>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {/* Card 1 */}
-            <div className="bg-white rounded-lg shadow p-6">
-              <h3 className="font-bold mb-2">
-                How long will my savings last?
-              </h3>
-              <p className="text-sm text-gray-600 mb-4">
-                Your savings will last until 81.34, if you retire at 70 in Los
-                Angeles, CA, and maintain a comfortable lifestyle.
-              </p>
-              <div className="h-40 bg-gray-100 rounded flex items-center justify-center">
-                [Chart Placeholder]
-              </div>
-            </div>
-
-            {/* Card 2 */}
-            <div className="bg-white rounded-lg shadow p-6">
-              <h3 className="font-bold mb-2">What age can I retire?</h3>
-              <p className="text-sm text-gray-600 mb-4">
-                You can retire as early as 63 with a comfortable lifestyle in
-                Los Angeles, CA.
-              </p>
-              <div className="h-40 bg-gray-100 rounded flex items-center justify-center">
-                [Chart Placeholder]
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
+      <Footer 
+        onLinkClick={handleFooterLinkClick}
+      />
     </>
   );
 }

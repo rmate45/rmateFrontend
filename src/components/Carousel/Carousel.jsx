@@ -1,5 +1,6 @@
 import React, { useRef } from "react";
 import Slider from "react-slick";
+import arrowIcon from "../../assets/arrow_right.png"; // use one icon
 
 const Carousel = ({ items, renderItem, slidesToShow = 3 }) => {
   const sliderRef = useRef(null);
@@ -7,9 +8,10 @@ const Carousel = ({ items, renderItem, slidesToShow = 3 }) => {
   const settings = {
     dots: false,
     infinite: true,
-    slidesToShow: 3,
+    slidesToShow,
     slidesToScroll: 1,
     arrows: false,
+    adaptiveHeight: false,
     responsive: [
       {
         breakpoint: 900,
@@ -19,21 +21,21 @@ const Carousel = ({ items, renderItem, slidesToShow = 3 }) => {
   };
 
   return (
-    <div className="flex items-center w-full">
+    <div className="relative w-full flex items-center">
       {/* Left Arrow */}
       <button
         onClick={() => sliderRef.current?.slickPrev()}
-        className="bg-gray-800 text-white p-2 rounded-full hover:bg-gray-700 transition"
+        className="absolute -left-12 z-10 bg-introPrimary text-white flex items-center justify-center w-10 h-10 rounded-full hover:bg-[#465c47] transition"
       >
-        {/* Using Unicode arrow instead of MUI icon */}
-        <span className="text-sm">←</span>
+        {/* rotate for left */}
+        <img src={arrowIcon} alt="Left Arrow" className="w-6 h-6 rotate-180" />
       </button>
 
       {/* Slider */}
-      <div className="flex-grow mx-3 w-full">
+      <div className="w-full">
         <Slider ref={sliderRef} {...settings}>
           {items.map((item, idx) => (
-            <div key={idx} className="px-2">
+            <div key={idx} className="px-3 h-full"> {/* gap between slides */}
               {renderItem(item, idx)}
             </div>
           ))}
@@ -43,9 +45,9 @@ const Carousel = ({ items, renderItem, slidesToShow = 3 }) => {
       {/* Right Arrow */}
       <button
         onClick={() => sliderRef.current?.slickNext()}
-        className="bg-gray-800 text-white p-2 rounded-full hover:bg-gray-700 transition"
+        className="absolute -right-12 z-10 bg-introPrimary text-white flex items-center justify-center w-10 h-10 rounded-full hover:bg-[#465c47] transition"
       >
-        <span className="text-sm">→</span>
+        <img src={arrowIcon} alt="Right Arrow" className="w-6 h-6" />
       </button>
     </div>
   );

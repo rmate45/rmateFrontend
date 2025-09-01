@@ -1,15 +1,15 @@
 
 @import "tailwindcss";
-@import url('https://fonts.googleapis.com/css2?family=Rubik:ital,wght@0,300..900;1,300..900&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Libre+Caslon+Text:ital,wght@0,400;0,700;1,400&display=swap");
 
 :root {
-  font-family: "Rubik", sans-serif;
+  font-family: "Libre Caslon Text", serif;
   font-optical-sizing: auto;
 }
 
 /* Ensure Rubik is applied to all elements */
 * {
-  font-family: "Rubik", sans-serif;
+    font-family: "Libre Caslon Text", serif;
 }
 
 @theme {
@@ -17,32 +17,26 @@
   --color-secondary: #5cc37e;
   --color-tertiary: #7bf1a8;
   --color-blue: #4892dc;
+
+  --color-introPrimary: #567257;
+  --color-intoSecondary: #896A58;
+  --color-intoTertiary: #ACAB9E;
 }
 
 a {
-  font-weight: 500;
-  color: #646cff;
   text-decoration: inherit;
-}
-a:hover {
-  color: #535bf2;
 }
 
 body {
   margin: 0;
   min-width: 320px;
   min-height: 100vh;
-  font-family: "Rubik", sans-serif; /* Explicitly set on body */
-}
-
-h1 {
-  font-size: 3.2em;
-  line-height: 1.1;
+  font-family: "Libre Caslon Text", serif; /* Explicitly set on body */
 }
 
 button {
   font-weight: 500;
-  font-family: "Rubik", sans-serif; /* Explicitly set on buttons */
+  font-family: "Libre Caslon Text", serif; /* Explicitly set on buttons */
   cursor: pointer;
 }
 

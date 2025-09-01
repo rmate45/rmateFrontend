@@ -1,221 +1,130 @@
-import React, { useState } from "react";
+// components/InsightsSection/InsightsSection.js
+import React from "react";
+import DataTable from "../DataTable/DataTable";
+import {
+  LineChart,
+  Line,
+  XAxis,
+  YAxis,
+  Tooltip,
+  ResponsiveContainer,
+  CartesianGrid,
+} from "recharts";
 
-export const InsightsSection = ({ onInsightSelect, insightsData }) => {
-  // Transform the dynamic data into the format expected by the component
-  const transformInsightsData = (data) => {
-    if (!data) return [];
+const lifestyleColumns = [
+  { key: "lifestyle", label: "Lifestyle" },
+  { key: "age", label: "Age Savings Run Out" },
+];
 
-    const insights = [];
+const lifestyleData = [
+  { lifestyle: "Budget", age: "85-89" },
+  { lifestyle: "Comfort", age: "81-84" },
+  { lifestyle: "Luxury", age: "72-75" },
+];
 
-    // Can I retire at 67?
-    if (data.canRetireAt67) {
-      const canRetireAnswer = data.canRetireAt67["Can I retire at 67?"];
-      insights.push({
-        type: "retirement",
-        question: "Can I retire at 67?",
-        canRetire: canRetireAnswer?.toLowerCase() === "yes",
-        fields: [
-          {
-            label: "Your Projected Savings at 67",
-            value: `$${
-              data.canRetireAt67[
-                "Your Projected Savings at 67"
-              ]?.toLocaleString() || "0"
-            }`,
-            color: "text-green-600",
-          },
-          {
-            label: "Savings Required at 67",
-            value: `$${
-              data.canRetireAt67["Savings Required at 67"]?.toLocaleString() ||
-              "0"
-            }`,
-            color: "text-green-600",
-          },
-          {
-            label: "Savings Deficit / Surplus",
-            value: `$${
-              data.canRetireAt67[
-                "Savings Deficit / Surplus"
-              ]?.toLocaleString() || "0"
-            }`,
-            color:
-              data.canRetireAt67["Savings Deficit / Surplus"] >= 0
-                ? "text-green-600"
-                : "text-orange-600",
-          },
-        ],
-        detail: "",
-      });
-    }
+const savingsColumns = [
+  { key: "savings", label: "Savings" },
+  { key: "budget", label: "Budget" },
+  { key: "comfort", label: "Comfort" },
+  { key: "luxury", label: "Luxury" },
+];
 
-    // How much saving is required at 67?
-    if (data.savingRequiredAt67) {
-      insights.push({
-        type: "saving_required",
-        question: "How much saving is required at 67?",
-        fields: [
-          {
-            label: "For Budget Lifestyle",
-            value: `$${
-              data.savingRequiredAt67[
-                "For Budget LifeStyle"
-              ]?.toLocaleString() || "0"
-            }`,
-            color: "text-green-600",
-          },
-          {
-            label: "For Comfortable Lifestyle",
-            value: `$${
-              data.savingRequiredAt67[
-                "For Comfortable Lifestyle"
-              ]?.toLocaleString() || "0"
-            }`,
-            color: "text-green-600",
-          },
-          {
-            label: "For Luxury Lifestyle",
-            value: `$${
-              data.savingRequiredAt67[
-                "For Luxury Lifestyle"
-              ]?.toLocaleString() || "0"
-            }`,
-            color: "text-green-600",
-          },
-        ],
-        detail: "",
-      });
-    }
+const savingsData = [
+  { savings: "$250/mo", budget: 67, comfort: 72, luxury: 80 },
+  { savings: "$500/mo", budget: 63, comfort: 67, luxury: 75 },
+  { savings: "$750/mo", budget: 61, comfort: 65, luxury: 72 },
+  { savings: "$1000/mo", budget: 59, comfort: 63, luxury: 67 },
+];
 
-    // How Long will my money last?
-    if (data.howLongMoneyLast) {
-      insights.push({
-        type: "money_duration",
-        question: "How Long will my money last?",
-        fields: [
-          {
-            label: "Money will last",
-            value: `${data.howLongMoneyLast["How Long will my money last?"]} years`,
-            color: "text-green-600",
-          },
-          {
-            label: "Years Extra/Short",
-            value: `${data.howLongMoneyLast["Years Extra"]} years`,
-            color:
-              data.howLongMoneyLast["Years Extra"] >= 0
-                ? "text-green-600"
-                : "text-orange-600",
-          },
-        ],
-        years: data.howLongMoneyLast["How Long will my money last?"],
-        detail: data.howLongMoneyLast["Message"] || "",
-      });
-    }
+const data = [
+  { age: 67, budget: 100, comfort: 120, luxury: 150 },
+  { age: 72, budget: 80, comfort: 90, luxury: 110 },
+  { age: 81, budget: 40, comfort: 50, luxury: 70 },
+  { age: 85, budget: 10, comfort: 20, luxury: 30 },
+];
 
-    // Can I Retire Today?
-    if (data.canIRetireToday) {
-      const canRetireTodayAnswer = data.canIRetireToday["Can I Retire Today?"];
-      insights.push({
-        type: "retire_today",
-        question: "Can I Retire Today?",
-        canRetire: canRetireTodayAnswer?.toLowerCase() === "yes",
-        fields: [
-          {
-            label: "Savings Today",
-            value: `$${
-              data.canIRetireToday["Savings Today"]?.toLocaleString() || "0"
-            }`,
-            color: "text-green-600",
-          },
-          {
-            label: "Amount Needed to Retire Today",
-            value: `$${
-              data.canIRetireToday[
-                "Amount Needed to Retire Today"
-              ]?.toLocaleString() || "0"
-            }`,
-            color: "text-green-600",
-          },
-        ],
-        // detail: data.canIRetireToday["Message"] || "",
-      });
-    }
+const lines = [
+  { key: "budget", color: "#567257" },
+  { key: "comfort", color: "#A3C586" },
+  { key: "luxury", color: "#C68A6B" },
+];
 
-    return insights;
-  };
 
-  const insights = transformInsightsData(insightsData);
-
+const InsightCard = ({ title, description, chartPlaceholder }) => {
   return (
-    <>
-      {insights.map((insight, index) => {
-        return (
-          <div
-            key={index}
-            className=" rounded-lg shadow hover:shadow-md transition"
-          >
-            <div
-              className={`cursor-pointer flex justify-center p-6 bg-blue text-white rounded-t-lg  items-center`}
-            >
-              <h3 className="font-semibold text-lg">{insight.question}</h3>
-            </div>
-
-            <div className="pt-8 px-6 pb-8  border border-blue text-sm text-gray-800 space-y-2">
-              {insight.hasOwnProperty("canRetire") &&
-                insight.type !== "money_duration" && (
-                  <div
-                    className={`text-lg border-2 rounded-full max-w-fit mx-auto mb-6 p-12 px-12 font-bold text-blue`}
-                  >
-                    {insight.canRetire ? "YES" : "NO"}
-                  </div>
-                )}
-
-              {insight.type == "money_duration" && (
-                <div>
-                  <div className="text-center text-base mt-8 font-medium text-blue mb-6">
-                    If you retire at 67 your money will last
-                  </div>
-
-                  <div
-                    className={`text-lg border-2 rounded-full max-w-fit mx-auto mb-6 p-11 px-12 font-bold text-blue`}
-                  >
-                    {insight.years} <br/> years
-                  </div>
-                </div>
-              )}
-
-              {insight.fields && insight.type !== "money_duration" && (
-                <div className="text-center space-y-8">
-                  {insight.fields.map((field, idx) => (
-                    <div key={idx}>
-                      <div className={`${field.color} font-semibold text-lg`}>
-                        {field.value}
-                        <hr className="border-b border-[#dfe0e3] my-2 max-w-1/2 mx-auto" />
-                      </div>
-                      <div className="font-semibold text-base text-blue">
-                        {field.label}
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              )}
-
-              {insight.detail && (
-                <div className="text-center text-base mt-8 font-medium text-blue mb-6">
-                  {insight.detail}
-                </div>
-              )}
-
-              <button
-                onClick={() => onInsightSelect(insight)}
-                className="mt-12 block mx-auto px-6 py-2 bg-secondary text-white font-semibold rounded-full hover:bg-green-400 transition"
-              >
-                Read More
-              </button>
-            </div>
-          </div>
-        );
-      })}
-    </>
+    <div className="bg-white rounded-[20px] shadow p-5">
+      <h3 className="font-medium text-base mb-3">{title}</h3>
+      <p className="text-sm jost text-left mb-5">{description}</p>
+      <div className="rounded flex gap-5 items-center justify-between">
+       <div className="w-full h-64">
+      <ResponsiveContainer>
+        <LineChart data={data} margin={{ top: 20, right: 20, bottom: 20, left: 0 }}>
+          <CartesianGrid strokeDasharray="3 3" stroke="#ddd" />
+          <XAxis dataKey="age" label={{ value: "Age", position: "insideBottom", offset: -5 }} />
+          <YAxis label={{ value: "$", angle: -90, position: "insideLeft" }} />
+          <Tooltip />
+          {lines.map((line, idx) => (
+            <Line
+              key={idx}
+              type="monotone"
+              dataKey={line.key}
+              stroke={line.color}
+              strokeWidth={2.5}
+              dot={false}
+              activeDot={false}
+            />
+          ))}
+        </LineChart>
+      </ResponsiveContainer>
+    </div>
+        <div>
+          <DataTable columns={lifestyleColumns} data={lifestyleData} />
+          <p className="mt-2 text-left text-xs jost">Living a budget lifestyle will extend your savings until you’re 85-89, living luxuriously will reduce it to 72-75.</p>
+        </div>
+      </div>
+    </div>
   );
 };
+
+const InsightsSection = ({ insights = [] }) => {
+  const defaultInsights = [
+    {
+      id: 1,
+      title: "How long will my savings last?",
+      description:
+        "Your savings will last until you're 81-84*, if you retire at 70 in Los Angeles, CA, and maintain a comfortable lifestyle.",
+    },
+    {
+      id: 2,
+      title: "What age can I retire?",
+      description:
+        "You can retire as early as 63 with a comfortable lifestyle in Los Angeles, CA.",
+    },
+  ];
+
+  const insightsToDisplay = insights.length > 0 ? insights : defaultInsights;
+
+  return (
+    <div className="bg-[#E7C7C3] text-center py-16 px-4">
+      <div className="max-w-6xl mx-auto">
+        <p className="text-[#2A2420] font-medium text-2xl mb-8">
+          RetireMate makes it easy to get the right answers <br /> to all your
+          retirement questions.
+        </p>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          {insightsToDisplay.map((insight) => (
+            <InsightCard
+              key={insight.id}
+              title={insight.title}
+              description={insight.description}
+              chartPlaceholder={insight.chartPlaceholder}
+            />
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default InsightsSection;
