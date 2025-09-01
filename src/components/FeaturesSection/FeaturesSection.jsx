@@ -80,13 +80,13 @@ const FeaturesSection = ({ features = [], testimonials = [] }) => {
   const testimonialsToDisplay = testimonials.length > 0 ? testimonials : defaultTestimonials;
 
   return (
-    <div className='text-center py-16 px-4'>
+    <div className='text-center px-6 py-10 sm:py-16'>
     <div className="max-w-7xl mx-auto flex flex-col justify-center">
       <p className="text-introPrimary font-medium text-2xl">
         Planning for Retirement should always be this easy.
       </p>
       
-      <div className="flex gap-4 items-start my-10 flex-wrap mx-auto">
+      <div className="flex gap-4 items-start justify-center my-10 flex-wrap mx-auto">
         {featuresToDisplay.map((feature, index) => (
           <FeatureItem
             key={feature.id}
@@ -96,7 +96,7 @@ const FeaturesSection = ({ features = [], testimonials = [] }) => {
         ))}
       </div>
 
-        <div className="flex gap-4 items-start flex-wrap mx-auto">
+        <div className="flex gap-4 justify-center items-start flex-wrap mx-auto">
           {testimonialsToDisplay.map((testimonial) => (
             <TestimonialCard
               key={testimonial.id}

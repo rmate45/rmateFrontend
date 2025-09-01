@@ -69,12 +69,12 @@ const QuestionsToAction = ({
     genderOptions.length > 0 ? genderOptions : defaultGenderOptions;
 
   return (
-    <div className="bg-[#D9D8D5] text-center py-16 px-4">
+    <div className="bg-[#D9D8D5] text-center px-6 py-10 sm:py-16">
       <div className="max-w-7xl mx-auto pr-12">
-        <div className="flex justify-between items-center gap-10  my-12">
+        <div className="flex justify-between flex-wrap items-center gap-10">
           {/* Left side: Questions heading and filters */}
           <div className="text-left max-w-[400px]">
-            <p className="font-medium text-2xl mb-6">
+            <p className="font-medium text-lg sm:text-2xl mb-6">
               What questions should you be asking?
             </p>
 
@@ -107,7 +107,7 @@ const QuestionsToAction = ({
                     {" "}
                     {/* stretch wrapper */}
                     <button
-                      className="rounded-3xl text-left p-7 bg-introPrimary tracking-wide shadow-md w-full min-h-[170px] text-wrap text-white !font-normal text-lg flex items-start"
+                      className="rounded-3xl text-left p-7 bg-introPrimary tracking-wide shadow-md min-h-[170px] text-wrap text-white !font-normal text-lg flex items-start"
                       onClick={() => onQuestionClick && onQuestionClick(q)}
                     >
                       {q.text}

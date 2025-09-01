@@ -1,3 +1,4 @@
+// components/Carousel/Carousel.js
 import React, { useRef } from "react";
 import Slider from "react-slick";
 import arrowIcon from "../../assets/arrow_right.png"; // use one icon
@@ -14,7 +15,15 @@ const Carousel = ({ items, renderItem, slidesToShow = 3 }) => {
     adaptiveHeight: false,
     responsive: [
       {
-        breakpoint: 900,
+        breakpoint: 1280, // large screens
+        settings: { slidesToShow: 3 },
+      },
+      {
+        breakpoint: 1024, // tablets landscape
+        settings: { slidesToShow: 2 },
+      },
+      {
+        breakpoint: 640, // mobile
         settings: { slidesToShow: 1 },
       },
     ],
@@ -25,17 +34,16 @@ const Carousel = ({ items, renderItem, slidesToShow = 3 }) => {
       {/* Left Arrow */}
       <button
         onClick={() => sliderRef.current?.slickPrev()}
-        className="absolute -left-12 z-10 bg-introPrimary text-white flex items-center justify-center w-10 h-10 rounded-full hover:bg-[#465c47] transition"
+        className="absolute -left-6 sm:-left-10 z-10 bg-introPrimary text-white flex items-center justify-center w-8 h-8 sm:w-10 sm:h-10 rounded-full hover:bg-[#465c47] transition"
       >
-        {/* rotate for left */}
-        <img src={arrowIcon} alt="Left Arrow" className="w-6 h-6 rotate-180" />
+        <img src={arrowIcon} alt="Left Arrow" className="w-4 h-4 sm:w-6 sm:h-6 rotate-180" />
       </button>
 
       {/* Slider */}
       <div className="w-full">
         <Slider ref={sliderRef} {...settings}>
           {items.map((item, idx) => (
-            <div key={idx} className="px-3 h-full"> {/* gap between slides */}
+            <div key={idx} className="px-2 sm:px-3 h-full">
               {renderItem(item, idx)}
             </div>
           ))}
@@ -45,9 +53,9 @@ const Carousel = ({ items, renderItem, slidesToShow = 3 }) => {
       {/* Right Arrow */}
       <button
         onClick={() => sliderRef.current?.slickNext()}
-        className="absolute -right-12 z-10 bg-introPrimary text-white flex items-center justify-center w-10 h-10 rounded-full hover:bg-[#465c47] transition"
+        className="absolute -right-6 sm:-right-10 z-10 bg-introPrimary text-white flex items-center justify-center w-8 h-8 sm:w-10 sm:h-10 rounded-full hover:bg-[#465c47] transition"
       >
-        <img src={arrowIcon} alt="Right Arrow" className="w-6 h-6" />
+        <img src={arrowIcon} alt="Right Arrow" className="w-4 h-4 sm:w-6 sm:h-6" />
       </button>
     </div>
   );

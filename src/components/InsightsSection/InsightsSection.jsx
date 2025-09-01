@@ -105,9 +105,9 @@ const InsightsSection = ({ insights = [] }) => {
   const insightsToDisplay = insights.length > 0 ? insights : defaultInsights;
 
   return (
-    <div className="bg-[#E7C7C3] text-center py-16 px-4">
+    <div className="bg-[#E7C7C3] text-center px-6 py-10 sm:py-16">
       <div className="max-w-6xl mx-auto">
-        <p className="text-[#2A2420] font-medium text-2xl mb-8">
+        <p className="text-[#2A2420] font-medium text-xl sm:text-2xl mb-8">
           RetireMate makes it easy to get the right answers <br /> to all your
           retirement questions.
         </p>

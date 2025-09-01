@@ -17,12 +17,12 @@ const HeroSection = ({ searchIcon, micIcon, onSearch, onVoiceSearch }) => {
   };
 
   return (
-    <div className="bg-[#567257] text-white py-16 md:py-28 md:pb-42 text-center px-2">
+    <div className="bg-[#567257] text-white py-12 md:py-28 md:pb-42 text-center px-2">
       <div className="max-w-2xl mx-auto">
         <h2 className="font-medium mb-3 text-3xl md:text-5xl">
           Retirement is Scary.
         </h2>
-        <p className="text-2xl font-light jost mb-9">
+        <p className="text-lg sm:text-2xl font-light jost mb-9">
           Get personalized answers to all your retirement questions
         </p>
 
