@@ -10,7 +10,7 @@ import api from "../api/api.js";
 const Quiz = () => {
   const location = useLocation();
   const initialText = location.state?.title || "";
-  
+
   const [currentQuestion, setCurrentQuestion] = useState(null);
   const [conversation, setConversation] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -30,7 +30,7 @@ const Quiz = () => {
 
   const [userAnswers, setUserAnswers] = useState({});
   const [insightsData, setInsightsData] = useState([]);
-  
+
   // New states for chat functionality
   const [isChatMode, setIsChatMode] = useState(false);
   const [userId, setUserId] = useState(null);
@@ -45,15 +45,19 @@ const Quiz = () => {
     const phoneNumberAnswer = userAnswers["Q2"];
     if (phoneNumberAnswer) {
       let phoneNumber = "";
-      
-      if (phoneNumberAnswer.value && typeof phoneNumberAnswer.value === 'object' && phoneNumberAnswer.value.fullNumber) {
+
+      if (
+        phoneNumberAnswer.value &&
+        typeof phoneNumberAnswer.value === "object" &&
+        phoneNumberAnswer.value.fullNumber
+      ) {
         phoneNumber = phoneNumberAnswer.value.fullNumber;
-      } else if (typeof phoneNumberAnswer.value === 'string') {
+      } else if (typeof phoneNumberAnswer.value === "string") {
         phoneNumber = phoneNumberAnswer.value;
-      } else if (typeof phoneNumberAnswer.answer === 'string') {
+      } else if (typeof phoneNumberAnswer.answer === "string") {
         phoneNumber = phoneNumberAnswer.answer;
       }
-      
+
       if (phoneNumber) {
         setUserId(phoneNumber);
       }
@@ -65,14 +69,15 @@ const Quiz = () => {
       setLoading(true);
 
       // Show the user's selected question/text first
-      setConversation([
-        { type: "answer", text: initialText }
-      ]);
+      setConversation([{ type: "answer", text: initialText }]);
 
       // Call first API to get statements
       const statementsResponse = await api.get("/get-statements");
 
-      if (statementsResponse.data?.data && statementsResponse.data.data.length > 0) {
+      if (
+        statementsResponse.data?.data &&
+        statementsResponse.data.data.length > 0
+      ) {
         // Start showing statements one by one
         showStatementsSequentially(statementsResponse.data.data);
       } else {
@@ -95,9 +100,9 @@ const Quiz = () => {
         return;
       }
 
-      setConversation(prev => [
+      setConversation((prev) => [
         ...prev,
-        { type: "system", text: statement.question }
+        { type: "system", text: statement.question },
       ]);
 
       index++;
@@ -116,23 +121,28 @@ const Quiz = () => {
     try {
       const questionsResponse = await api.get("/get-intake-questions");
 
-      if (questionsResponse.data?.data && questionsResponse.data.data.length > 0) {
-        const sortedQuestions = questionsResponse.data.data.sort((a, b) => a.position - b.position);
+      if (
+        questionsResponse.data?.data &&
+        questionsResponse.data.data.length > 0
+      ) {
+        const sortedQuestions = questionsResponse.data.data.sort(
+          (a, b) => a.position - b.position
+        );
         setAllQuestions(sortedQuestions);
         setCurrentQuestion(sortedQuestions[0]);
         setCurrentQuestionIndex(0);
         setQuestionNumber(1);
       } else {
-        setConversation(prev => [
+        setConversation((prev) => [
           ...prev,
-          { type: "system", text: "No questions available for this topic." }
+          { type: "system", text: "No questions available for this topic." },
         ]);
       }
     } catch (error) {
       console.error("Error fetching questions:", error);
-      setConversation(prev => [
+      setConversation((prev) => [
         ...prev,
-        { type: "system", text: "Error loading questions. Please try again." }
+        { type: "system", text: "Error loading questions. Please try again." },
       ]);
     } finally {
       setLoading(false);
@@ -141,11 +151,11 @@ const Quiz = () => {
 
   const moveToNextQuestion = () => {
     const nextIndex = currentQuestionIndex + 1;
-    
+
     if (nextIndex < allQuestions.length) {
       setCurrentQuestionIndex(nextIndex);
       setCurrentQuestion(allQuestions[nextIndex]);
-      setQuestionNumber(prev => prev + 1);
+      setQuestionNumber((prev) => prev + 1);
       setCanReload(true);
     } else {
       // All questions completed
@@ -164,20 +174,26 @@ const Quiz = () => {
     try {
       // Format the payload according to the required structure
       const payload = formatSavePayload();
-      
+
       console.log("Saving user responses:", payload);
-      
+
       const response = await api.post("/save", payload);
-      
+
       console.log("Save response:", response.data);
-      
+
       // Optionally show a message to the user
-      addToConversation("system", "Your responses have been saved successfully!");
-      
+      addToConversation(
+        "system",
+        "Your responses have been saved successfully!"
+      );
+
       return response.data;
     } catch (error) {
       console.error("Error saving user responses:", error);
-      addToConversation("system", "There was an issue saving your responses, but we'll continue with your results.");
+      addToConversation(
+        "system",
+        "There was an issue saving your responses, but we'll continue with your results."
+      );
     }
   };
 
@@ -186,51 +202,105 @@ const Quiz = () => {
     // Extract phone number from Q2 (assuming Q2 is the phone number question)
     const phoneNumberAnswer = userAnswers["Q2"];
     let phoneNumber = "";
-    
+
     if (phoneNumberAnswer) {
       // Check if it's a phone data object with fullNumber
-      if (phoneNumberAnswer.value && typeof phoneNumberAnswer.value === 'object' && phoneNumberAnswer.value.fullNumber) {
+      if (
+        phoneNumberAnswer.value &&
+        typeof phoneNumberAnswer.value === "object" &&
+        phoneNumberAnswer.value.fullNumber
+      ) {
         phoneNumber = phoneNumberAnswer.value.fullNumber;
-      } else if (typeof phoneNumberAnswer.value === 'string') {
+      } else if (typeof phoneNumberAnswer.value === "string") {
         phoneNumber = phoneNumberAnswer.value;
-      } else if (typeof phoneNumberAnswer.answer === 'string') {
+      } else if (typeof phoneNumberAnswer.answer === "string") {
         phoneNumber = phoneNumberAnswer.answer;
       }
     }
 
     // Format responses array
-    const responses = Object.entries(userAnswers).map(([questionId, answerData]) => {
-      let answer = answerData.answer;
-      
-      // Handle phone number specially - use full number for API
-      if (questionId === "Q2" && answerData.value && typeof answerData.value === 'object' && answerData.value.fullNumber) {
-        answer = answerData.value.fullNumber;
-      }
-      // For multi-select questions, the answer should be an array
-      else if (Array.isArray(answerData.value)) {
-        answer = answerData.value;
-      } else if (typeof answerData.value === 'string' && answerData.value.includes(',')) {
-        // If it's a comma-separated string, convert to array
-        answer = answerData.value.split(', ').map(item => item.trim());
-      }
+    const responses = Object.entries(userAnswers).map(
+      ([questionId, answerData]) => {
+        let answer = answerData.answer;
 
-      return {
-        questionId,
-        answer
-      };
-    });
+        // Handle phone number specially - use full number for API
+        if (
+          questionId === "Q2" &&
+          answerData.value &&
+          typeof answerData.value === "object" &&
+          answerData.value.fullNumber
+        ) {
+          answer = answerData.value.fullNumber;
+        }
+        // For multi-select questions, the answer should be an array
+        else if (Array.isArray(answerData.value)) {
+          answer = answerData.value;
+        } else if (
+          typeof answerData.value === "string" &&
+          answerData.value.includes(",")
+        ) {
+          // If it's a comma-separated string, convert to array
+          answer = answerData.value.split(", ").map((item) => item.trim());
+        }
+
+        return {
+          questionId,
+          answer,
+        };
+      }
+    );
 
     // Sort responses by questionId to maintain order (Q1, Q2, Q3, etc.)
     responses.sort((a, b) => {
-      const aNum = parseInt(a.questionId.replace('Q', ''));
-      const bNum = parseInt(b.questionId.replace('Q', ''));
+      const aNum = parseInt(a.questionId.replace("Q", ""));
+      const bNum = parseInt(b.questionId.replace("Q", ""));
       return aNum - bNum;
     });
 
     return {
       phoneNumber,
-      responses
+      responses,
     };
+  };
+
+  // Function to generate a personalized initial message based on user's quiz responses
+  const generateCustomInitialMessage = () => {
+    try {
+      const mainTopic = initialText || "retirement planning";
+
+      // Create a simple user-style question with their context
+      let message = `${mainTopic}? `;
+
+      // Add key details from their answers in a natural way
+      const keyDetails = [];
+      Object.entries(userAnswers).forEach(([questionId, answerData]) => {
+        // Skip phone number for privacy
+        if (
+          questionId === "Q2" &&
+          answerData.questionText.toLowerCase().includes("phone")
+        ) {
+          return;
+        }
+
+        let answerText = answerData.answer;
+        if (Array.isArray(answerData.value)) {
+          answerText = answerData.value.join(", ");
+        }
+
+        keyDetails.push(answerText);
+      });
+
+      if (keyDetails.length > 0) {
+        message += `I'm ${keyDetails.join(", ")}. `;
+      }
+
+      message += "What should I do?";
+
+      return message;
+    } catch (error) {
+      console.error("Error generating message:", error);
+      return `${initialText || "How should I plan for retirement"}?`;
+    }
   };
 
   // New function to start chat mode after quiz completion
@@ -238,101 +308,135 @@ const Quiz = () => {
     try {
       setLoading(true);
       setIsChatMode(true);
-      
+
       // Show completion message
-      addToConversation("system", "Thank you for completing the quiz! Let me analyze your responses and provide personalized retirement insights...");
-      
+      addToConversation(
+        "system",
+        "Thank you for completing the quiz! Let me analyze your responses and provide personalized retirement insights..."
+      );
+
       if (!userId) {
-        addToConversation("system", "Error: Unable to identify user. Please try again.");
+        addToConversation(
+          "system",
+          "Error: Unable to identify user. Please try again."
+        );
         return;
       }
 
-      // Send initial message to start the conversation
-      await handleSendMessage("Please analyze my retirement quiz responses and provide personalized insights.");
-      
+      console.log("Starting chat mode with userId:", userId);
+      console.log("User answers:", userAnswers);
+
+      // Generate personalized message based on user's quiz responses
+      const customMessage = generateCustomInitialMessage();
+      console.log("Generated custom message:", customMessage);
+
+      // Send the personalized initial message (show as user message)
+      await handleSendMessage(customMessage, false);
     } catch (error) {
       console.error("Error starting chat mode:", error);
-      addToConversation("system", "Something went wrong while starting the analysis. Please try again later.");
-    } finally {
-      setLoading(false);
+      addToConversation(
+        "system",
+        "Something went wrong while starting the analysis. Please try again later."
+      );
     }
   };
 
   // New chat message handler with streaming
-  const handleSendMessage = async (message) => {
+  const handleSendMessage = async (message, isInitialMessage = false) => {
     try {
       setLoading(true);
-      
+
       // Add user message immediately (only if it's not the initial automated message)
-      if (!message.startsWith("Please analyze my retirement")) {
+      if (!isInitialMessage) {
         addToConversation("answer", message);
       }
 
       // Add an empty assistant message that will be updated during streaming
-      const assistantMessageIndex = conversation.length + (message.startsWith("Please analyze my retirement") ? 0 : 1);
       addToConversation("system", "");
-      
+
       // Mark the last message as streaming
-      setConversation(prev => {
+      setConversation((prev) => {
         const newConv = [...prev];
-        newConv[newConv.length - 1] = { 
-          ...newConv[newConv.length - 1], 
-          isStreaming: true 
+        newConv[newConv.length - 1] = {
+          ...newConv[newConv.length - 1],
+          isStreaming: true,
         };
         return newConv;
       });
 
+      console.log("Sending message to API:", { userId, message }); // Debug log
+
       // Prepare for streaming response
-      const response = await fetch('https://test-api.retiremate.com/api/chat/send', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ userId, message }),
-      });
+      const response = await fetch(
+        "https://test-api.retiremate.com/api/chat/send",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ userId, message }),
+        }
+      );
+
+      console.log("API Response status:", response.status); // Debug log
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
 
       const reader = response.body.getReader();
       const decoder = new TextDecoder();
-      let assistantMessage = '';
+      let assistantMessage = "";
 
       while (true) {
         const { done, value } = await reader.read();
         if (done) break;
 
         const chunk = decoder.decode(value);
-        const lines = chunk.split('\n');
+        const lines = chunk.split("\n");
 
-        lines.forEach(line => {
-          if (line.startsWith('data: ')) {
+        lines.forEach((line) => {
+          if (line.startsWith("data: ")) {
             try {
-              const data = JSON.parse(line.slice(5));
-              if (data.type === 'delta' && data.content) {
+              const jsonData = line.slice(5).trim();
+              if (jsonData === "[DONE]") return; // Handle completion marker
+
+              const data = JSON.parse(jsonData);
+              console.log("Received SSE data:", data); // Debug log
+
+              if (data.type === "delta" && data.content) {
                 assistantMessage += data.content;
                 // Update only the last system message
-                setConversation(prev => {
+                setConversation((prev) => {
                   const newMessages = [...prev];
                   for (let i = newMessages.length - 1; i >= 0; i--) {
-                    if (newMessages[i].type === "system" && newMessages[i].hasOwnProperty('isStreaming')) {
+                    if (
+                      newMessages[i].type === "system" &&
+                      newMessages[i].hasOwnProperty("isStreaming")
+                    ) {
                       newMessages[i] = {
                         type: "system",
                         text: assistantMessage,
-                        isStreaming: true
+                        isStreaming: true,
                       };
                       break;
                     }
                   }
                   return newMessages;
                 });
-              } else if (data.type === 'end') {
+              } else if (data.type === "end" || data.type === "done") {
                 // Mark the message as complete when streaming ends
-                setConversation(prev => {
+                setConversation((prev) => {
                   const newMessages = [...prev];
                   for (let i = newMessages.length - 1; i >= 0; i--) {
-                    if (newMessages[i].type === "system" && newMessages[i].hasOwnProperty('isStreaming')) {
+                    if (
+                      newMessages[i].type === "system" &&
+                      newMessages[i].hasOwnProperty("isStreaming")
+                    ) {
                       newMessages[i] = {
                         type: "system",
                         text: assistantMessage,
-                        isStreaming: false
+                        isStreaming: false,
                       };
                       break;
                     }
@@ -341,14 +445,62 @@ const Quiz = () => {
                 });
               }
             } catch (e) {
-              console.error('Error parsing SSE data:', e);
+              console.error("Error parsing SSE data:", e, "Raw line:", line);
             }
           }
         });
       }
+
+      // Fallback: if no streaming data was received, mark as complete
+      if (!assistantMessage) {
+        console.warn(
+          "No streaming data received, checking for direct response"
+        );
+        // Try to read response as regular JSON if streaming failed
+        const responseText = await response.text();
+        console.log("Direct response:", responseText);
+
+        setConversation((prev) => {
+          const newMessages = [...prev];
+          for (let i = newMessages.length - 1; i >= 0; i--) {
+            if (
+              newMessages[i].type === "system" &&
+              newMessages[i].hasOwnProperty("isStreaming")
+            ) {
+              newMessages[i] = {
+                type: "system",
+                text:
+                  responseText ||
+                  "I received your message but couldn't generate a response. Please try again.",
+                isStreaming: false,
+              };
+              break;
+            }
+          }
+          return newMessages;
+        });
+      }
     } catch (error) {
-      console.error('Error sending message:', error);
-      addToConversation("system", "Sorry, there was an error processing your request. Please try again.");
+      console.error("Error sending message:", error);
+
+      // Update the streaming message with error
+      setConversation((prev) => {
+        const newMessages = [...prev];
+        for (let i = newMessages.length - 1; i >= 0; i--) {
+          if (
+            newMessages[i].type === "system" &&
+            newMessages[i].hasOwnProperty("isStreaming")
+          ) {
+            newMessages[i] = {
+              type: "system",
+              text: `Sorry, there was an error processing your request: ${error.message}. Please try again.`,
+              isStreaming: false,
+            };
+            break;
+          }
+        }
+        return newMessages;
+      });
     } finally {
       setLoading(false);
     }
@@ -360,8 +512,8 @@ const Quiz = () => {
       [questionId]: {
         questionText: questionText,
         answer: displayLabel,
-        value: value
-      }
+        value: value,
+      },
     }));
   };
 
@@ -390,19 +542,22 @@ const Quiz = () => {
       }, 1000);
     }
 
-    setTimeout(() => {
-      moveToNextQuestion();
-      setLoading(false);
-    }, (comment && comment.trim()) ? 2500 : 1500);
+    setTimeout(
+      () => {
+        moveToNextQuestion();
+        setLoading(false);
+      },
+      comment && comment.trim() ? 2500 : 1500
+    );
   };
 
   const handleMultiSelectSubmit = (selectedOptions) => {
     addToConversation("question", currentQuestion.questionText);
-    
-    const selectedTexts = selectedOptions.map(opt => opt.text);
+
+    const selectedTexts = selectedOptions.map((opt) => opt.text);
     const answerText = selectedTexts.join(", ");
     addToConversation("answer", answerText);
-    
+
     setLoading(true);
 
     // Store the multi-select answer with array value
@@ -424,19 +579,22 @@ const Quiz = () => {
       }, 1000);
     }
 
-    setTimeout(() => {
-      moveToNextQuestion();
-      setLoading(false);
-    }, (comment && comment.trim()) ? 2500 : 1500);
+    setTimeout(
+      () => {
+        moveToNextQuestion();
+        setLoading(false);
+      },
+      comment && comment.trim() ? 2500 : 1500
+    );
   };
 
   const handleTextSubmit = async (inputData) => {
     // Handle both regular text input and phone data object
     let displayText = "";
     let storeValue = inputData;
-    
+
     // Check if this is phone data object from TextInputPhone
-    if (inputData && typeof inputData === 'object' && inputData.displayNumber) {
+    if (inputData && typeof inputData === "object" && inputData.displayNumber) {
       displayText = `${inputData.countryFlag} ${inputData.displayNumber}`;
       storeValue = inputData; // Store the entire phone object
     } else {
@@ -474,16 +632,19 @@ const Quiz = () => {
       }, 1000);
     }
 
-    setTimeout(() => {
-      moveToNextQuestion();
-      setLoading(false);
-    }, (comment && comment.trim()) ? 2500 : 1500);
+    setTimeout(
+      () => {
+        moveToNextQuestion();
+        setLoading(false);
+      },
+      comment && comment.trim() ? 2500 : 1500
+    );
   };
 
   // New function to handle user input in chat mode
   const handleChatInput = async (message) => {
     if (!message.trim() || loading) return;
-    
+
     await handleSendMessage(message);
     setTextInput(""); // Clear input after sending
   };
@@ -524,9 +685,9 @@ const Quiz = () => {
     if (prevIndex >= 0) {
       setCurrentQuestionIndex(prevIndex);
       setCurrentQuestion(allQuestions[prevIndex]);
-      setQuestionNumber(prev => prev - 1);
+      setQuestionNumber((prev) => prev - 1);
     }
-    
+
     setCanReload(false);
     setLoading(false);
   };
@@ -661,7 +822,7 @@ const Quiz = () => {
                   value={textInput}
                   onChange={(e) => setTextInput(e.target.value)}
                   onKeyPress={(e) => {
-                    if (e.key === 'Enter') {
+                    if (e.key === "Enter") {
                       handleChatInput(textInput);
                     }
                   }}
