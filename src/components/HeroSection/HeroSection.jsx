@@ -38,7 +38,7 @@ const HeroSection = ({ searchIcon, micIcon, onSearch, onVoiceSearch }) => {
             onChange={(e) => setSearchQuery(e.target.value)}
             onKeyPress={handleKeyPress}
             className="flex-1 outline-none jost font-normal text-base px-2 text-introPrimary"
-            placeholderTextColor="#567257"
+            placeholdertextcolor="#567257"
           />
           <button 
             className="ml-2"

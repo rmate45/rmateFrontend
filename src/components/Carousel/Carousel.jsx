@@ -13,18 +13,19 @@ const Carousel = ({ items, renderItem, slidesToShow = 3 }) => {
     slidesToScroll: 1,
     arrows: false,
     adaptiveHeight: false,
+
     responsive: [
       {
-        breakpoint: 1280, // large screens
-        settings: { slidesToShow: 3 },
+        breakpoint: 1250, // large screens
+        settings: { slidesToShow: 2 },
       },
       {
         breakpoint: 1024, // tablets landscape
         settings: { slidesToShow: 2 },
       },
       {
-        breakpoint: 640, // mobile
-        settings: { slidesToShow: 1 },
+        breakpoint: 768, // mobile
+        settings: { slidesToShow: 1, dots: true },
       },
     ],
   };
@@ -34,9 +35,13 @@ const Carousel = ({ items, renderItem, slidesToShow = 3 }) => {
       {/* Left Arrow */}
       <button
         onClick={() => sliderRef.current?.slickPrev()}
-        className="absolute -left-6 sm:-left-10 z-10 bg-introPrimary text-white flex items-center justify-center w-8 h-8 sm:w-10 sm:h-10 rounded-full hover:bg-[#465c47] transition"
+        className="absolute -left-0 xl:-left-10 z-10 bg-introPrimary text-white hidden md:flex items-center justify-center w-8 h-8 sm:w-10 sm:h-10 rounded-full hover:bg-[#465c47] transition"
       >
-        <img src={arrowIcon} alt="Left Arrow" className="w-4 h-4 sm:w-6 sm:h-6 rotate-180" />
+        <img
+          src={arrowIcon}
+          alt="Left Arrow"
+          className="w-4 h-4 sm:w-6 sm:h-6 rotate-180"
+        />
       </button>
 
       {/* Slider */}
@@ -53,9 +58,13 @@ const Carousel = ({ items, renderItem, slidesToShow = 3 }) => {
       {/* Right Arrow */}
       <button
         onClick={() => sliderRef.current?.slickNext()}
-        className="absolute -right-6 sm:-right-10 z-10 bg-introPrimary text-white flex items-center justify-center w-8 h-8 sm:w-10 sm:h-10 rounded-full hover:bg-[#465c47] transition"
+        className="absolute -right-6 xl:-right-10 z-10 bg-introPrimary text-white hidden md:flex items-center justify-center w-8 h-8 sm:w-10 sm:h-10 rounded-full hover:bg-[#465c47] transition"
       >
-        <img src={arrowIcon} alt="Right Arrow" className="w-4 h-4 sm:w-6 sm:h-6" />
+        <img
+          src={arrowIcon}
+          alt="Right Arrow"
+          className="w-4 h-4 sm:w-6 sm:h-6"
+        />
       </button>
     </div>
   );

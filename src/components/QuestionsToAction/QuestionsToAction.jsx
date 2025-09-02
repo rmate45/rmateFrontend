@@ -1,32 +1,55 @@
 // components/QuestionsToAction/QuestionsToAction.js
 import React, { useState } from "react";
 import Carousel from "../Carousel/Carousel";
+import { ChevronDown } from "lucide-react";
 
 const FilterDropdown = ({ id, label, value, onChange, options }) => {
   return (
-    <div>
+    <div className="w-full sm:w-44">
       <label
         htmlFor={id}
         className="block text-sm font-semibold text-[#2A2420] mb-2"
       >
         {label}
       </label>
-      <select
-        id={id}
-        value={value}
-        onChange={(e) => onChange(e.target.value)}
-        className="block w-40 rounded-xl border border-gray-300 bg-white px-3 py-2 text-sm font-medium text-[#2A2420] shadow-sm focus:outline-none focus:ring-2 focus:ring-[#2A2420]"
-      >
-        <option value="">Select {label.toLowerCase()}</option>
-        {options.map((option) => (
-          <option key={option.value} value={option.value}>
-            {option.label}
+
+      <div className="relative">
+        <select
+          id={id}
+          value={value}
+          onChange={(e) => onChange(e.target.value)}
+          className="
+            block w-full rounded-xl border border-gray-300 bg-white 
+            pl-4 pr-10 py-2.5 text-sm font-medium text-[#2A2420] 
+            shadow-sm focus:outline-none focus:ring-2 focus:ring-[#2A2420] focus:border-[#2A2420]
+            cursor-pointer
+            appearance-none
+          "
+        >
+          <option className="text-gray-400" value="">
+            Select {label.toLowerCase()}
           </option>
-        ))}
-      </select>
+          {options.map((option) => (
+            <option
+              key={option.value}
+              value={option.value}
+              className="py-2 px-3 text-sm text-[#2A2420]"
+            >
+              {option.label}
+            </option>
+          ))}
+        </select>
+
+        {/* Chevron */}
+        <ChevronDown
+          className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 pointer-events-none"
+          size={18}
+        />
+      </div>
     </div>
   );
 };
+
 
 const QuestionsToAction = ({
   questions = [],
@@ -42,7 +65,7 @@ const QuestionsToAction = ({
     { id: 1, text: "How does divorce impact my retirement benefits?" },
     {
       id: 2,
-      text: "What retirement benefits can I claim from a deceased or ex-spouse",
+      text: "What retirement benefits can I claim from a deceased or ex-spouse?",
     },
     { id: 3, text: "Should I increase contributions now that kids are older?" },
   ];
@@ -69,16 +92,16 @@ const QuestionsToAction = ({
     genderOptions.length > 0 ? genderOptions : defaultGenderOptions;
 
   return (
-    <div className="bg-[#D9D8D5] text-center px-6 py-10 sm:py-16">
-      <div className="max-w-7xl mx-auto pr-12">
-        <div className="flex justify-between flex-wrap items-center gap-10">
+    <div className="bg-[#D9D8D5] text-center px-4 sm:px-6 py-10 sm:py-16">
+      <div className="max-w-7xl mx-auto">
+        <div className="flex flex-col xl:flex-row justify-between gap-10 items-center">
           {/* Left side: Questions heading and filters */}
-          <div className="text-left max-w-[400px]">
+          <div className="w-full max-w-[400px] text-left">
             <p className="font-medium text-lg sm:text-2xl mb-6">
               What questions should you be asking?
             </p>
 
-            <div className="flex gap-6">
+            <div className="flex flex-col sm:flex-row gap-4 sm:gap-6">
               <FilterDropdown
                 id="age"
                 label="Age"
@@ -98,16 +121,29 @@ const QuestionsToAction = ({
           </div>
 
           {/* Right side: Carousel */}
-          <div>
+          <div className="w-full lg:flex-1">
             <div className="max-w-3xl mx-auto">
               <Carousel
                 items={questionsToDisplay}
                 renderItem={(q) => (
                   <div className="flex h-full">
-                    {" "}
-                    {/* stretch wrapper */}
                     <button
-                      className="rounded-3xl text-left p-7 bg-introPrimary tracking-wide shadow-md min-h-[170px] text-wrap text-white !font-normal text-lg flex items-start"
+                      className="
+                        rounded-3xl 
+                        text-left 
+                        p-5 sm:p-7 
+                        bg-introPrimary 
+                        tracking-wide 
+                        shadow-md 
+                        min-h-[140px] sm:min-h-[170px] 
+                        w-full 
+                        text-white 
+                        font-medium sm:font-normal 
+                        text-base sm:text-lg 
+                        flex items-start
+                        max-w-[300px]
+                        mx-auto
+                      "
                       onClick={() => onQuestionClick && onQuestionClick(q)}
                     >
                       {q.text}
@@ -120,14 +156,14 @@ const QuestionsToAction = ({
         </div>
 
         {/* Browse link */}
-        <div>
+        <div className="mt-8 border-t border-[#D9D9D9] pt-4">
           <a
             href="#"
             onClick={(e) => {
               e.preventDefault();
               onBrowseAllClick && onBrowseAllClick();
             }}
-            className="pt-4 w-full border-t border-[#D9D9D9] inline-block text-[#2A2420] jost text-center font-semibold"
+            className="text-[#2A2420] jost text-center font-semibold block"
           >
             Browse all questions
           </a>
