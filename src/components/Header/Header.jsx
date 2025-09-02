@@ -1,7 +1,9 @@
 // components/Header/Header.js
 import React from 'react';
+import logo from "../../assets/logo.png";
 
-const Header = ({ logo, onLoginClick }) => {
+
+const Header = ({ onLoginClick }) => {
   return (
     <div className="bg-[#567257] py-5 px-4 flex justify-between items-center">
       <div className="max-w-[1750px] flex justify-between items-center mx-auto w-full">

@@ -30,64 +30,87 @@ const Quiz = () => {
 
   const [userAnswers, setUserAnswers] = useState({});
   const [insightsData, setInsightsData] = useState([]);
+  
+  // New states for chat functionality
+  const [isChatMode, setIsChatMode] = useState(false);
+  const [userId, setUserId] = useState(null);
 
   // Initialize the flow when component mounts
- useEffect(() => {
+  useEffect(() => {
     initializeFlow();
-}, []);
+  }, []);
+
+  // Extract userId from phone number when available
+  useEffect(() => {
+    const phoneNumberAnswer = userAnswers["Q2"];
+    if (phoneNumberAnswer) {
+      let phoneNumber = "";
+      
+      if (phoneNumberAnswer.value && typeof phoneNumberAnswer.value === 'object' && phoneNumberAnswer.value.fullNumber) {
+        phoneNumber = phoneNumberAnswer.value.fullNumber;
+      } else if (typeof phoneNumberAnswer.value === 'string') {
+        phoneNumber = phoneNumberAnswer.value;
+      } else if (typeof phoneNumberAnswer.answer === 'string') {
+        phoneNumber = phoneNumberAnswer.answer;
+      }
+      
+      if (phoneNumber) {
+        setUserId(phoneNumber);
+      }
+    }
+  }, [userAnswers]);
 
   const initializeFlow = async () => {
-  try {
-    setLoading(true);
+    try {
+      setLoading(true);
 
-    // Show the user's selected question/text first
-    setConversation([
-      { type: "answer", text: initialText,  }
-    ]);
+      // Show the user's selected question/text first
+      setConversation([
+        { type: "answer", text: initialText }
+      ]);
 
-    // Call first API to get statements
-    const statementsResponse = await api.get("/get-statements");
+      // Call first API to get statements
+      const statementsResponse = await api.get("/get-statements");
 
-    if (statementsResponse.data?.data && statementsResponse.data.data.length > 0) {
-
-      // Start showing statements one by one
-      showStatementsSequentially(statementsResponse.data.data);
-    } else {
-      // If no statements, directly fetch questions
-    }
-  } catch (error) {
-    console.error("Error fetching statements:", error);
-    // Try to fetch questions anyway
-  }
-};
-
-const showStatementsSequentially = (statementsData) => {
-  let index = 0;
-
-  const showNext = () => {
-    const statement = statementsData[index];
-    if (!statement) {
-      // No more statements, fetch questions
-      setTimeout(fetchQuestions, 1000);
-      return;
-    }
-
-    setConversation(prev => [
-      ...prev,
-      { type: "system", text: statement.question }
-    ]);
-
-    index++;
-
-    if (index < statementsData.length) {
-      setTimeout(showNext, 1500);
-    } else {
-      setTimeout(fetchQuestions, 1000);
+      if (statementsResponse.data?.data && statementsResponse.data.data.length > 0) {
+        // Start showing statements one by one
+        showStatementsSequentially(statementsResponse.data.data);
+      } else {
+        // If no statements, directly fetch questions
+      }
+    } catch (error) {
+      console.error("Error fetching statements:", error);
+      // Try to fetch questions anyway
     }
   };
 
-  setTimeout(showNext, 1000);
-};
+  const showStatementsSequentially = (statementsData) => {
+    let index = 0;
+
+    const showNext = () => {
+      const statement = statementsData[index];
+      if (!statement) {
+        // No more statements, fetch questions
+        setTimeout(fetchQuestions, 1000);
+        return;
+      }
+
+      setConversation(prev => [
+        ...prev,
+        { type: "system", text: statement.question }
+      ]);
+
+      index++;
+
+      if (index < statementsData.length) {
+        setTimeout(showNext, 1500);
+      } else {
+        setTimeout(fetchQuestions, 1000);
+      }
+    };
+
+    setTimeout(showNext, 1000);
+  };
 
   const fetchQuestions = async () => {
     try {
@@ -129,9 +152,9 @@ const showStatementsSequentially = (statementsData) => {
       setCurrentQuestion(null);
       setIsLastQuestion(true);
       setCanReload(false);
-      // Call save API first, then calculate results
+      // Call save API first, then start chat mode
       saveUserResponses().then(() => {
-        fetchCalculateData();
+        startChatMode();
       });
     }
   };
@@ -210,38 +233,122 @@ const showStatementsSequentially = (statementsData) => {
     };
   };
 
-  const fetchCalculateData = async () => {
-    const payload = {
-      userAnswers: {
-        ...userAnswers,
-      },
-      initialText: initialText
-    };
+  // New function to start chat mode after quiz completion
+  const startChatMode = async () => {
+    try {
+      setLoading(true);
+      setIsChatMode(true);
+      
+      // Show completion message
+      addToConversation("system", "Thank you for completing the quiz! Let me analyze your responses and provide personalized retirement insights...");
+      
+      if (!userId) {
+        addToConversation("system", "Error: Unable to identify user. Please try again.");
+        return;
+      }
 
+      // Send initial message to start the conversation
+      await handleSendMessage("Please analyze my retirement quiz responses and provide personalized insights.");
+      
+    } catch (error) {
+      console.error("Error starting chat mode:", error);
+      addToConversation("system", "Something went wrong while starting the analysis. Please try again later.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // New chat message handler with streaming
+  const handleSendMessage = async (message) => {
     try {
       setLoading(true);
       
-      // Show completion message
-      addToConversation("system", "Thank you for completing the quiz! Calculating your retirement insights...");
+      // Add user message immediately (only if it's not the initial automated message)
+      if (!message.startsWith("Please analyze my retirement")) {
+        addToConversation("answer", message);
+      }
 
-      const { data } = await api.post("/calculate-results-level1", {
-        details: {
-          ...payload,
-        },
+      // Add an empty assistant message that will be updated during streaming
+      const assistantMessageIndex = conversation.length + (message.startsWith("Please analyze my retirement") ? 0 : 1);
+      addToConversation("system", "");
+      
+      // Mark the last message as streaming
+      setConversation(prev => {
+        const newConv = [...prev];
+        newConv[newConv.length - 1] = { 
+          ...newConv[newConv.length - 1], 
+          isStreaming: true 
+        };
+        return newConv;
       });
 
-      if (data?.data) {
-        setInsightsData(data.data);
-        addToConversation("system", "Your personalized retirement analysis is ready!");
-      } else {
-        addToConversation("system", "Results calculated successfully!");
+      // Prepare for streaming response
+      const response = await fetch('https://test-api.retiremate.com/api/chat/send', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ userId, message }),
+      });
+
+      const reader = response.body.getReader();
+      const decoder = new TextDecoder();
+      let assistantMessage = '';
+
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+
+        const chunk = decoder.decode(value);
+        const lines = chunk.split('\n');
+
+        lines.forEach(line => {
+          if (line.startsWith('data: ')) {
+            try {
+              const data = JSON.parse(line.slice(5));
+              if (data.type === 'delta' && data.content) {
+                assistantMessage += data.content;
+                // Update only the last system message
+                setConversation(prev => {
+                  const newMessages = [...prev];
+                  for (let i = newMessages.length - 1; i >= 0; i--) {
+                    if (newMessages[i].type === "system" && newMessages[i].hasOwnProperty('isStreaming')) {
+                      newMessages[i] = {
+                        type: "system",
+                        text: assistantMessage,
+                        isStreaming: true
+                      };
+                      break;
+                    }
+                  }
+                  return newMessages;
+                });
+              } else if (data.type === 'end') {
+                // Mark the message as complete when streaming ends
+                setConversation(prev => {
+                  const newMessages = [...prev];
+                  for (let i = newMessages.length - 1; i >= 0; i--) {
+                    if (newMessages[i].type === "system" && newMessages[i].hasOwnProperty('isStreaming')) {
+                      newMessages[i] = {
+                        type: "system",
+                        text: assistantMessage,
+                        isStreaming: false
+                      };
+                      break;
+                    }
+                  }
+                  return newMessages;
+                });
+              }
+            } catch (e) {
+              console.error('Error parsing SSE data:', e);
+            }
+          }
+        });
       }
     } catch (error) {
-      console.error("Error calculating results:", error);
-      addToConversation(
-        "system",
-        "Something went wrong while calculating results. Please try again later."
-      );
+      console.error('Error sending message:', error);
+      addToConversation("system", "Sorry, there was an error processing your request. Please try again.");
     } finally {
       setLoading(false);
     }
@@ -371,6 +478,14 @@ const showStatementsSequentially = (statementsData) => {
       moveToNextQuestion();
       setLoading(false);
     }, (comment && comment.trim()) ? 2500 : 1500);
+  };
+
+  // New function to handle user input in chat mode
+  const handleChatInput = async (message) => {
+    if (!message.trim() || loading) return;
+    
+    await handleSendMessage(message);
+    setTextInput(""); // Clear input after sending
   };
 
   const handleReloadAnswer = async () => {
@@ -514,7 +629,7 @@ const showStatementsSequentially = (statementsData) => {
                 key={idx}
                 message={item}
                 isLastAnswer={isLastAnswer}
-                canReload={canReload}
+                canReload={canReload && !isChatMode}
                 loading={loading}
                 onReload={handleReloadAnswer}
               />
@@ -523,16 +638,46 @@ const showStatementsSequentially = (statementsData) => {
 
           <LoadingIndicator loading={loading} />
 
-          <QuestionDisplay
-            onValidationError={scrollUpOnValidationError}
-            currentQuestion={currentQuestion}
-            loading={loading}
-            textInput={textInput}
-            onTextChange={setTextInput}
-            onOptionClick={handleOptionClick}
-            onTextSubmit={handleTextSubmit}
-            onMultiSelectSubmit={handleMultiSelectSubmit}
-          />
+          {/* Show QuestionDisplay only if not in chat mode and there's a current question */}
+          {!isChatMode && currentQuestion && (
+            <QuestionDisplay
+              onValidationError={scrollUpOnValidationError}
+              currentQuestion={currentQuestion}
+              loading={loading}
+              textInput={textInput}
+              onTextChange={setTextInput}
+              onOptionClick={handleOptionClick}
+              onTextSubmit={handleTextSubmit}
+              onMultiSelectSubmit={handleMultiSelectSubmit}
+            />
+          )}
+
+          {/* Show text input for chat mode */}
+          {isChatMode && !loading && (
+            <div className="mt-4">
+              <div className="flex gap-2">
+                <input
+                  type="text"
+                  value={textInput}
+                  onChange={(e) => setTextInput(e.target.value)}
+                  onKeyPress={(e) => {
+                    if (e.key === 'Enter') {
+                      handleChatInput(textInput);
+                    }
+                  }}
+                  placeholder="Ask me anything about your retirement plan..."
+                  className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
+                />
+                <button
+                  onClick={() => handleChatInput(textInput)}
+                  disabled={!textInput.trim() || loading}
+                  className="px-4 py-2 bg-primary text-white rounded-lg disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  Send
+                </button>
+              </div>
+            </div>
+          )}
 
           <div id="overview" ref={overviewRef} className="scroll-mt-20"></div>
         </div>

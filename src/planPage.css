@@ -1,0 +1,62 @@
+.plainPagecontainer h1 {
+    font-size: 2.2em;
+    color: #3b5998;
+    text-align: center;
+    margin-bottom: 10px;
+}
+
+.plainPagecontainer h2 {
+    font-size: 1.6em;
+    color: #2a3d66;
+    border-left: 5px solid #3b5998;
+    padding-left: 10px;
+    margin-top: 30px;
+}
+
+.plainPagecontainer p {
+    font-size: 1.05em;
+    margin-bottom: 15px;
+    color: #444;
+}
+
+.plainPagecontainer ul {
+    margin: 15px 0 20px 25px;
+    padding: 0;
+}
+
+.plainPagecontainer ul li {
+    margin-bottom: 8px;
+    padding-left: 5px;
+}
+
+.plainPagecontainer table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 25px 0;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    background-color: #fff;
+}
+
+.plainPagecontainer th,
+.plainPagecontainer td {
+    border: 1px solid #ddd;
+    padding: 12px 15px;
+    text-align: left;
+    font-size: 0.95em;
+}
+
+.plainPagecontainer th {
+    background-color: #3b5998;
+    color: white;
+    font-weight: bold;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.plainPagecontainer tr:nth-child(even) {
+    background-color: #f9f9f9;
+}
+
+.plainPagecontainer strong {
+    color: #222;
+}
