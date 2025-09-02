@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect } from "react";
-import { ChevronDown, Send } from "lucide-react";
+import { ChevronDown } from "lucide-react";
 import api from "../../api/api";
+import sendIcon from "../../assets/send.svg";
 
 // Country codes data
 const countryCodes = [
@@ -247,7 +248,7 @@ export const TextInputPhone = ({
             disabled={loading}
             className="absolute right-2 top-1/2 -translate-y-1/2 p-1 text-blue-500 hover:text-blue-600 disabled:text-gray-400 disabled:cursor-not-allowed"
           >
-            <Send className="w-5 h-5" />
+              <img src={sendIcon} alt="send" className="w-5 h-5" />
           </button>
         </div>
       </div>

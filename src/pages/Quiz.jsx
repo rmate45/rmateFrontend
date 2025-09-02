@@ -27,9 +27,6 @@ const Quiz = () => {
   // New states for handling the flow
   const [allQuestions, setAllQuestions] = useState([]);
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
-  const [statements, setStatements] = useState([]);
-  const [flowInitialized, setFlowInitialized] = useState(false);
-  const [statementsShown, setStatementsShown] = useState(false);
 
   const [userAnswers, setUserAnswers] = useState({});
   const [insightsData, setInsightsData] = useState([]);
@@ -52,7 +49,6 @@ const Quiz = () => {
     const statementsResponse = await api.get("/get-statements");
 
     if (statementsResponse.data?.data && statementsResponse.data.data.length > 0) {
-      setStatements(statementsResponse.data.data);
 
       // Start showing statements one by one
       showStatementsSequentially(statementsResponse.data.data);
@@ -103,7 +99,6 @@ const showStatementsSequentially = (statementsData) => {
         setCurrentQuestion(sortedQuestions[0]);
         setCurrentQuestionIndex(0);
         setQuestionNumber(1);
-        setStatementsShown(true);
       } else {
         setConversation(prev => [
           ...prev,
@@ -118,7 +113,6 @@ const showStatementsSequentially = (statementsData) => {
       ]);
     } finally {
       setLoading(false);
-      setFlowInitialized(true);
     }
   };
 
@@ -539,33 +533,6 @@ const showStatementsSequentially = (statementsData) => {
             onTextSubmit={handleTextSubmit}
             onMultiSelectSubmit={handleMultiSelectSubmit}
           />
-
-          {/* Show completion message and insights when quiz is done */}
-          {isLastQuestion && !loading && (
-            <div className="mt-6 p-4 bg-green-50 border border-green-200 rounded-lg">
-              <h3 className="text-lg font-semibold text-green-800 mb-2">Quiz Complete!</h3>
-              <p className="text-green-700 mb-4">
-                Thank you for providing your information. We're analyzing your responses to create a personalized retirement plan.
-              </p>
-              
-              {insightsData && insightsData.length > 0 && (
-                <div>
-                  <h4 className="font-medium text-green-800 mb-2">Your Retirement Insights:</h4>
-                  <div className="space-y-2">
-                    {insightsData.map((insight, idx) => (
-                      <div 
-                        key={idx} 
-                        className="p-2 bg-white border border-green-300 rounded cursor-pointer hover:bg-green-50"
-                        onClick={() => handleInsightSelection(insight)}
-                      >
-                        <span className="text-sm text-green-700">{insight.title || insight}</span>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              )}
-            </div>
-          )}
 
           <div id="overview" ref={overviewRef} className="scroll-mt-20"></div>
         </div>
