@@ -58,12 +58,10 @@ const Quiz = () => {
       showStatementsSequentially(statementsResponse.data.data);
     } else {
       // If no statements, directly fetch questions
-      // fetchQuestions();
     }
   } catch (error) {
     console.error("Error fetching statements:", error);
     // Try to fetch questions anyway
-    // fetchQuestions();
   }
 };
 
@@ -137,8 +135,85 @@ const showStatementsSequentially = (statementsData) => {
       setCurrentQuestion(null);
       setIsLastQuestion(true);
       setCanReload(false);
-      fetchCalculateData();
+      // Call save API first, then calculate results
+      saveUserResponses().then(() => {
+        fetchCalculateData();
+      });
     }
+  };
+
+  // New function to save user responses
+  const saveUserResponses = async () => {
+    try {
+      // Format the payload according to the required structure
+      const payload = formatSavePayload();
+      
+      console.log("Saving user responses:", payload);
+      
+      const response = await api.post("/save", payload);
+      
+      console.log("Save response:", response.data);
+      
+      // Optionally show a message to the user
+      addToConversation("system", "Your responses have been saved successfully!");
+      
+      return response.data;
+    } catch (error) {
+      console.error("Error saving user responses:", error);
+      addToConversation("system", "There was an issue saving your responses, but we'll continue with your results.");
+    }
+  };
+
+  // Function to format the payload for the save API
+  const formatSavePayload = () => {
+    // Extract phone number from Q2 (assuming Q2 is the phone number question)
+    const phoneNumberAnswer = userAnswers["Q2"];
+    let phoneNumber = "";
+    
+    if (phoneNumberAnswer) {
+      // Check if it's a phone data object with fullNumber
+      if (phoneNumberAnswer.value && typeof phoneNumberAnswer.value === 'object' && phoneNumberAnswer.value.fullNumber) {
+        phoneNumber = phoneNumberAnswer.value.fullNumber;
+      } else if (typeof phoneNumberAnswer.value === 'string') {
+        phoneNumber = phoneNumberAnswer.value;
+      } else if (typeof phoneNumberAnswer.answer === 'string') {
+        phoneNumber = phoneNumberAnswer.answer;
+      }
+    }
+
+    // Format responses array
+    const responses = Object.entries(userAnswers).map(([questionId, answerData]) => {
+      let answer = answerData.answer;
+      
+      // Handle phone number specially - use full number for API
+      if (questionId === "Q2" && answerData.value && typeof answerData.value === 'object' && answerData.value.fullNumber) {
+        answer = answerData.value.fullNumber;
+      }
+      // For multi-select questions, the answer should be an array
+      else if (Array.isArray(answerData.value)) {
+        answer = answerData.value;
+      } else if (typeof answerData.value === 'string' && answerData.value.includes(',')) {
+        // If it's a comma-separated string, convert to array
+        answer = answerData.value.split(', ').map(item => item.trim());
+      }
+
+      return {
+        questionId,
+        answer
+      };
+    });
+
+    // Sort responses by questionId to maintain order (Q1, Q2, Q3, etc.)
+    responses.sort((a, b) => {
+      const aNum = parseInt(a.questionId.replace('Q', ''));
+      const bNum = parseInt(b.questionId.replace('Q', ''));
+      return aNum - bNum;
+    });
+
+    return {
+      phoneNumber,
+      responses
+    };
   };
 
   const fetchCalculateData = async () => {
@@ -229,11 +304,11 @@ const showStatementsSequentially = (statementsData) => {
     
     setLoading(true);
 
-    // Store the multi-select answer
+    // Store the multi-select answer with array value
     storeAnswer(
       currentQuestion.questionId,
       currentQuestion.questionText,
-      selectedTexts,
+      selectedTexts, // Store as array for multi-select
       answerText
     );
 
@@ -254,28 +329,41 @@ const showStatementsSequentially = (statementsData) => {
     }, (comment && comment.trim()) ? 2500 : 1500);
   };
 
-  const handleTextSubmit = async () => {
-    if (!textInput.trim()) return;
+  const handleTextSubmit = async (inputData) => {
+    // Handle both regular text input and phone data object
+    let displayText = "";
+    let storeValue = inputData;
+    
+    // Check if this is phone data object from TextInputPhone
+    if (inputData && typeof inputData === 'object' && inputData.displayNumber) {
+      displayText = `${inputData.countryFlag} ${inputData.displayNumber}`;
+      storeValue = inputData; // Store the entire phone object
+    } else {
+      // Regular text input
+      displayText = inputData || textInput;
+      storeValue = inputData || textInput;
+    }
+
+    if (!displayText.trim()) return;
 
     const questionText = currentQuestion.questionText;
 
     addToConversation("question", questionText);
-    addToConversation("answer", textInput);
+    addToConversation("answer", displayText);
 
-    // Store the text answer
+    // Store the answer (phone object or regular text)
     storeAnswer(
       currentQuestion.questionId,
       questionText,
-      textInput,
-      textInput
+      storeValue,
+      displayText
     );
 
     setLastQuestionText(questionText);
     setLastQuestionData(currentQuestion);
-    setLastAnswerOption({ text: textInput, value: textInput });
+    setLastAnswerOption({ text: displayText, value: storeValue });
 
-    const userInput = textInput;
-    setTextInput("");
+    setTextInput(""); // Clear input
     setLoading(true);
 
     const comment = currentQuestion.defaultComment;
@@ -378,7 +466,6 @@ const showStatementsSequentially = (statementsData) => {
     startNewChatWithTopic(insight.title);
   };
 
-
   const scrollUpOnValidationError = () => {
     const chat = chatRef.current;
     if (chat) {
@@ -412,8 +499,6 @@ const showStatementsSequentially = (statementsData) => {
       </div>
     );
   }
-
-  console.log( "conversation", conversation);
 
   return (
     <div className="bg-white px-4 min-h-screen flex flex-col items-center relative">

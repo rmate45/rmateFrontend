@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { QuestionOptions } from "../QuestionOptions/QuestionOptions";
 import { RangeSlider } from "../RangeSlider/RangeSlider";
 import { TextInput } from "../TextInput/TextInput";
+import { TextInputPhone } from "../TextInputPhone/TextInputPhone";
 
 export const QuestionDisplay = ({
   currentQuestion,
@@ -18,6 +19,7 @@ export const QuestionDisplay = ({
   if (!currentQuestion || loading) return null;
 
   const isValidateZip = currentQuestion?.questionId === "Q7"; // Question 7 asks for zip code
+  const isPhoneInput = currentQuestion?.questionId === "Q2"; // Question 2 is for phone number
 
   const handleMultiSelectToggle = (option) => {
     setSelectedMultiOptions(prev => {
@@ -37,14 +39,30 @@ export const QuestionDisplay = ({
     }
   };
 
+  // Handle phone number submission with full phone data
+  const handlePhoneSubmit = (phoneData) => {
+    // phoneData contains: fullNumber, displayNumber, countryCode, phoneNumber, countryFlag, countryName
+    onTextSubmit(phoneData);
+  };
+
   return (
     <div className="mt-4">
       <div className="mb-2 text-sm border-2 border-secondary px-4 py-2 text-center rounded-xl text-gray-800 font-semibold max-w-sm">
         {currentQuestion.questionText}
       </div>
 
-      {/* Free Text Input */}
-      {currentQuestion.inputType === "free_text" && (
+      {/* Phone Number Input */}
+      {currentQuestion.inputType === "free_text" && isPhoneInput && (
+        <TextInputPhone
+          value={textInput}
+          onChange={onTextChange}
+          onSubmit={handlePhoneSubmit}
+          onValidationError={onValidationError}
+        />
+      )}
+
+      {/* Regular Free Text Input (ZIP or other text) */}
+      {currentQuestion.inputType === "free_text" && !isPhoneInput && (
         <TextInput
           value={textInput}
           onChange={onTextChange}
