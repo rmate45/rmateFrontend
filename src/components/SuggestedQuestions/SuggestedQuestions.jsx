@@ -1,8 +1,21 @@
 // components/SuggestedQuestions/SuggestedQuestions.js
 import React from "react";
+import { useNavigate } from 'react-router-dom';
 import Carousel from "../Carousel/Carousel";
 
 const SuggestedQuestions = ({ questions, onQuestionClick }) => {
+  const navigate = useNavigate();
+
+  const handleQuestionClick = (question) => {
+    // Navigate to quiz page with the question text
+    navigate('/quiz', { state: { title: question.text } });
+    
+    // Still call the original onQuestionClick if provided for backward compatibility
+    if (onQuestionClick) {
+      onQuestionClick(question);
+    }
+  };
+
   return (
     <div className="text-center px-6 py-10 sm:py-16">
       <div className="max-w-7xl mx-auto">
@@ -15,7 +28,7 @@ const SuggestedQuestions = ({ questions, onQuestionClick }) => {
             items={questions}
             renderItem={(q) => (
               <button
-                className="  rounded-3xl 
+                className="rounded-3xl 
         text-left 
         px-6 md:px-10 
         py-6 md:py-8 
@@ -29,9 +42,11 @@ const SuggestedQuestions = ({ questions, onQuestionClick }) => {
         text-lg md:text-2xl 
         flex items-center justify-center
         max-w-[300px]
-        mx-auto"
+        mx-auto
+        hover:opacity-90 
+        transition-opacity"
                 style={{ backgroundColor: q.color }}
-                onClick={() => onQuestionClick && onQuestionClick(q)}
+                onClick={() => handleQuestionClick(q)}
               >
                 {q.text}
               </button>

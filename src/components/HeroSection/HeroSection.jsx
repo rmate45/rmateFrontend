@@ -1,10 +1,17 @@
 // components/HeroSection/HeroSection.js
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 const HeroSection = ({ searchIcon, micIcon, onSearch, onVoiceSearch }) => {
   const [searchQuery, setSearchQuery] = useState('');
+  const navigate = useNavigate();
 
   const handleSearch = () => {
+    if (searchQuery.trim()) {
+      // Navigate to quiz page with the search query
+      navigate('/quiz', { state: { title: searchQuery.trim() } });
+    }
+    // Still call the original onSearch if provided for backward compatibility
     if (onSearch) {
       onSearch(searchQuery);
     }
@@ -14,6 +21,14 @@ const HeroSection = ({ searchIcon, micIcon, onSearch, onVoiceSearch }) => {
     if (e.key === 'Enter') {
       handleSearch();
     }
+  };
+
+  const handleVoiceSearch = () => {
+    // Call the original onVoiceSearch if provided
+    if (onVoiceSearch) {
+      onVoiceSearch();
+    }
+    // You can add voice search logic here that eventually navigates to quiz
   };
 
   return (
@@ -27,26 +42,29 @@ const HeroSection = ({ searchIcon, micIcon, onSearch, onVoiceSearch }) => {
         </p>
 
         {/* Search Input */}
-        <div className="bg-white rounded-full flex items-center px-3 py-3 max-w-xl mx-auto">
-          <button onClick={handleSearch}>
-            <img src={searchIcon} alt="Search" className="w-7 h-7" />
-          </button>
-          <input
-            type="text"
-            placeholder="Ask Anything"
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            onKeyPress={handleKeyPress}
-            className="flex-1 outline-none jost font-normal text-base px-2 text-introPrimary"
-            placeholdertextcolor="#567257"
-          />
-          <button 
-            className="ml-2"
-            onClick={onVoiceSearch}
-          >
-            <img src={micIcon} alt="Microphone" className="w-8 h-8" />
-          </button>
-        </div>
+        <form onSubmit={(e) => { e.preventDefault(); handleSearch(); }}>
+          <div className="bg-white rounded-full flex items-center px-3 py-3 max-w-xl mx-auto">
+            <button type="submit" onClick={handleSearch}>
+              <img src={searchIcon} alt="Search" className="w-7 h-7" />
+            </button>
+            <input
+              type="text"
+              placeholder="Ask Anything"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              onKeyPress={handleKeyPress}
+              className="flex-1 outline-none jost font-normal text-base px-2 text-introPrimary"
+              placeholdertextcolor="#567257"
+            />
+            <button 
+              type="button"
+              className="ml-2"
+              onClick={handleVoiceSearch}
+            >
+              <img src={micIcon} alt="Microphone" className="w-8 h-8" />
+            </button>
+          </div>
+        </form>
       </div>
     </div>
   );

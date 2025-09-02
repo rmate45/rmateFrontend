@@ -89,7 +89,7 @@ function IntroPage() {
     }
   ];
 
-  // Event handlers
+  // Event handlers - these are now optional since navigation is handled within components
   const handleLoginClick = () => {
     console.log('Login clicked');
     // Add your login logic here
@@ -97,7 +97,7 @@ function IntroPage() {
 
   const handleSearch = (query) => {
     console.log('Search query:', query);
-    // Add your search logic here
+    // This is now optional - navigation is handled in HeroSection
   };
 
   const handleVoiceSearch = () => {
@@ -107,7 +107,7 @@ function IntroPage() {
 
   const handleQuestionClick = (question) => {
     console.log('Question clicked:', question);
-    // Add your question click logic here
+    // This is now optional - navigation is handled in SuggestedQuestions
   };
 
   const handleBrowseAllClick = () => {
