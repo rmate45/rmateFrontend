@@ -453,12 +453,7 @@ const Quiz = () => {
 
       // Fallback: if no streaming data was received, mark as complete
       if (!assistantMessage) {
-        console.warn(
-          "No streaming data received, checking for direct response"
-        );
-        // Try to read response as regular JSON if streaming failed
-        const responseText = await response.text();
-        console.log("Direct response:", responseText);
+        console.warn("No streaming data received");
 
         setConversation((prev) => {
           const newMessages = [...prev];
@@ -469,9 +464,7 @@ const Quiz = () => {
             ) {
               newMessages[i] = {
                 type: "system",
-                text:
-                  responseText ||
-                  "I received your message but couldn't generate a response. Please try again.",
+                text: "I received your message but couldn't generate a response. Please try again.",
                 isStreaming: false,
               };
               break;
@@ -505,7 +498,6 @@ const Quiz = () => {
       setLoading(false);
     }
   };
-
   const storeAnswer = (questionId, questionText, value, displayLabel) => {
     setUserAnswers((prev) => ({
       ...prev,
