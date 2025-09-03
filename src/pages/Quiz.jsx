@@ -581,14 +581,20 @@ const Quiz = () => {
   };
 
   const handleTextSubmit = async (inputData) => {
+    console.log(inputData, "displayText");
+
     // Handle both regular text input and phone data object
     let displayText = "";
     let storeValue = inputData;
 
-    // Check if this is phone data object from TextInputPhone
-    if (inputData && typeof inputData === "object" && inputData.displayNumber) {
-      displayText = `${inputData.countryFlag} ${inputData.displayNumber}`;
-      storeValue = inputData; // Store the entire phone object
+    if (
+      inputData &&
+      typeof inputData === "object" &&
+      (inputData.displayNumber || inputData.fullNumber)
+    ) {
+      // Prefer displayNumber if available, else fallback to fullNumber
+      displayText = inputData.displayNumber || inputData.fullNumber;
+      storeValue = inputData; // keep full object for backend
     } else {
       // Regular text input
       displayText = inputData || textInput;
@@ -728,7 +734,14 @@ const Quiz = () => {
     startNewChatWithTopic(insight.title);
   };
 
-  const scrollUpOnValidationError = () => {
+  const scrollUp = () => {
+    const chat = chatRef.current;
+    if (chat) {
+      chatRef.current.scrollIntoView({ behavior: "smooth" });
+    }
+  };
+
+  const scrollToBottom = () => {
     const chat = chatRef.current;
     if (chat) {
       chat.scrollTo({
@@ -794,7 +807,9 @@ const Quiz = () => {
           {/* Show QuestionDisplay only if not in chat mode and there's a current question */}
           {!isChatMode && currentQuestion && (
             <QuestionDisplay
-              onValidationError={scrollUpOnValidationError}
+              onValidationError={scrollUp}
+              scrollUp={scrollToBottom} // This was already scrollToBottom in your code
+              scrollToBottom={scrollToBottom} // Add this new prop for error scrolling
               currentQuestion={currentQuestion}
               loading={loading}
               textInput={textInput}

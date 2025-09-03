@@ -1,5 +1,5 @@
 import sendIcon from "../../assets/send.svg";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import api from "../../api/api";
 
 export const TextInput = ({
@@ -8,10 +8,20 @@ export const TextInput = ({
   onSubmit,
   validateAsZip = false,
   onValidationError,
+  scrollToBottom, // Add this new prop
 }) => {
   const [isValid, setIsValid] = useState(true);
   const [validZipCode, setValidZipCode] = useState(null);
   const [loading, setLoading] = useState(false);
+
+  // Scroll to bottom when error message appears
+  useEffect(() => {
+    if (validZipCode && scrollToBottom) {
+      setTimeout(() => {
+        scrollToBottom();
+      }, 100); // Small delay to ensure DOM is updated
+    }
+  }, [validZipCode, scrollToBottom]);
 
   const validateZip = async (zip) => {
     if (!zip || zip.length < 3 || zip.length > 6) {
@@ -67,6 +77,12 @@ export const TextInput = ({
       } else {
         setIsValid(false);
         onValidationError?.();
+        // Show error for empty input and scroll
+        if (scrollToBottom) {
+          setTimeout(() => {
+            scrollToBottom();
+          }, 100);
+        }
       }
     }
   };
@@ -105,7 +121,6 @@ export const TextInput = ({
           <img src={sendIcon} alt="send" className="w-6 mt-4 mb-4" />
         </button>
       </div>
-
       {validZipCode && <p className="text-red-500 text-sm">{validZipCode}</p>}
     </div>
   );

@@ -13,8 +13,19 @@ export const QuestionDisplay = ({
   onTextSubmit,
   onMultiSelectSubmit,
   onValidationError,
+  scrollUp,
+  scrollToBottom, // Add this new prop for scrolling to bottom
 }) => {
   const [selectedMultiOptions, setSelectedMultiOptions] = useState([]);
+  
+  // Scroll to bottom when submit button appears for multi-select
+  useEffect(() => {
+    if (selectedMultiOptions.length > 0 && scrollToBottom) {
+      setTimeout(() => {
+        scrollToBottom();
+      }, 100); // Small delay to ensure DOM is updated
+    }
+  }, [selectedMultiOptions.length, scrollToBottom]);
   
   if (!currentQuestion || loading) return null;
 
@@ -35,13 +46,13 @@ export const QuestionDisplay = ({
   const handleMultiSelectSubmitClick = () => {
     if (selectedMultiOptions.length > 0) {
       onMultiSelectSubmit(selectedMultiOptions);
+      scrollUp();
       setSelectedMultiOptions([]);
     }
   };
 
   // Handle phone number submission with full phone data
   const handlePhoneSubmit = (phoneData) => {
-    // phoneData contains: fullNumber, displayNumber, countryCode, phoneNumber, countryFlag, countryName
     onTextSubmit(phoneData);
   };
 
@@ -58,6 +69,7 @@ export const QuestionDisplay = ({
           onChange={onTextChange}
           onSubmit={handlePhoneSubmit}
           onValidationError={onValidationError}
+          scrollToBottom={scrollToBottom} // Pass scrollToBottom prop
         />
       )}
 
@@ -69,6 +81,7 @@ export const QuestionDisplay = ({
           onSubmit={onTextSubmit}
           validateAsZip={isValidateZip}
           onValidationError={onValidationError}
+          scrollToBottom={scrollToBottom} // Pass scrollToBottom prop
         />
       )}
 
