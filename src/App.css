@@ -9,6 +9,7 @@
   height: 40vmin;
   pointer-events: none;
 }
+
 body * {
   font-family: "Libre Caslon Text", serif;
 }
@@ -43,10 +44,12 @@ body * {
   from {
     transform: rotate(0deg);
   }
+
   to {
     transform: rotate(360deg);
   }
 }
+
 .st0 {
   fill: #5cc37e;
 }
@@ -54,40 +57,95 @@ body * {
 .st1 {
   fill: #0e6735;
 }
+
 .logoSvg {
   width: 150px;
   cursor: pointer;
 }
+
 header.header_wrapper {
   box-shadow: 0px 0px 5px rgba(0, 0, 0, 10%);
   background: #fff;
 }
+
 .header_wrapper a {
   color: #0e6735;
   font-size: 14px;
   font-weight: 600;
   cursor: pointer;
 }
+
 .send_image {
   position: absolute !important;
   top: 15px;
   right: 2px;
 }
+
 .save_text {
   padding: 60px 0px;
   text-align: center;
   margin-top: 3rem;
 }
+
 .save_text h3 {
   display: inline-block;
   text-align: left;
 }
+
 .footer {
   padding: 2em 0;
 }
+
 div#root {
   min-height: 100vh;
 }
+
+.slick-track {
+  display: flex !important;
+}
+
+
+.slick-slide {
+  height: auto !important;
+}
+
+.slick-slide>div {
+  height: 100% !important;
+}
+
+.slick-prev,
+.slick-next {
+  background-color: #0e6735 !important;
+  border-radius: 50% !important;
+  width: 35px !important;
+  height: 35px !important;
+}
+
+.slick-next{
+  padding: 3px 0px 3px 2px !important;
+}
+
+.slick-prev{
+  padding: 3px 2px 3px 0px !important;
+}
+
+.slick-dots li button:before {
+  font-size: 14px !important;
+  line-height: 32px !important;
+}
+
+.slick-dots li.slick-active button:before {
+  color: #0e6735 !important;
+}
+
+.slick-slider{
+  padding: 0px 15px;
+}
+
+.slick-dots{
+  margin: 0 -15px !important;
+}
+
 @media (max-width: 576px) {
   .logoSvg {
     width: 110px;

@@ -121,7 +121,7 @@ const QuestionsToAction = ({
           </div>
 
           {/* Right side: Carousel */}
-          <div className="w-full lg:flex-1">
+          <div className="w-full lg:flex-1 px-5">
             <div className="max-w-3xl mx-auto">
               <Carousel
                 items={questionsToDisplay}
@@ -135,13 +135,12 @@ const QuestionsToAction = ({
                         bg-introPrimary 
                         tracking-wide 
                         shadow-md 
-                        min-h-[140px] sm:min-h-[170px] 
+                      
                         w-full 
                         text-white 
                         font-medium sm:font-normal 
                         text-base sm:text-lg 
                         flex items-start
-                        max-w-[300px]
                         mx-auto
                       "
                       onClick={() => onQuestionClick && onQuestionClick(q)}
