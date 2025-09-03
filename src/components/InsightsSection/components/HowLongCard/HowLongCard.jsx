@@ -37,39 +37,46 @@ const lines = [
 
 const HowLongCard = () => (
   <div className="bg-white rounded-[20px] shadow p-5">
-    <h3 className="font-medium text-base mb-3 text-introPrimary">How long will my savings last?</h3>
+    <h3 className="font-medium text-base mb-3 text-introPrimary">
+      How long will my savings last?
+    </h3>
     <p className="text-sm jost text-left mb-5 text-introPrimary">
       Your savings will last until you’re 81-84*, if you retire at 70 in Los
       Angeles, CA, and maintain a comfortable lifestyle.
     </p>
 
-    <div className="w-full h-64">
-      <ResponsiveContainer>
-        <LineChart data={data} margin={{ top: 20, right: 20, bottom: 20, left: 0 }}>
-          <CartesianGrid strokeDasharray="3 3" stroke="#ddd" />
-          <XAxis dataKey="age" />
-          <YAxis label={{ value: "$", angle: -90, position: "insideLeft" }} />
-          <Tooltip />
-          {lines.map((line, idx) => (
-            <Line
-              key={idx}
-              type="monotone"
-              dataKey={line.key}
-              stroke={line.color}
-              strokeWidth={2.5}
-              dot={false}
-            />
-          ))}
-        </LineChart>
-      </ResponsiveContainer>
-    </div>
+    <div className="flex flex-wrap xl:flex-nowrap">
+      <div className="w-full h-64">
+        <ResponsiveContainer>
+          <LineChart
+            data={data}
+            margin={{ top: 20, right: 20, bottom: 20, left: 0 }}
+          >
+            <CartesianGrid strokeDasharray="3 3" stroke="#ddd" />
+            <XAxis dataKey="age" />
+            <YAxis label={{ value: "$", angle: -90, position: "insideLeft" }} />
+            <Tooltip />
+            {lines.map((line, idx) => (
+              <Line
+                key={idx}
+                type="monotone"
+                dataKey={line.key}
+                stroke={line.color}
+                strokeWidth={2.5}
+                dot={false}
+              />
+            ))}
+          </LineChart>
+        </ResponsiveContainer>
+      </div>
 
-    <div className="mt-2">
-      <DataTable columns={lifestyleColumns} data={lifestyleData} />
-      <p className="mt-4 text-left text-xs jost text-introPrimary">
-        Living a budget lifestyle will extend your savings until you’re 85-89,
-        living luxuriously will reduce it to 72-75.
-      </p>
+      <div className="mt-2">
+        <DataTable columns={lifestyleColumns} data={lifestyleData} />
+        <p className="mt-4 text-left text-xs jost text-introPrimary">
+          Living a budget lifestyle will extend your savings until you’re 85-89,
+          living luxuriously will reduce it to 72-75.
+        </p>
+      </div>
     </div>
   </div>
 );

@@ -3,13 +3,13 @@ import React from "react";
 const DataTable = ({ columns, data }) => {
   return (
     <div className="overflow-x-auto">
-      <table className="min-w-[100px] bg-white border border-gray-300 text-left mx-auto">
+      <table className="min-w-[100px] bg-white border border-gray-300 text-left">
         <thead className="bg-gray-50">
           <tr>
             {columns.map((col) => (
               <th
                 key={col.key}
-                className="px-4 py-2 font-semibold text-introPrimary border border-gray-300 jost text-xs md:text-sm"
+                className="px-2 py-1 font-semibold text-introPrimary border border-gray-300 jost text-xs md:text-sm"
               >
                 {col.label}
               </th>
@@ -22,7 +22,7 @@ const DataTable = ({ columns, data }) => {
               {columns.map((col) => (
                 <td
                   key={col.key}
-                  className="px-4 py-2 border border-gray-300 jost text-introPrimary text-xs md:text-sm"
+                  className="px-2 py-1 border border-gray-300 jost text-introPrimary text-sm md:text-sm"
                 >
                   {row[col.key]}
                 </td>

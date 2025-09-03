@@ -38,6 +38,8 @@ const RetireAgeCard = () => (
       You can retire as early as 63 with a comfortable lifestyle in Los Angeles, CA.
     </p>
 
+    <div className="flex flex-wrap xl:flex-nowrap">
+
     <div className="w-full h-64">
       <ResponsiveContainer>
         <BarChart data={barData} margin={{ top: 20, right: 20, bottom: 20, left: 0 }}>
@@ -49,13 +51,14 @@ const RetireAgeCard = () => (
       </ResponsiveContainer>
     </div>
 
-    <div className="mt-2">
+    <div className="mt-2 flex-1/2">
       <DataTable columns={savingsColumns} data={savingsData} />
       <p className="mt-4 text-left text-xs jost text-introPrimary">
         Saving $1,000 or 5% of your monthly income — the max recommended — could
         allow you to retire as young as 63. Saving $250 or 1% of your monthly
         income would allow you to retire comfortably by 72.
       </p>
+    </div>
     </div>
   </div>
 );
