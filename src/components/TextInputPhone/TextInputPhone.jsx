@@ -52,11 +52,11 @@ export const TextInputPhone = ({
             setIsValid(true);
             setValidationMessage(null);
           }}
-          inputClass={`!w-full !pl-12 !pr-10 !py-3 !text-sm !border-2 !rounded-xl !h-[40px] ${
-            isValid ? "!border-gray-300" : "!border-red-500"
+          inputClass={`!w-full !pl-12 !pr-10 !py-3 !text-sm !border-2 !rounded-xl !h-[40px] jost ${
+            isValid ? "!border-gray-300" : "!border-red-500 "
           }`}
           buttonClass="!border-2 !border-gray-300 !rounded-l-xl"
-          containerClass="w-full"
+          containerClass="w-full jost"
           inputProps={{
             name: "phone",
             required: true,
@@ -81,7 +81,7 @@ export const TextInputPhone = ({
       </div>
 
       {validationMessage && (
-        <p className="text-red-500 text-sm">{validationMessage}</p>
+        <p className="text-red-500 jost text-sm">{validationMessage}</p>
       )}
     </div>
   );

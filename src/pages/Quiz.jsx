@@ -6,6 +6,7 @@ import { ChatMessage } from "../components/ChatMessage/ChatMessage";
 import { LoadingIndicator } from "../components/LoadingIndicator/LoadingIndicator";
 import { QuestionDisplay } from "../components/QuestionDisplay/QuestionDisplay";
 import api from "../api/api.js";
+import sendIcon from "../assets/send.svg";
 
 const Quiz = () => {
   const location = useLocation();
@@ -823,7 +824,7 @@ const Quiz = () => {
           {/* Show text input for chat mode */}
           {isChatMode && !loading && (
             <div className="mt-4">
-              <div className="flex gap-2">
+              <div className="flex gap-2 relative">
                 <input
                   type="text"
                   value={textInput}
@@ -834,18 +835,18 @@ const Quiz = () => {
                     }
                   }}
                   placeholder="Ask me anything about your retirement plan..."
-                  className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
+                    className={`w-full px-4 py-2 pr-10 border-2 jost rounded-xl text-sm focus:outline-none border-gray-300 focus:border-secondary`}
                 />
                 <button
                   onClick={() => handleChatInput(textInput)}
                   disabled={!textInput.trim() || loading}
-                  className="px-4 py-2 bg-primary text-white rounded-lg disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="absolute right-2 top-1/2 -translate-y-1/2 p-1 disabled:text-gray-400 disabled:cursor-not-allowed"
                 >
-                  Send
+                    <img src={sendIcon} alt="send" className="w-6 mt-4 mb-4" />
                 </button>
               </div>
             </div>
-          )}
+          )} 
 
           <div id="overview" ref={overviewRef} className="scroll-mt-20"></div>
         </div>

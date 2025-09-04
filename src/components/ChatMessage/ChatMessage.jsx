@@ -21,7 +21,7 @@ export const ChatMessage = ({
       )}
 
       <div
-        className={`px-4 py-2 min-h-10 text-sm max-w-xs rounded-xl flex justify-center items-center  ${
+        className={`px-4 py-2 min-h-10 text-sm max-w-xs rounded-xl flex justify-center items-center jost  ${
           isAnswer
             ? "rounded-br-none bg-green-300 text-left text-black"
             : isComment

@@ -58,7 +58,7 @@ export const QuestionDisplay = ({
 
   return (
     <div className="mt-4">
-      <div className="mb-2 text-sm border-2 border-secondary px-4 py-2 text-center rounded-xl text-gray-800 font-semibold max-w-sm">
+      <div className="mb-2 jost text-sm border-2 border-secondary px-4 py-2 text-center rounded-xl text-gray-800 font-semibold max-w-sm">
         {currentQuestion.questionText}
       </div>
 
@@ -107,7 +107,7 @@ export const QuestionDisplay = ({
                     : 'border-gray-300 hover:border-green-400'
                 }`}
               >
-                <div className="flex items-center justify-between">
+                <div className="flex items-center justify-between jost">
                   <span>{option.text}</span>
                   <span className="text-sm">
                     {selectedMultiOptions.find(item => item.text === option.text) ? '✓' : '+'}
@@ -121,7 +121,7 @@ export const QuestionDisplay = ({
             <div className="text-center">
               <button
                 onClick={handleMultiSelectSubmitClick}
-                className="px-6 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
+                className="px-6 py-2 bg-green-600 jost text-white rounded-lg hover:bg-green-700 transition-colors"
               >
                 Submit ({selectedMultiOptions.length} selected)
               </button>

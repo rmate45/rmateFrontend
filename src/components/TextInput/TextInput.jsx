@@ -109,7 +109,7 @@ export const TextInput = ({
               ? "Enter ZIP code (3–6 digits)"
               : "Type your answer here..."
           }
-          className={`w-full px-4 py-2 pr-10 border-2 rounded-xl text-sm focus:outline-none ${
+          className={`w-full px-4 py-2 pr-10 border-2 jost rounded-xl text-sm focus:outline-none focus:border-secondary ${
             isValid ? "border-gray-300" : "border-red-500"
           }`}
         />
@@ -121,7 +121,7 @@ export const TextInput = ({
           <img src={sendIcon} alt="send" className="w-6 mt-4 mb-4" />
         </button>
       </div>
-      {validZipCode && <p className="text-red-500 text-sm">{validZipCode}</p>}
+      {validZipCode && <p className="text-red-500 jost text-sm">{validZipCode}</p>}
     </div>
   );
 };

@@ -70,7 +70,7 @@ const HowLongCard = () => (
         </ResponsiveContainer>
       </div>
 
-      <div className="mt-2">
+      <div className="mt-2 flex flex-col items-center xl:items-start">
         <DataTable columns={lifestyleColumns} data={lifestyleData} />
         <p className="mt-4 text-left text-xs jost text-introPrimary">
           Living a budget lifestyle will extend your savings until you’re 85-89,

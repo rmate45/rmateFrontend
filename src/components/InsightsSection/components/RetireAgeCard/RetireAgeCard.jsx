@@ -51,7 +51,7 @@ const RetireAgeCard = () => (
       </ResponsiveContainer>
     </div>
 
-    <div className="mt-2 flex-1/2">
+    <div className="mt-2 flex-1/2 flex flex-col items-center xl:items-start">
       <DataTable columns={savingsColumns} data={savingsData} />
       <p className="mt-4 text-left text-xs jost text-introPrimary">
         Saving $1,000 or 5% of your monthly income — the max recommended — could
