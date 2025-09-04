@@ -402,7 +402,6 @@ const Quiz = () => {
               if (jsonData === "[DONE]") return; // Handle completion marker
 
               const data = JSON.parse(jsonData);
-              console.log("Received SSE data:", data); // Debug log
 
               if (data.type === "delta" && data.content) {
                 assistantMessage += data.content;
@@ -798,11 +797,12 @@ const Quiz = () => {
                 canReload={canReload && !isChatMode}
                 loading={loading}
                 onReload={handleReloadAnswer}
+                chatMode={isChatMode}
               />
             );
           })}
 
-          <LoadingIndicator loading={loading} />
+          <LoadingIndicator loading={loading && !isChatMode} />
 
           {/* Show QuestionDisplay only if not in chat mode and there's a current question */}
           {!isChatMode && currentQuestion && (

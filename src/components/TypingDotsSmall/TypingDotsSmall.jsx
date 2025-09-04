@@ -1,6 +1,6 @@
 import React from "react";
 
-const TypingDots = () => {
+const TypingDotsSmall = () => {
   return (
     <div className="flex items-center space-x-1">
      <span className="w-2 h-2 bg-primary rounded-full animate-bounce [animation-delay:-0.3s]"></span>
@@ -10,4 +10,4 @@ const TypingDots = () => {
   );
 };
 
-export default TypingDots;
+export default TypingDotsSmall;
