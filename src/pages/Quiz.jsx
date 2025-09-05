@@ -203,7 +203,6 @@ const Quiz = () => {
   // New function to save user responses
   const saveUserResponses = async () => {
     try {
-
       setLoading(true);
       // Format the payload according to the required structure
       const payload = formatSavePayload();
@@ -307,10 +306,12 @@ const Quiz = () => {
       setLoading(true);
 
       // Show completion message
-      addToConversation(
-        "system",
-        "Thank you for completing the quiz! Let me analyze your responses and provide personalized retirement insights..."
-      );
+      setTimeout(() => {
+        addToConversation(
+          "system",
+          "Thank you for completing the quiz! Let me analyze your responses and provide personalized retirement insights..."
+        );
+      }, 2000);
 
       if (!userId) {
         addToConversation(
@@ -348,15 +349,15 @@ const Quiz = () => {
             "Now you can ask me anything about your retirement plan, savings strategies, or any financial questions you might have!"
           );
           setLoading(false);
+          setIsChatMode(true);
         }, 2000);
-
-        setIsChatMode(true);
       } else {
         addToConversation(
           "system",
           "I couldn't generate your chart data, but I'm ready to help with any retirement planning questions you have!"
         );
         setLoading(false);
+        setIsChatMode(true);
       }
     } catch (error) {
       console.error("Error starting chat mode:", error);
@@ -365,6 +366,7 @@ const Quiz = () => {
         "Something went wrong while generating your analysis, but I'm still here to help with your retirement planning questions!"
       );
       setLoading(false);
+      setIsChatMode(true);
     }
   };
 
