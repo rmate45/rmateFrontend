@@ -12,15 +12,44 @@ import PlotChart from "../components/PlotChart/PlotChart.jsx";
 function buildPayload(response) {
   const parseMedian = (str) => {
     if (!str) return null;
+
+    const normalized = str.trim().toLowerCase();
+
+    // Special cases
+    if (normalized.includes("nothing") || normalized.includes("no income")) {
+      return 0;
+    }
+
+    if (normalized.includes("less than")) {
+      const max = parseInt(str.replace(/\D/g, ""), 10);
+      return isNaN(max) ? 0 : Math.round(max / 2); // midpoint between 0 and max
+    }
+
+    if (normalized.includes("plus")) {
+      if (normalized.includes("million")) {
+        // "1 Million Plus" -> pick between 1M and 2M
+        const min = 1_000_000;
+        const max = 2_000_000;
+        return Math.floor(Math.random() * (max - min + 1)) + min;
+      } else {
+        // "$500,000 +" -> pick between 500k and 1M
+        const min = parseInt(str.replace(/\$|,|\+/g, ""), 10) || 500_000;
+        const max = 1_000_000;
+        return Math.floor(Math.random() * (max - min + 1)) + min;
+      }
+    }
+
+    // Normal ranges like "$51,000 - $100,000"
     const nums = str
-      .replace(/\$|,/g, "")
-      .replace(/–|—/g, "-") // normalize en dash/em dash to regular dash
+      .replace(/\$|,|\+/g, "")
+      .replace(/–|—/g, "-") // normalize en dash/em dash
       .split("-")
       .map((n) => parseInt(n.trim(), 10))
       .filter((n) => !isNaN(n))
       .sort((a, b) => a - b);
 
     if (nums.length === 0) return null;
+    if (nums.length === 1) return nums[0];
 
     const mid = Math.floor(nums.length / 2);
     return nums.length % 2 === 1 ? nums[mid] : (nums[mid - 1] + nums[mid]) / 2;
@@ -36,6 +65,7 @@ function buildPayload(response) {
     retirementSavings,
   };
 }
+
 
 const Quiz = () => {
   const location = useLocation();
