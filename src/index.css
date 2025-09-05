@@ -1,4 +1,3 @@
-
 @import "tailwindcss";
 @import url("https://fonts.googleapis.com/css2?family=Libre+Caslon+Text:ital,wght@0,400;0,700;1,400&display=swap");
 
@@ -9,7 +8,7 @@
 
 /* Ensure Rubik is applied to all elements */
 * {
-    font-family: "Libre Caslon Text", serif;
+  font-family: "Libre Caslon Text", serif;
 }
 
 @theme {
@@ -19,8 +18,11 @@
   --color-blue: #4892dc;
 
   --color-introPrimary: #567257;
-  --color-intoSecondary: #896A58;
-  --color-intoTertiary: #ACAB9E;
+  --color-intoSecondary: #896a58;
+  --color-intoTertiary: #acab9e;
+  --shadow-soft: 0 2px 8px rgba(0, 0, 0, 0.08);
+  --shadow-medium: 0 0 12px rgba(0, 0, 0, 25%);
+  --shadow-strong: 0 6px 20px rgba(0, 0, 0, 0.18);
 }
 
 a {

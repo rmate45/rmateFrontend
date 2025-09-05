@@ -102,14 +102,14 @@ div#root {
 
 .slick-track {
   display: flex !important;
+  padding: 10px 0px;
 }
-
 
 .slick-slide {
   height: auto !important;
 }
 
-.slick-slide>div {
+.slick-slide > div {
   height: 100% !important;
 }
 
@@ -121,11 +121,11 @@ div#root {
   height: 35px !important;
 }
 
-.slick-next{
+.slick-next {
   padding: 3px 0px 3px 2px !important;
 }
 
-.slick-prev{
+.slick-prev {
   padding: 3px 2px 3px 0px !important;
 }
 
@@ -138,14 +138,16 @@ div#root {
   color: #0e6735 !important;
 }
 
-.slick-slider{
+.slick-slider {
   padding: 0px 15px;
 }
 
-.slick-dots{
+.slick-dots {
   margin: 0 -15px !important;
 }
-
+.slick-list {
+  height: auto !important;
+}
 @media (max-width: 576px) {
   .logoSvg {
     width: 110px;

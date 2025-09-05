@@ -14,7 +14,7 @@ const ResourceColumn = ({ title, items = [], browseAllText, onBrowseAllClick }) 
           </li>
         ))}
       </ul>
-      <a
+      {/* <a
         href="#"
         onClick={(e) => {
           e.preventDefault();
@@ -23,7 +23,7 @@ const ResourceColumn = ({ title, items = [], browseAllText, onBrowseAllClick }) 
         className="pt-4 w-full border-t border-[#D9D9D9] inline-block text-[#2A2420] jost text-center font-semibold"
       >
         {browseAllText}
-      </a>
+      </a> */}
     </div>
   );
 };
@@ -32,34 +32,34 @@ const ResourcesSection = ({ columns = [] }) => {
   const defaultColumns = [
     {
       id: 1,
-      title: "Top Questions for 45-54 Year Olds",
+      title: "Top Questions for 35-44 Year Olds",
       items: [
-        "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod?",
-        "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod?",
-        "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod?",
-        "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod?"
+        "Am I on track for retirement savings at 40?",
+        "How can I catch up if I started saving late?",
+        "How do I avoid burnout while building wealth?",
+        "How does taking time off for caregiving affect my retirement?"
       ],
       browseAllText: "Browse all articles"
     },
     {
       id: 2,
-      title: "Checklists for 45-54 Year Olds",
+      title: "Top Questions for 45-54 Year Olds",
       items: [
-        "Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod?",
-        "Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod?",
-        "Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod?",
-        "Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod?"
+        "Am I behind on retirement savings at age 50?",
+        "Can I retire early at 55?",
+        "Is it worth starting a side business for retirement income?",
+        "What retirement benefits can I claim from a deceased or ex-spouse?"
       ],
       browseAllText: "Browse all checklists"
     },
     {
       id: 3,
-      title: "Frequently Asked Questions",
+      title: "Top Questions for 55-64 Year Olds",
       items: [
-        "Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod?",
-        "Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod?",
-        "Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod?",
-        "Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod?"
+        "When should I start taking Social Security?",
+        "Should I buy an annuity to guarantee income?",
+        "How can I maximize pension and Social Security benefits?",
+        "How do I plan for retirement if I was a full-time homemaker?"
       ],
       browseAllText: "Browse all FAQs"
     }

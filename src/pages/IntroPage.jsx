@@ -10,7 +10,7 @@ import FeaturesSection from '../components/FeaturesSection/FeaturesSection';
 import QuestionsToAction from '../components/QuestionsToAction/QuestionsToAction';
 import ResourcesSection from '../components/ResourcesSection/ResourcesSection';
 import Footer from '../components/Footer/Footer';
-
+import RetireMateAdvantage from '../components/RetireMateAdvantage/RetireMateAdvantage';
 // Import assets
 import logo from "../assets/logo.png";
 import mic from "../assets/mic.png";
@@ -24,9 +24,12 @@ import avatar from "../assets/Avatar.png";
 function IntroPage() {
   // Data for components
   const suggestedQuestions = [
-    { id: 1, text: "How long will my savings last?", color: "#567257" },
-    { id: 2, text: "What age can I retire?", color: "#896A58" },
-    { id: 3, text: "How much money do I need to retire?", color: "#ACAB9E" },
+    { id: 1, text: "How long will my savings last?", color: "#567257", tag :"BUdget", tagcolor:"#FFDDB5" },
+    { id: 2, text: "What age can I retire?", color: "#896A58", tag:"Age", tagcolor:"#B5E0FF" },
+    { id: 3, text: "How much money do I need to retire?", color: "#ACAB9E",  tag:"Budget", tagcolor:"#FFDDB5" },
+    { id: 3, text: "Where’s the best place for me to retire?", color: "#ACAB9E",  tag:"Location", tagcolor:"#BEFFB5" },
+    { id: 3, text: "How do I find the right financial adviser?", color: "#ACAB9E",  tag:"Category", tagcolor:"#DDB5FF" },
+    { id: 3, text: "How much should I save per month?", color: "#ACAB9E",  tag:"Budget", tagcolor:"#FFDDB5" },
   ];
 
   const questionsAsked = [
@@ -59,33 +62,35 @@ function IntroPage() {
   ];
 
   const testimonials = [
-    {
+  {
       id: 1,
-      text: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamc. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamc...",
-      avatar: avatar,
-      name: "Lisa*",
-      title: "Full-Time Mom"
+      text: "I've always let my husband handle our finances, but I worry what would happen if I had to figure out retirement alone. RetireMate gives me confidence that I'd know exactly what to do.",
+      name: "Lisa M.",
+      title: "Recently Divorced, Part-time worker"
     },
     {
       id: 2,
-      text: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamc. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamc...",
-      avatar: avatar,
-      name: "Lisa*",
-      title: "Full-Time Mom"
+      text: "Full-time Mom, Planning aheadWe've been saving for years, but we honestly don't know if it's enough. Between our mortgage, kids, and everything else, it's hard to know if we're on track. RetireMate gave us a roadmap to see where we stand and what we should do next.",
+      name: "Rachel T.",
+      title: "Full-time Mom, Planning ahead"
     },
     {
       id: 3,
-      text: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamc. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamc...",
-      avatar: avatar,
-      name: "Lisa*",
-      title: "Full-Time Mom"
+      text: "I make a good living, but I never realized how much I'd need to maintain my lifestyle into my 90s. RetireMate gave me a roadmap to see the gap and how to close it.",
+      name: "David & Sarah K.",
+      title: "Working Parents, Homeowners"
+    },
+      {
+      id: 4,
+      text: "I drive for Uber and never had a retirement plan through work. I didn't even know where to start. RetireMate gave me simple steps to begin saving, even with an irregular income.",
+      name: "Dr. James R.",
+      title: "Cardiologist, High Earner"
     },
     {
-      id: 4,
+      id: 5,
       text: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamc. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamc...",
-      avatar: avatar,
-      name: "Lisa*",
-      title: "Full-Time Mom"
+      name: "Marcus L.",
+      title: "Rideshare Driver, Contract Worker"
     }
   ];
 
@@ -140,10 +145,9 @@ function IntroPage() {
       />
 
       <InsightsSection />
-
+    <RetireMateAdvantage/>
       <FeaturesSection 
         features={features}
-        testimonials={testimonials}
       />
 
       <QuestionsToAction 

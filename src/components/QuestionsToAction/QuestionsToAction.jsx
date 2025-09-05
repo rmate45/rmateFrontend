@@ -5,7 +5,7 @@ import { ChevronDown } from "lucide-react";
 
 const FilterDropdown = ({ id, label, value, onChange, options }) => {
   return (
-    <div className="w-full sm:w-44">
+    <div className="w-full sm:w-44 flex items-center gap-2">
       <label
         htmlFor={id}
         className="block text-sm font-semibold text-[#2A2420] mb-2"
@@ -13,7 +13,7 @@ const FilterDropdown = ({ id, label, value, onChange, options }) => {
         {label}
       </label>
 
-      <div className="relative">
+      <div className="relative w-full">
         <select
           id={id}
           value={value}
@@ -27,7 +27,7 @@ const FilterDropdown = ({ id, label, value, onChange, options }) => {
           "
         >
           <option className="text-gray-400" value="">
-            Select {label.toLowerCase()}
+            Select
           </option>
           {options.map((option) => (
             <option
@@ -42,7 +42,7 @@ const FilterDropdown = ({ id, label, value, onChange, options }) => {
 
         {/* Chevron */}
         <ChevronDown
-          className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 pointer-events-none"
+          className="absolute right-3 top-3 text-gray-500 pointer-events-none"
           size={18}
         />
       </div>
@@ -97,11 +97,11 @@ const QuestionsToAction = ({
         <div className="flex flex-col xl:flex-row justify-between gap-10 items-center">
           {/* Left side: Questions heading and filters */}
           <div className="w-full max-w-[400px] text-left">
-            <p className="font-medium text-lg sm:text-2xl mb-6">
+            <p className="font-medium text-lg sm:text-2xl mb-6 text-center">
               What questions should you be asking?
             </p>
 
-            <div className="flex flex-col sm:flex-row gap-4 sm:gap-6">
+            <div className="flex gap-4 sm:gap-6">
               <FilterDropdown
                 id="age"
                 label="Age"
@@ -155,7 +155,7 @@ const QuestionsToAction = ({
         </div>
 
         {/* Browse link */}
-        <div className="mt-8 border-t border-[#D9D9D9] pt-4">
+        {/* <div className="mt-8 border-t border-[#D9D9D9] pt-4">
           <a
             href="#"
             onClick={(e) => {
@@ -166,7 +166,7 @@ const QuestionsToAction = ({
           >
             Browse all questions
           </a>
-        </div>
+        </div> */}
       </div>
     </div>
   );

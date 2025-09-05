@@ -19,7 +19,7 @@ const Footer = ({
   links = [],
   onLinkClick 
 }) => {
-  const defaultDisclaimerText = "The content provided here and elsewhere on the SeniorCareMaps site is provided for general informational purposes only. It is not intended as, and SeniorCareMaps does not provide, medical advice, diagnosis, or treatment. Always contact your healthcare provider directly with any questions you may have regarding your health or specific medical advice.";
+  const defaultDisclaimerText = "The content provided her and elsewhere on the RetireMate site is provided for general informational purposes only. It is not indended as, and RetireMate does not provide, financial advice or legal advice.";
   
   const defaultCopyrightText = "© 2023 CareMaps Group, Inc";
   

@@ -17,16 +17,20 @@ const lifestyleColumns = [
 ];
 
 const lifestyleData = [
-  { lifestyle: "Budget", age: "85-89" },
-  { lifestyle: "Comfort", age: "81-84" },
-  { lifestyle: "Luxury", age: "72-75" },
+  { lifestyle: "Budget", age: "85-89", color: "#567257" },
+  { lifestyle: "Comfort", age: "81-84", color: "#A3C586" },
+  { lifestyle: "Luxury", age: "72-75", color: "#C68A6B" },
 ];
 
+// Base savings
+const initialSavings = 156000; // $156K
+
+// Data for chart (start from $156K and decrease)
 const data = [
-  { age: 67, budget: 100, comfort: 120, luxury: 150 },
-  { age: 72, budget: 80, comfort: 90, luxury: 110 },
-  { age: 81, budget: 40, comfort: 50, luxury: 70 },
-  { age: 85, budget: 10, comfort: 20, luxury: 30 },
+  { age: 67, budget: 156000, comfort: 156000, luxury: 156000 },
+  { age: 72, budget: 120000, comfort: 110000, luxury: 95000 },
+  { age: 81, budget: 60000, comfort: 45000, luxury: 20000 },
+  { age: 85, budget: 20000, comfort: 5000, luxury: 0 },
 ];
 
 const lines = [
@@ -35,14 +39,18 @@ const lines = [
   { key: "luxury", color: "#C68A6B" },
 ];
 
+// Formatter for axis numbers
+const dollarFormatter = (value) => `$${(value / 1000).toFixed(0)}K`;
+
 const HowLongCard = () => (
   <div className="bg-white rounded-[20px] shadow p-5">
     <h3 className="font-medium text-base mb-3 text-introPrimary">
       How long will my savings last?
     </h3>
     <p className="text-sm jost text-left mb-5 text-introPrimary">
-      Your savings will last until you’re 81-84*, if you retire at 70 in Los
-      Angeles, CA, and maintain a comfortable lifestyle.
+      Your savings of <strong>${(initialSavings / 1000).toFixed(0)}K</strong>{" "}
+      will last until you’re 81-84*, if you retire at 70 in Los Angeles, CA, and
+      maintain a comfortable lifestyle.
     </p>
 
     <div className="flex flex-wrap xl:flex-nowrap">
@@ -50,12 +58,23 @@ const HowLongCard = () => (
         <ResponsiveContainer>
           <LineChart
             data={data}
-            margin={{ top: 20, right: 20, bottom: 20, left: 0 }}
+            margin={{ top: 20, right: 20, bottom: 30, left: 0 }}
           >
             <CartesianGrid strokeDasharray="3 3" stroke="#ddd" />
-            <XAxis dataKey="age" />
-            <YAxis label={{ value: "$", angle: -90, position: "insideLeft" }} />
-            <Tooltip />
+            <XAxis
+              dataKey="age"
+              label={{ value: "Age", position: "insideBottom", offset: -10 }}
+            />
+            <YAxis
+              tickFormatter={dollarFormatter}
+              label={{
+                value: "$",
+                angle: -90,
+                position: "insideLeft",
+                offset: 0,
+              }}
+            />
+            <Tooltip formatter={(v) => dollarFormatter(v)} />
             {lines.map((line, idx) => (
               <Line
                 key={idx}
@@ -71,11 +90,40 @@ const HowLongCard = () => (
       </div>
 
       <div className="mt-2 flex flex-col items-center xl:items-start">
-        <DataTable columns={lifestyleColumns} data={lifestyleData} />
+        {/* Table with row colors */}
+        <table className="w-full text-sm border-collapse">
+          <thead>
+            <tr>
+              {lifestyleColumns.map((col) => (
+                <th key={col.key} className="px-3 py-2 text-left">
+                  {col.label}
+                </th>
+              ))}
+            </tr>
+          </thead>
+          <tbody>
+            {lifestyleData.map((row, i) => (
+              <tr
+                key={i}
+                style={{ backgroundColor: `${row.color}22` }} // light tint
+              >
+                <td className="px-3 py-2 font-medium" style={{ color: row.color }}>
+                  {row.lifestyle}
+                </td>
+                <td className="px-3 py-2">{row.age}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+
         <p className="mt-4 text-left text-xs jost text-introPrimary">
           Living a budget lifestyle will extend your savings until you’re 85-89,
           living luxuriously will reduce it to 72-75.
         </p>
+
+        <button className="mt-4 rounded-lg px-4 py-2 bg-[#567257] text-white">
+          Get started on yours
+        </button>
       </div>
     </div>
   </div>
