@@ -13,6 +13,12 @@ export const ChatMessage = ({
 
   const isAnswer = type === "answer";
   const isComment = type === "comment";
+  const isChart = type === "chart";
+
+  // Don't render chart messages here since they're handled in the main component
+  if (isChart) {
+    return null;
+  }
 
   return (
     <div className={`mb-3 flex ${isAnswer ? "justify-end" : "justify-start"}`}>

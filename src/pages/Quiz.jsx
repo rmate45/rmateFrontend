@@ -7,6 +7,36 @@ import { LoadingIndicator } from "../components/LoadingIndicator/LoadingIndicato
 import { QuestionDisplay } from "../components/QuestionDisplay/QuestionDisplay";
 import api from "../api/api.js";
 import sendIcon from "../assets/send.svg";
+import PlotChart from "../components/PlotChart/PlotChart.jsx";
+
+function buildPayload(response) {
+  // Helper: parse ranges like "$101,000 - $150,000"
+  const parseRange = (str) => {
+    if (!str) return null;
+    const nums = str
+      .replace(/\$|,/g, "") // remove $ and commas
+      .split("-")
+      .map((n) => parseInt(n.trim(), 10))
+      .filter((n) => !isNaN(n));
+
+    if (nums.length === 1) return nums[0];
+    if (nums.length === 2) return Math.round((nums[0] + nums[1]) / 2);
+
+    return null;
+  };
+
+  // Extract from response
+  const age = parseInt(response?.Q3?.value, 10) || null;
+  const householdIncome = parseRange(response?.Q9?.value);
+  const retirementSavings = parseRange(response?.Q10?.value);
+
+  // Build payload
+  return {
+    age,
+    householdIncome,
+    retirementSavings,
+  };
+}
 
 const Quiz = () => {
   const location = useLocation();
@@ -17,7 +47,6 @@ const Quiz = () => {
   const [loading, setLoading] = useState(true);
   const [textInput, setTextInput] = useState("");
   const chatRef = useRef(null);
-  const [questionNumber, setQuestionNumber] = useState(0);
   const [lastAnswerOption, setLastAnswerOption] = useState(null);
   const [lastQuestionText, setLastQuestionText] = useState(null);
   const [lastQuestionData, setLastQuestionData] = useState(null);
@@ -30,11 +59,14 @@ const Quiz = () => {
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
 
   const [userAnswers, setUserAnswers] = useState({});
-  const [insightsData, setInsightsData] = useState([]);
 
   // New states for chat functionality
   const [isChatMode, setIsChatMode] = useState(false);
   const [userId, setUserId] = useState(null);
+  
+  // New state for chart data
+  const [chartData, setChartData] = useState(null);
+  const [showChart, setShowChart] = useState(false);
 
   // Initialize the flow when component mounts
   useEffect(() => {
@@ -132,7 +164,6 @@ const Quiz = () => {
         setAllQuestions(sortedQuestions);
         setCurrentQuestion(sortedQuestions[0]);
         setCurrentQuestionIndex(0);
-        setQuestionNumber(1);
       } else {
         setConversation((prev) => [
           ...prev,
@@ -156,7 +187,6 @@ const Quiz = () => {
     if (nextIndex < allQuestions.length) {
       setCurrentQuestionIndex(nextIndex);
       setCurrentQuestion(allQuestions[nextIndex]);
-      setQuestionNumber((prev) => prev + 1);
       setCanReload(true);
     } else {
       // All questions completed
@@ -181,12 +211,6 @@ const Quiz = () => {
       const response = await api.post("/save", payload);
 
       console.log("Save response:", response.data);
-
-      // Optionally show a message to the user
-      addToConversation(
-        "system",
-        "Your responses have been saved successfully!"
-      );
 
       return response.data;
     } catch (error) {
@@ -264,43 +288,13 @@ const Quiz = () => {
     };
   };
 
-  // Function to generate a personalized initial message based on user's quiz responses
-  const generateCustomInitialMessage = () => {
+  const fetchChartData = async (data) => {
     try {
-      const mainTopic = initialText || "retirement planning";
-
-      // Create a simple user-style question with their context
-      let message = `${mainTopic}? `;
-
-      // Add key details from their answers in a natural way
-      const keyDetails = [];
-      Object.entries(userAnswers).forEach(([questionId, answerData]) => {
-        // Skip phone number for privacy
-        if (
-          questionId === "Q2" &&
-          answerData.questionText.toLowerCase().includes("phone")
-        ) {
-          return;
-        }
-
-        let answerText = answerData.answer;
-        if (Array.isArray(answerData.value)) {
-          answerText = answerData.value.join(", ");
-        }
-
-        keyDetails.push(answerText);
-      });
-
-      if (keyDetails.length > 0) {
-        message += `I'm ${keyDetails.join(", ")}. `;
-      }
-
-      message += "What should I do?";
-
-      return message;
+      const response = await api.post("/calculate-saving-projection", data);
+      return response;
     } catch (error) {
-      console.error("Error generating message:", error);
-      return `${initialText || "How should I plan for retirement"}?`;
+      console.error("Error fetching chart data:", error);
+      throw error;
     }
   };
 
@@ -327,18 +321,49 @@ const Quiz = () => {
       console.log("Starting chat mode with userId:", userId);
       console.log("User answers:", userAnswers);
 
-      // Generate personalized message based on user's quiz responses
-      const customMessage = generateCustomInitialMessage();
-      console.log("Generated custom message:", customMessage);
+      const chartPayload = buildPayload(userAnswers);
 
-      // Send the personalized initial message (show as user message)
-      await handleSendMessage(customMessage, false);
+      const response = await fetchChartData(chartPayload);
+      
+      console.log(response?.data?.data);
+
+      // Set chart data and show it
+      if (response?.data?.data) {
+        setChartData(response.data.data);
+        setShowChart(true);
+        
+        // Add chart message to conversation
+        addToConversation(
+          "system", 
+          "Based on your responses, here's your personalized retirement savings projection:"
+        );
+        
+        // Add chart component to conversation
+        addToConversation("chart", response.data?.data?.data);
+        
+        // Wait a bit, then show the chat assistance message
+        setTimeout(() => {
+          addToConversation(
+            "system",
+            "Now you can ask me anything about your retirement plan, savings strategies, or any financial questions you might have!"
+          );
+          setLoading(false);
+        }, 2000);
+      } else {
+        addToConversation(
+          "system",
+          "I couldn't generate your chart data, but I'm ready to help with any retirement planning questions you have!"
+        );
+        setLoading(false);
+      }
+
     } catch (error) {
       console.error("Error starting chat mode:", error);
       addToConversation(
         "system",
-        "Something went wrong while starting the analysis. Please try again later."
+        "Something went wrong while generating your analysis, but I'm still here to help with your retirement planning questions!"
       );
+      setLoading(false);
     }
   };
 
@@ -498,6 +523,7 @@ const Quiz = () => {
       setLoading(false);
     }
   };
+
   const storeAnswer = (questionId, questionText, value, displayLabel) => {
     setUserAnswers((prev) => ({
       ...prev,
@@ -683,7 +709,6 @@ const Quiz = () => {
     if (prevIndex >= 0) {
       setCurrentQuestionIndex(prevIndex);
       setCurrentQuestion(allQuestions[prevIndex]);
-      setQuestionNumber((prev) => prev - 1);
     }
 
     setCanReload(false);
@@ -691,47 +716,10 @@ const Quiz = () => {
   };
 
   const addToConversation = (type, text) => {
-    setConversation((prev) => [...prev, { type, text }]);
-  };
-
-  const startNewChatWithTopic = async (selectedTopic) => {
-    try {
-      setLoading(true);
-      setConversation([
-        { type: "system", text: `Let's dive into: "${selectedTopic}"` },
-      ]);
-      setCurrentQuestion(null);
-      setQuestionNumber(1);
-      setLastAnswerOption(null);
-      setLastQuestionText(null);
-      setLastQuestionData(null);
-      setCanReload(false);
-      setIsLastQuestion(false);
-
-      const { data } = await api.get(`/start-topic`, {
-        params: { topic: selectedTopic },
-      });
-
-      if (data?.data?.question) {
-        setCurrentQuestion(data.data.question);
-      } else {
-        setConversation((prev) => [
-          ...prev,
-          {
-            type: "system",
-            text: "No follow-up questions found for this topic.",
-          },
-        ]);
-      }
-    } catch (error) {
-      console.error("Error starting topic flow:", error);
-    } finally {
-      setLoading(false);
+    if(type == "chart") {
+      console.log(text, type);
     }
-  };
-
-  const handleInsightSelection = (insight) => {
-    startNewChatWithTopic(insight.title);
+    setConversation((prev) => [...prev, { type, text }]);
   };
 
   const scrollUp = () => {
@@ -790,6 +778,18 @@ const Quiz = () => {
               (idx === conversation.length - 1 ||
                 (idx === conversation.length - 2 &&
                   conversation[idx + 1]?.type === "comment"));
+            
+            // Render chart if the message type is 'chart'
+            if (item.type === "chart") {
+              return (
+                <div key={idx} className="mb-4 flex justify-start">
+                  <div className="px-2 py-2 rounded-xl border-2 border-secondary bg-white w-full max-w-full">
+                    <PlotChart data={item.text} />
+                  </div>
+                </div>
+              );
+            }
+            
             return (
               <ChatMessage
                 key={idx}
@@ -835,18 +835,18 @@ const Quiz = () => {
                     }
                   }}
                   placeholder="Ask me anything about your retirement plan..."
-                    className={`w-full px-4 py-2 pr-10 border-2 jost rounded-xl text-sm focus:outline-none border-gray-300 focus:border-secondary`}
+                  className={`w-full px-4 py-2 pr-10 border-2 jost rounded-xl text-sm focus:outline-none border-gray-300 focus:border-secondary`}
                 />
                 <button
                   onClick={() => handleChatInput(textInput)}
                   disabled={!textInput.trim() || loading}
                   className="absolute right-2 top-1/2 -translate-y-1/2 p-1 disabled:text-gray-400 disabled:cursor-not-allowed"
                 >
-                    <img src={sendIcon} alt="send" className="w-6 mt-4 mb-4" />
+                  <img src={sendIcon} alt="send" className="w-6 mt-4 mb-4" />
                 </button>
               </div>
             </div>
-          )} 
+          )}
 
           <div id="overview" ref={overviewRef} className="scroll-mt-20"></div>
         </div>

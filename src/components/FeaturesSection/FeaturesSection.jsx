@@ -86,7 +86,7 @@ const FeaturesSection = ({ features = [], testimonials = [] }) => {
         </div>
       </div>
       <div className='text-center px-6 py-10 sm:py-16'>
-        <div className="max-w-7xl mx-auto flex flex-col justify-center">
+        <div className="max-w-7xl mx-auto flex flex-col justify-center px-5">
 
 
           <div className="">
