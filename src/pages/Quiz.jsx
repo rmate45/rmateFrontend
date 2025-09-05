@@ -100,8 +100,10 @@ const Quiz = () => {
     try {
       setLoading(true);
 
-      // Show the user's selected question/text first
-      setConversation([{ type: "answer", text: initialText }]);
+      if(initialText) {
+        // Show the user's selected question/text first
+        setConversation([{ type: "answer", text: initialText }]);
+      }
 
       // Call first API to get statements
       const statementsResponse = await api.get("/get-statements");

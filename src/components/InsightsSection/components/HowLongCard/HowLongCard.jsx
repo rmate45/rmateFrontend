@@ -10,6 +10,7 @@ import {
   CartesianGrid,
 } from "recharts";
 import DataTable from "../../../DataTable/DataTable";
+import { useNavigate } from "react-router-dom";
 
 const lifestyleColumns = [
   { key: "lifestyle", label: "Lifestyle" },
@@ -42,91 +43,103 @@ const lines = [
 // Formatter for axis numbers
 const dollarFormatter = (value) => `$${(value / 1000).toFixed(0)}K`;
 
-const HowLongCard = () => (
-  <div className="bg-white rounded-[20px] shadow p-5">
-    <h3 className="font-medium text-base mb-3 text-introPrimary">
-      How long will my savings last?
-    </h3>
-    <p className="text-sm jost text-left mb-5 text-introPrimary">
-      Your savings of <strong>${(initialSavings / 1000).toFixed(0)}K</strong>{" "}
-      will last until you’re 81-84*, if you retire at 70 in Los Angeles, CA, and
-      maintain a comfortable lifestyle.
-    </p>
+const HowLongCard = () => {
+  const navigate = useNavigate();
 
-    <div className="flex flex-wrap xl:flex-nowrap">
-      <div className="w-full h-64">
-        <ResponsiveContainer>
-          <LineChart
-            data={data}
-            margin={{ top: 20, right: 20, bottom: 30, left: 0 }}
-          >
-            <CartesianGrid strokeDasharray="3 3" stroke="#ddd" />
-            <XAxis
-              dataKey="age"
-              label={{ value: "Age", position: "insideBottom", offset: -10 }}
-            />
-            <YAxis
-              tickFormatter={dollarFormatter}
-              label={{
-                value: "$",
-                angle: -90,
-                position: "insideLeft",
-                offset: 0,
-              }}
-            />
-            <Tooltip formatter={(v) => dollarFormatter(v)} />
-            {lines.map((line, idx) => (
-              <Line
-                key={idx}
-                type="monotone"
-                dataKey={line.key}
-                stroke={line.color}
-                strokeWidth={2.5}
-                dot={false}
+  return (
+    <div className="bg-white rounded-[20px] shadow p-5">
+      <h3 className="font-medium text-base mb-3 text-introPrimary">
+        How long will my savings last?
+      </h3>
+      <p className="text-sm jost text-left mb-5 text-introPrimary">
+        Your savings of <strong>${(initialSavings / 1000).toFixed(0)}K</strong>{" "}
+        will last until you’re 81-84*, if you retire at 70 in Los Angeles, CA,
+        and maintain a comfortable lifestyle.
+      </p>
+
+      <div className="flex flex-wrap xl:flex-nowrap">
+        <div className="w-full h-64">
+          <ResponsiveContainer>
+            <LineChart
+              data={data}
+              margin={{ top: 20, right: 20, bottom: 30, left: 0 }}
+            >
+              <CartesianGrid strokeDasharray="3 3" stroke="#ddd" />
+              <XAxis
+                dataKey="age"
+                label={{ value: "Age", position: "insideBottom", offset: -10 }}
               />
-            ))}
-          </LineChart>
-        </ResponsiveContainer>
-      </div>
-
-      <div className="mt-2 flex flex-col items-center xl:items-start">
-        {/* Table with row colors */}
-        <table className="w-full text-sm border-collapse">
-          <thead>
-            <tr>
-              {lifestyleColumns.map((col) => (
-                <th key={col.key} className="px-3 py-2 text-left">
-                  {col.label}
-                </th>
+              <YAxis
+                tickFormatter={dollarFormatter}
+                label={{
+                  value: "$",
+                  angle: -90,
+                  position: "insideLeft",
+                  offset: 0,
+                }}
+              />
+              <Tooltip formatter={(v) => dollarFormatter(v)} />
+              {lines.map((line, idx) => (
+                <Line
+                  key={idx}
+                  type="monotone"
+                  dataKey={line.key}
+                  stroke={line.color}
+                  strokeWidth={2.5}
+                  dot={false}
+                />
               ))}
-            </tr>
-          </thead>
-          <tbody>
-            {lifestyleData.map((row, i) => (
-              <tr
-                key={i}
-                style={{ backgroundColor: `${row.color}22` }} // light tint
-              >
-                <td className="px-3 py-2 font-medium" style={{ color: row.color }}>
-                  {row.lifestyle}
-                </td>
-                <td className="px-3 py-2">{row.age}</td>
+            </LineChart>
+          </ResponsiveContainer>
+        </div>
+
+        <div className="mt-2 flex flex-col items-center xl:items-start">
+          {/* Table with row colors */}
+          <table className="w-full text-sm border-collapse">
+            <thead>
+              <tr>
+                {lifestyleColumns.map((col) => (
+                  <th key={col.key} className="px-3 py-2 text-left">
+                    {col.label}
+                  </th>
+                ))}
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {lifestyleData.map((row, i) => (
+                <tr
+                  key={i}
+                  style={{ backgroundColor: `${row.color}22` }} // light tint
+                >
+                  <td
+                    className="px-3 py-2 font-medium"
+                    style={{ color: row.color }}
+                  >
+                    {row.lifestyle}
+                  </td>
+                  <td className="px-3 py-2">{row.age}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
 
-        <p className="mt-4 text-left text-xs jost text-introPrimary">
-          Living a budget lifestyle will extend your savings until you’re 85-89,
-          living luxuriously will reduce it to 72-75.
-        </p>
+          <p className="mt-4 text-left text-xs jost text-introPrimary">
+            Living a budget lifestyle will extend your savings until you’re
+            85-89, living luxuriously will reduce it to 72-75.
+          </p>
 
-        <button className="mt-4 rounded-lg px-4 py-2 bg-[#567257] text-white">
-          Get started on yours
-        </button>
+          <button
+            className="mt-4 rounded-lg px-4 py-2 bg-[#567257] text-white"
+            onClick={() => {
+              navigate("/quiz");
+            }}
+          >
+            Get started on yours
+          </button>
+        </div>
       </div>
     </div>
-  </div>
-);
+  );
+};
 
 export default HowLongCard;

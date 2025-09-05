@@ -50,7 +50,7 @@ const SuggestedQuestions = ({ questions, onQuestionClick }) => {
                 style={{
                   boxShadow: "0 4px 15px rgba(0, 0, 0, 0.15)" // custom shadow
                 }}
-
+                onClick={() => handleQuestionClick(q)}
               >
                 <span
                   style={{ backgroundColor: q.tagcolor }}
@@ -62,7 +62,7 @@ const SuggestedQuestions = ({ questions, onQuestionClick }) => {
                   {q.text}
                 </p>
                 <div className="flex justify-end w-full absolute right-3 bottom-3">
-                  <img src={AiImage} alt="chat" onClick={() => handleQuestionClick(q)} role="button" />
+                  <img src={AiImage} alt="chat" role="button" />
                 </div>
               </div>
             )}
@@ -72,7 +72,7 @@ const SuggestedQuestions = ({ questions, onQuestionClick }) => {
 
         <div className="text-center">
           <p className="text-[#2A2420] font-medium text-xl sm:text-2xl">
-            We believe everyone should have access to instant,<br /> personalized retirement answers - for free 
+            We believe everyone should have access to instant,<br /> personalized retirement answers - for free
           </p>
         </div>
       </div>
