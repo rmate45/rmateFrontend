@@ -34,33 +34,33 @@ const FeaturesSection = ({ features = [], testimonials = [] }) => {
   ];
 
   const testimonialsdata = [
-    {
+     {
       id: 1,
-      text: "I've always let my husband handle our finances, but I worry what would happen if I had to figure out retirement alone. RetireMate gives me confidence that I'd know exactly what to do.",
+      text: "I spent years focused on raising my kids. After my divorce, I felt lost about how to start saving for retirement. RetireMate showed me the steps I need to take now - and that it's not too late.",
       name: "Lisa M.",
       title: "Recently Divorced, Part-time worker"
     },
     {
       id: 2,
-      text: "Full-time Mom, Planning aheadWe've been saving for years, but we honestly don't know if it's enough. Between our mortgage, kids, and everything else, it's hard to know if we're on track. RetireMate gave us a roadmap to see where we stand and what we should do next.",
+      text: "I've always let my husband handle our finances, but I worry what would happen if I had to figure out retirement alone. RetireMate gives me confidence that I'd know exactly what to do.",
       name: "Rachel T.",
       title: "Full-time Mom, Planning ahead"
     },
     {
       id: 3,
-      text: "I make a good living, but I never realized how much I'd need to maintain my lifestyle into my 90s. RetireMate gave me a roadmap to see the gap and how to close it.",
+      text: "We've been saving for years, but we honestly don't know if it's enough. Between our mortgage, kids, and everything else, it's hard to know if we're on track. RetireMate gave us a roadmap to see where we stand and what we should do next.",
       name: "David & Sarah K.",
       title: "Working Parents, Homeowners"
     },
     {
       id: 4,
-      text: "I drive for Uber and never had a retirement plan through work. I didn't even know where to start. RetireMate gave me simple steps to begin saving, even with an irregular income.",
+      text: "I make a good living, but I never realized how much I'd need to maintain my lifestyle into my 90s. RetireMate gave me a roadmap to see the gap and how to close it.",
       name: "Dr. James R.",
       title: "Cardiologist, High Earner"
     },
     {
       id: 5,
-      text: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamc. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamc...",
+      text: "I drive for Uber and never had a retirement plan through work. I didn't even know where to start. RetireMate gave me simple steps to begin saving, even with an irregular income.",
       name: "Marcus L.",
       title: "Rideshare Driver, Contract Worker"
     }

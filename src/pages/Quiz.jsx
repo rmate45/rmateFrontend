@@ -192,6 +192,7 @@ const Quiz = () => {
       setCurrentQuestion(null);
       setIsLastQuestion(true);
       setCanReload(false);
+      setLoading(true);
       // Call save API first, then start chat mode
       saveUserResponses().then(() => {
         startChatMode();
@@ -202,6 +203,8 @@ const Quiz = () => {
   // New function to save user responses
   const saveUserResponses = async () => {
     try {
+
+      setLoading(true);
       // Format the payload according to the required structure
       const payload = formatSavePayload();
 
@@ -214,6 +217,7 @@ const Quiz = () => {
       return response.data;
     } catch (error) {
       console.error("Error saving user responses:", error);
+      setLoading(false);
       addToConversation(
         "system",
         "There was an issue saving your responses, but we'll continue with your results."
@@ -301,7 +305,6 @@ const Quiz = () => {
   const startChatMode = async () => {
     try {
       setLoading(true);
-      setIsChatMode(true);
 
       // Show completion message
       addToConversation(
@@ -323,8 +326,6 @@ const Quiz = () => {
       const chartPayload = buildPayload(userAnswers);
 
       const response = await fetchChartData(chartPayload);
-
-      console.log(response?.data?.data);
 
       // Set chart data and show it
       if (response?.data?.data) {
@@ -348,6 +349,8 @@ const Quiz = () => {
           );
           setLoading(false);
         }, 2000);
+
+        setIsChatMode(true);
       } else {
         addToConversation(
           "system",
