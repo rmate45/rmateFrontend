@@ -31,6 +31,7 @@ export const QuestionDisplay = ({
 
   const isValidateZip = currentQuestion?.questionId === "Q7"; // Question 7 asks for zip code
   const isPhoneInput = currentQuestion?.questionId === "Q2"; // Question 2 is for phone number
+  const isAgeInput = currentQuestion?.questionId === "Q3"; // Question 1 is for age range
 
   const handleMultiSelectToggle = (option) => {
     setSelectedMultiOptions(prev => {
@@ -80,6 +81,7 @@ export const QuestionDisplay = ({
           onChange={onTextChange}
           onSubmit={onTextSubmit}
           validateAsZip={isValidateZip}
+          isAgeInput={isAgeInput}
           onValidationError={onValidationError}
           scrollToBottom={scrollToBottom} // Pass scrollToBottom prop
         />

@@ -10,27 +10,26 @@ import sendIcon from "../assets/send.svg";
 import PlotChart from "../components/PlotChart/PlotChart.jsx";
 
 function buildPayload(response) {
-  // Helper: parse ranges like "$101,000 - $150,000"
-  const parseRange = (str) => {
+  const parseMedian = (str) => {
     if (!str) return null;
     const nums = str
-      .replace(/\$|,/g, "") // remove $ and commas
+      .replace(/\$|,/g, "")
+      .replace(/–|—/g, "-") // normalize en dash/em dash to regular dash
       .split("-")
       .map((n) => parseInt(n.trim(), 10))
-      .filter((n) => !isNaN(n));
+      .filter((n) => !isNaN(n))
+      .sort((a, b) => a - b);
 
-    if (nums.length === 1) return nums[0];
-    if (nums.length === 2) return Math.round((nums[0] + nums[1]) / 2);
+    if (nums.length === 0) return null;
 
-    return null;
+    const mid = Math.floor(nums.length / 2);
+    return nums.length % 2 === 1 ? nums[mid] : (nums[mid - 1] + nums[mid]) / 2;
   };
 
-  // Extract from response
   const age = parseInt(response?.Q3?.value, 10) || null;
-  const householdIncome = parseRange(response?.Q9?.value);
-  const retirementSavings = parseRange(response?.Q10?.value);
+  const householdIncome = parseMedian(response?.Q9?.value);
+  const retirementSavings = parseMedian(response?.Q10?.value);
 
-  // Build payload
   return {
     age,
     householdIncome,
@@ -63,7 +62,7 @@ const Quiz = () => {
   // New states for chat functionality
   const [isChatMode, setIsChatMode] = useState(false);
   const [userId, setUserId] = useState(null);
-  
+
   // New state for chart data
   const [chartData, setChartData] = useState(null);
   const [showChart, setShowChart] = useState(false);
@@ -324,23 +323,23 @@ const Quiz = () => {
       const chartPayload = buildPayload(userAnswers);
 
       const response = await fetchChartData(chartPayload);
-      
+
       console.log(response?.data?.data);
 
       // Set chart data and show it
       if (response?.data?.data) {
         setChartData(response.data.data);
         setShowChart(true);
-        
+
         // Add chart message to conversation
         addToConversation(
-          "system", 
+          "system",
           "Based on your responses, here's your personalized retirement savings projection:"
         );
-        
+
         // Add chart component to conversation
         addToConversation("chart", response.data?.data?.data);
-        
+
         // Wait a bit, then show the chat assistance message
         setTimeout(() => {
           addToConversation(
@@ -356,7 +355,6 @@ const Quiz = () => {
         );
         setLoading(false);
       }
-
     } catch (error) {
       console.error("Error starting chat mode:", error);
       addToConversation(
@@ -716,7 +714,7 @@ const Quiz = () => {
   };
 
   const addToConversation = (type, text) => {
-    if(type == "chart") {
+    if (type == "chart") {
       console.log(text, type);
     }
     setConversation((prev) => [...prev, { type, text }]);
@@ -778,7 +776,7 @@ const Quiz = () => {
               (idx === conversation.length - 1 ||
                 (idx === conversation.length - 2 &&
                   conversation[idx + 1]?.type === "comment"));
-            
+
             // Render chart if the message type is 'chart'
             if (item.type === "chart") {
               return (
@@ -789,7 +787,7 @@ const Quiz = () => {
                 </div>
               );
             }
-            
+
             return (
               <ChatMessage
                 key={idx}

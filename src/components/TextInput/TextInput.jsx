@@ -8,47 +8,45 @@ export const TextInput = ({
   onSubmit,
   validateAsZip = false,
   onValidationError,
-  scrollToBottom, // Add this new prop
+  isAgeInput = false,
+  scrollToBottom,
 }) => {
   const [isValid, setIsValid] = useState(true);
-  const [validZipCode, setValidZipCode] = useState(null);
+  const [validationMessage, setValidationMessage] = useState(null);
   const [loading, setLoading] = useState(false);
 
-  // Scroll to bottom when error message appears
   useEffect(() => {
-    if (validZipCode && scrollToBottom) {
+    if (validationMessage && scrollToBottom) {
       setTimeout(() => {
         scrollToBottom();
-      }, 100); // Small delay to ensure DOM is updated
+      }, 100);
     }
-  }, [validZipCode, scrollToBottom]);
+  }, [validationMessage, scrollToBottom]);
 
   const validateZip = async (zip) => {
     if (!zip || zip.length < 3 || zip.length > 6) {
       setIsValid(false);
-      setValidZipCode("ZIP code must be between 3 and 6 digits.");
+      setValidationMessage("ZIP code must be between 3 and 6 digits.");
       onValidationError?.();
       return false;
     }
 
     try {
       setLoading(true);
-      const { data } = await api.post("/check-valid-zipcode", {
-        zipcode: zip,
-      });
+      const { data } = await api.post("/check-valid-zipcode", { zipcode: zip });
       setIsValid(data?.type === "success");
 
       if (data?.type !== "success") {
-        setValidZipCode("Invalid ZIP code.");
+        setValidationMessage("Invalid ZIP code.");
         onValidationError?.();
         return false;
       }
 
-      setValidZipCode(null);
+      setValidationMessage(null);
       return true;
     } catch (error) {
       console.error("ZIP code validation failed", error);
-      setValidZipCode(
+      setValidationMessage(
         error?.response?.data?.message || "ZIP code validation failed."
       );
       setIsValid(false);
@@ -60,24 +58,46 @@ export const TextInput = ({
   };
 
   const handleChange = (rawValue) => {
-    const cleaned = validateAsZip ? rawValue.replace(/\D/g, "") : rawValue;
+    let cleaned = rawValue;
+
+    if (validateAsZip) {
+      cleaned = rawValue.replace(/\D/g, ""); // only digits
+    } else if (isAgeInput) {
+      cleaned = rawValue.replace(/\D/g, ""); // only digits for age too
+    }
+
     onChange(cleaned);
     setIsValid(true);
-    setValidZipCode(null);
+    setValidationMessage(null);
   };
 
   const handleSubmit = async () => {
     if (validateAsZip) {
       const isZipValid = await validateZip(value);
       if (isZipValid) onSubmit();
+    } else if (isAgeInput) {
+      const age = parseInt(value, 10);
+      if (!age || isNaN(age) || age < 18) {
+        setIsValid(false);
+        setValidationMessage("Age must be a number and at least 18.");
+        onValidationError?.();
+        if (scrollToBottom) {
+          setTimeout(() => {
+            scrollToBottom();
+          }, 100);
+        }
+      } else {
+        setIsValid(true);
+        onSubmit();
+      }
     } else {
       if (value.trim()) {
         setIsValid(true);
         onSubmit();
       } else {
         setIsValid(false);
+        setValidationMessage("This field is required.");
         onValidationError?.();
-        // Show error for empty input and scroll
         if (scrollToBottom) {
           setTimeout(() => {
             scrollToBottom();
@@ -97,9 +117,9 @@ export const TextInput = ({
     <div className="flex flex-col gap-2">
       <div className="relative">
         <input
-          type="text"
-          inputMode={validateAsZip ? "numeric" : "text"}
-          pattern={validateAsZip ? "\\d{0,6}" : undefined}
+          type={isAgeInput ? "number" : "text"}
+          inputMode={validateAsZip || isAgeInput ? "numeric" : "text"}
+          pattern={validateAsZip || isAgeInput ? "\\d*" : undefined}
           maxLength={validateAsZip ? 6 : undefined}
           value={value}
           onChange={(e) => handleChange(e.target.value)}
@@ -107,11 +127,12 @@ export const TextInput = ({
           placeholder={
             validateAsZip
               ? "Enter ZIP code (3–6 digits)"
-              : "Type your answer here..."
+              : isAgeInput
+                ? "Enter your age (18+)"
+                : "Type your answer here..."
           }
-          className={`w-full px-4 py-2 pr-10 border-2 jost rounded-xl text-sm focus:outline-none focus:border-secondary ${
-            isValid ? "border-gray-300" : "border-red-500"
-          }`}
+          className={`w-full px-4 py-2 pr-10 border-2 jost rounded-xl text-sm focus:outline-none focus:border-secondary ${isValid ? "border-gray-300" : "border-red-500"
+            }`}
         />
         <button
           onClick={handleSubmit}
@@ -121,7 +142,9 @@ export const TextInput = ({
           <img src={sendIcon} alt="send" className="w-6 mt-4 mb-4" />
         </button>
       </div>
-      {validZipCode && <p className="text-red-500 jost text-sm">{validZipCode}</p>}
+      {validationMessage && (
+        <p className="text-red-500 jost text-sm">{validationMessage}</p>
+      )}
     </div>
   );
 };
