@@ -9,8 +9,6 @@ import {
   ResponsiveContainer,
   CartesianGrid,
 } from "recharts";
-import DataTable from "../../../DataTable/DataTable";
-import { useNavigate } from "react-router-dom";
 
 const lifestyleColumns = [
   { key: "lifestyle", label: "Lifestyle" },
@@ -44,7 +42,6 @@ const lines = [
 const dollarFormatter = (value) => `$${(value / 1000).toFixed(0)}K`;
 
 const HowLongCard = () => {
-  const navigate = useNavigate();
 
   return (
     <div className="bg-white rounded-[20px] shadow p-5">
@@ -131,7 +128,7 @@ const HowLongCard = () => {
           <button
             className="mt-4 rounded-lg px-4 py-2 bg-[#567257] text-white"
             onClick={() => {
-              navigate("/quiz");
+                window.open(`/quiz`, "_blank");
             }}
           >
             Get started on yours

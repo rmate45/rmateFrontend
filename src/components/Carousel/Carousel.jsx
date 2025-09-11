@@ -5,7 +5,6 @@ import { ChevronLeft, ChevronRight } from "lucide-react";
 
 const Carousel = ({ items, renderItem, slidesToShow = 3 }) => {
   const sliderRef = useRef(null);
-console.log(items,"items");
 
   const settings = {
     dots: false,

@@ -109,7 +109,7 @@ div#root {
   height: auto !important;
 }
 
-.slick-slide > div {
+.slick-slide>div {
   height: 100% !important;
 }
 
@@ -145,9 +145,18 @@ div#root {
 .slick-dots {
   margin: 0 -15px !important;
 }
+
 .slick-list {
   height: auto !important;
 }
+
+@media (max-width: 767px) {
+  .slick-slider {
+    padding: 0px 0px;
+  }
+}
+
+
 @media (max-width: 576px) {
   .logoSvg {
     width: 110px;

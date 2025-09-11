@@ -1,15 +1,22 @@
 // components/HeroSection/HeroSection.js
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useEffect, useRef, useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 const HeroSection = ({ searchIcon, micIcon, onSearch, onVoiceSearch }) => {
-  const [searchQuery, setSearchQuery] = useState('');
+  const [searchQuery, setSearchQuery] = useState("");
   const navigate = useNavigate();
+  const inputRef = useRef(null);
+
+  useEffect(() => {
+    if (inputRef.current) {
+      inputRef.current.focus();
+    }
+  }, [])
 
   const handleSearch = () => {
     if (searchQuery.trim()) {
       // Navigate to quiz page with the search query
-      navigate('/quiz', { state: { title: searchQuery.trim() } });
+      navigate("/quiz", { state: { title: searchQuery.trim() } });
     }
     // Still call the original onSearch if provided for backward compatibility
     if (onSearch) {
@@ -18,7 +25,7 @@ const HeroSection = ({ searchIcon, micIcon, onSearch, onVoiceSearch }) => {
   };
 
   const handleKeyPress = (e) => {
-    if (e.key === 'Enter') {
+    if (e.key === "Enter") {
       handleSearch();
     }
   };
@@ -38,16 +45,22 @@ const HeroSection = ({ searchIcon, micIcon, onSearch, onVoiceSearch }) => {
           Retirement is Scary.
         </h1>
         <p className="text-lg sm:text-2xl font-light jost mb-9">
-         Get answers in minutes, not months.
+          Get a plan in minutes, not months
         </p>
 
         {/* Search Input */}
-        <form onSubmit={(e) => { e.preventDefault(); handleSearch(); }}>
+        <form
+          onSubmit={(e) => {
+            e.preventDefault();
+            handleSearch();
+          }}
+        >
           <div className="bg-white rounded-full flex items-center px-3 py-3 max-w-xl mx-auto">
             <button type="submit" onClick={handleSearch}>
               <img src={searchIcon} alt="Search" className="w-7 h-7" />
             </button>
             <input
+              ref={inputRef}
               type="text"
               placeholder="Ask Anything"
               value={searchQuery}
@@ -56,13 +69,13 @@ const HeroSection = ({ searchIcon, micIcon, onSearch, onVoiceSearch }) => {
               className="flex-1 outline-none jost font-normal text-base px-2 text-introPrimary"
               placeholdertextcolor="#567257"
             />
-            <button 
+            {/* <button 
               type="button"
               className="ml-2"
               onClick={handleVoiceSearch}
             >
               <img src={micIcon} alt="Microphone" className="w-8 h-8" />
-            </button>
+            </button> */}
           </div>
         </form>
       </div>

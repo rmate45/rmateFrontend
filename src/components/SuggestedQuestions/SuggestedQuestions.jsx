@@ -1,21 +1,21 @@
 // components/SuggestedQuestions/SuggestedQuestions.js
 import React from "react";
-import { useNavigate } from 'react-router-dom';
 import Carousel from "../Carousel/Carousel";
 import AiImage from '../../assets/AIChat.png'
+import ResponsiveCarousel from "../ResponsiveCarousel/ResponsiveCarousel";
 
 const SuggestedQuestions = ({ questions, onQuestionClick }) => {
-  const navigate = useNavigate();
 
-  const handleQuestionClick = (question) => {
-    // Navigate to quiz page with the question text
-    navigate('/quiz', { state: { title: question.text } });
+const handleQuestionClick = (question) => {
+  // Open quiz in a new tab with state passed via URL params
+  const queryParam = encodeURIComponent(question.text);
+  window.open(`/quiz?title=${queryParam}`, "_blank");
 
-    // Still call the original onQuestionClick if provided for backward compatibility
-    if (onQuestionClick) {
-      onQuestionClick(question);
-    }
-  };
+  // Still call the original onQuestionClick if provided
+  if (onQuestionClick) {
+    onQuestionClick(question);
+  }
+};
 
   return (
     <div className="text-center px-6 py-10 sm:py-16">
@@ -28,7 +28,7 @@ const SuggestedQuestions = ({ questions, onQuestionClick }) => {
         </p>
 
         <div className="max-w-[1080px] mx-auto my-10 sm:my-16">
-          <Carousel
+          <ResponsiveCarousel
             items={questions}
             renderItem={(q) => (
               <div
@@ -37,7 +37,8 @@ const SuggestedQuestions = ({ questions, onQuestionClick }) => {
                 text-left 
                 px-6 md:px-4 
                 py-6 md:py-4
-                pr-6 md:pr-10 
+                pr-10 md:pr-10 
+                
                 tracking-wide 
                 w-full 
                 bg-white

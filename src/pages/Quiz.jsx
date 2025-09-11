@@ -66,10 +66,11 @@ function buildPayload(response) {
   };
 }
 
-
 const Quiz = () => {
   const location = useLocation();
-  const initialText = location.state?.title || "";
+    const params = new URLSearchParams(location.search);
+
+  const initialText = location.state?.title || params.get("title") || "";
 
   const [currentQuestion, setCurrentQuestion] = useState(null);
   const [conversation, setConversation] = useState([]);
@@ -642,7 +643,6 @@ const Quiz = () => {
   };
 
   const handleTextSubmit = async (inputData) => {
-    console.log(inputData, "displayText");
 
     // Handle both regular text input and phone data object
     let displayText = "";
@@ -684,7 +684,10 @@ const Quiz = () => {
     setTextInput(""); // Clear input
     setLoading(true);
 
-    const comment = currentQuestion.defaultComment;
+    let comment = currentQuestion.defaultComment;
+    if(currentQuestion.questionId == "Q1") {
+      comment =   `Nice to meet you, ${textInput}`;
+    }
     if (comment && comment.trim()) {
       setTimeout(() => {
         addToConversation("comment", comment);
