@@ -4,7 +4,7 @@ export const LoadingIndicator = ({ loading }) => {
   if (!loading) return null;
 
   return (
-    <div className=" px-4 py-2 min-h-10 text-sm max-w-xs rounded-xl flex w-fit justify-start items-center rounded-tl-none border-2 border-secondary text-black">
+    <div className="mx-4 px-4 py-2 min-h-10 text-sm max-w-xs rounded-xl flex w-fit justify-start items-center rounded-tl-none border-2 border-secondary text-black">
       <div className="bg-transparent">
         <TypingDots />
       </div>

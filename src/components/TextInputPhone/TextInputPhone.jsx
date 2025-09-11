@@ -43,6 +43,9 @@ export const TextInputPhone = ({
 
   return (
     <div className="flex flex-col gap-2">
+      {validationMessage && (
+        <p className="text-red-500 jost text-sm">{validationMessage}</p>
+      )}
       <div className="relative flex">
         <PhoneInput
           country={"us"} // default country
@@ -52,7 +55,7 @@ export const TextInputPhone = ({
             setIsValid(true);
             setValidationMessage(null);
           }}
-          inputClass={`!w-full !pl-12 !pr-10 !py-3 !text-sm !border-2 !rounded-xl !h-[40px] jost ${
+          inputClass={`!w-full !pl-12 !pr-10 !py-3 !text-sm !border-2 !rounded-xl !h-[50px] jost ${
             isValid ? "!border-gray-300" : "!border-red-500 "
           }`}
           buttonClass="!border-2 !border-gray-300 !rounded-l-xl"
@@ -76,13 +79,9 @@ export const TextInputPhone = ({
           disabled={loading}
           className="absolute right-2 top-1/2 -translate-y-1/2 p-1 text-blue-500 hover:text-blue-600 disabled:text-gray-400 disabled:cursor-not-allowed"
         >
-          <img src={sendIcon} alt="send" className="w-5 h-5" />
+          <img src={sendIcon} alt="send" className="w-6 h-6" />
         </button>
       </div>
-
-      {validationMessage && (
-        <p className="text-red-500 jost text-sm">{validationMessage}</p>
-      )}
     </div>
   );
 };

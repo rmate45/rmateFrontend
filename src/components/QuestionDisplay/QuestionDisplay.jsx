@@ -17,7 +17,7 @@ export const QuestionDisplay = ({
   scrollToBottom, // Add this new prop for scrolling to bottom
 }) => {
   const [selectedMultiOptions, setSelectedMultiOptions] = useState([]);
-  
+
   // Scroll to bottom when submit button appears for multi-select
   useEffect(() => {
     if (selectedMultiOptions.length > 0 && scrollToBottom) {
@@ -26,7 +26,7 @@ export const QuestionDisplay = ({
       }, 100); // Small delay to ensure DOM is updated
     }
   }, [selectedMultiOptions.length, scrollToBottom]);
-  
+
   if (!currentQuestion || loading) return null;
 
   const isValidateZip = currentQuestion?.questionId === "Q7"; // Question 7 asks for zip code
@@ -58,34 +58,36 @@ export const QuestionDisplay = ({
   };
 
   return (
-    <div className="mt-4">
-      <div className="mb-2 jost text-sm border-2 border-secondary px-4 py-2 text-center rounded-xl text-gray-800 font-semibold max-w-sm">
+    <div className={`mt-0`}>
+      <div className="mb-2 mx-4 jost text-sm border-2 border-secondary px-4 py-2 text-center rounded-xl text-gray-800 font-semibold max-w-sm">
         {currentQuestion.questionText}
       </div>
 
-      {/* Phone Number Input */}
-      {currentQuestion.inputType === "free_text" && isPhoneInput && (
-        <TextInputPhone
-          value={textInput}
-          onChange={onTextChange}
-          onSubmit={handlePhoneSubmit}
-          onValidationError={onValidationError}
-          scrollToBottom={scrollToBottom} // Pass scrollToBottom prop
-        />
-      )}
+      <div className={currentQuestion.inputType == "free_text" ? "fixed bottom-0 pb-4 w-full px-4 max-w-3xl bg-white" : ""}>
+        {/* Phone Number Input */}
+        {currentQuestion.inputType === "free_text" && isPhoneInput && (
+          <TextInputPhone
+            value={textInput}
+            onChange={onTextChange}
+            onSubmit={handlePhoneSubmit}
+            onValidationError={onValidationError}
+            scrollToBottom={scrollToBottom} // Pass scrollToBottom prop
+          />
+        )}
 
-      {/* Regular Free Text Input (ZIP or other text) */}
-      {currentQuestion.inputType === "free_text" && !isPhoneInput && (
-        <TextInput
-          value={textInput}
-          onChange={onTextChange}
-          onSubmit={onTextSubmit}
-          validateAsZip={isValidateZip}
-          isAgeInput={isAgeInput}
-          onValidationError={onValidationError}
-          scrollToBottom={scrollToBottom} // Pass scrollToBottom prop
-        />
-      )}
+        {/* Regular Free Text Input (ZIP or other text) */}
+        {currentQuestion.inputType === "free_text" && !isPhoneInput && (
+          <TextInput
+            value={textInput}
+            onChange={onTextChange}
+            onSubmit={onTextSubmit}
+            validateAsZip={isValidateZip}
+            isAgeInput={isAgeInput}
+            onValidationError={onValidationError}
+            scrollToBottom={scrollToBottom} // Pass scrollToBottom prop
+          />
+        )}
+      </div>
 
       {/* Single Select Options */}
       {currentQuestion.inputType === "single_select" && currentQuestion.options && (
@@ -98,27 +100,26 @@ export const QuestionDisplay = ({
       {/* Multi Select Options */}
       {currentQuestion.inputType === "multi_select" && currentQuestion.options && (
         <div>
-          <div className="space-y-2 mb-4">
+          <div className="space-y-2 mb-4 mx-4">
             {currentQuestion.options.map((option, idx) => (
               <button
                 key={idx}
                 onClick={() => handleMultiSelectToggle(option)}
-                className={`w-full p-3 text-left border-2 rounded-lg transition-all ${
-                  selectedMultiOptions.find(item => item.text === option.text)
+                className={`w-full p-3 text-left border-2 rounded-lg transition-all ${selectedMultiOptions.find(item => item.text === option.text)
                     ? 'border-green-500 bg-green-50 text-green-700'
                     : 'border-gray-300 hover:border-green-400'
-                }`}
+                  }`}
               >
                 <div className="flex items-center justify-between jost">
-                  <span>{option.text}</span>
-                  <span className="text-sm">
+                  <span className="jost">{option.text}</span>
+                  <span className="text-sm jost">
                     {selectedMultiOptions.find(item => item.text === option.text) ? '✓' : '+'}
                   </span>
                 </div>
               </button>
             ))}
           </div>
-          
+
           {selectedMultiOptions.length > 0 && (
             <div className="text-center">
               <button

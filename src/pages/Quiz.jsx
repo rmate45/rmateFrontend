@@ -68,7 +68,7 @@ function buildPayload(response) {
 
 const Quiz = () => {
   const location = useLocation();
-    const params = new URLSearchParams(location.search);
+  const params = new URLSearchParams(location.search);
 
   const initialText = location.state?.title || params.get("title") || "";
 
@@ -83,6 +83,7 @@ const Quiz = () => {
   const [canReload, setCanReload] = useState(false);
   const [isLastQuestion, setIsLastQuestion] = useState(false);
   const overviewRef = useRef(null);
+  const chatInputRef = useRef(null);
 
   // New states for handling the flow
   const [allQuestions, setAllQuestions] = useState([]);
@@ -102,6 +103,12 @@ const Quiz = () => {
   useEffect(() => {
     initializeFlow();
   }, []);
+
+  useEffect(() => {
+    if(chatInputRef && chatInputRef?.current) {
+      chatInputRef.current.focus();
+    }
+  }, [chatInputRef, isChatMode, loading])
 
   // Extract userId from phone number when available
   useEffect(() => {
@@ -131,7 +138,7 @@ const Quiz = () => {
     try {
       setLoading(true);
 
-      if(initialText) {
+      if (initialText) {
         // Show the user's selected question/text first
         setConversation([{ type: "answer", text: initialText }]);
       }
@@ -556,6 +563,9 @@ const Quiz = () => {
         return newMessages;
       });
     } finally {
+      if(chatInputRef && chatInputRef?.current) {
+        chatInputRef.current.focus();
+      }
       setLoading(false);
     }
   };
@@ -685,8 +695,8 @@ const Quiz = () => {
     setLoading(true);
 
     let comment = currentQuestion.defaultComment;
-    if(currentQuestion.questionId == "Q1") {
-      comment =   `Nice to meet you, ${textInput}`;
+    if (currentQuestion.questionId == "Q1") {
+      comment = `Nice to meet you, ${textInput}`;
     }
     if (comment && comment.trim()) {
       setTimeout(() => {
@@ -761,30 +771,25 @@ const Quiz = () => {
   };
 
   const scrollUp = () => {
-    const chat = chatRef.current;
-    if (chat) {
-      chatRef.current.scrollIntoView({ behavior: "smooth" });
-    }
+     window.scrollTo({
+      top: document.documentElement.scrollHeight,
+      behavior: "smooth",
+    });
   };
 
   const scrollToBottom = () => {
-    const chat = chatRef.current;
-    if (chat) {
-      chat.scrollTo({
-        top: chat.scrollHeight,
-        behavior: "smooth",
-      });
-    }
+    window.scrollTo({
+      top: document.documentElement.scrollHeight,
+      behavior: "smooth",
+    });
+
   };
 
   useEffect(() => {
-    const chat = chatRef.current;
-    if (chat) {
-      chat.scrollTo({
-        top: chat.scrollHeight,
-        behavior: "smooth",
-      });
-    }
+    window.scrollTo({
+      top: document.documentElement.scrollHeight,
+      behavior: "smooth",
+    });
   }, [conversation, currentQuestion]);
 
   useEffect(() => {
@@ -802,14 +807,15 @@ const Quiz = () => {
   }
 
   return (
-    <div className="bg-white px-4 min-h-screen flex flex-col items-center relative">
+    <div className="bg-white flex flex-col items-center relative">
+      <ChatHeader logo={logo} />
       <div
         ref={chatRef}
-        className="bg-white border-2 border-primary rounded-lg shadow-lg mt-5 min-h-[95vh] max-h-[92vh] pb-4 w-full max-w-xl sm:min-w-xl overflow-y-auto flex flex-col relative"
+        className="bg-white rounded-lg min-h-[98vh] max-h-[98vh] 
+        pb-4 w-full max-w-3xl  flex flex-col relative"
       >
-        <ChatHeader logo={logo} />
-        <div className="flex-1"></div>
-        <div className="flex flex-col pt-4 px-4">
+        {/* <div className="flex-1"></div> */}
+        <div className={`flex flex-col flex-1 grow pt-4  ${currentQuestion?.inputType == "free_text" || isChatMode ? "pb-24" : "pb-4"}`}>
           {conversation.map((item, idx) => {
             const isLastAnswer =
               item.type === "answer" &&
@@ -820,7 +826,7 @@ const Quiz = () => {
             // Render chart if the message type is 'chart'
             if (item.type === "chart") {
               return (
-                <div key={idx} className="mb-4 flex justify-start">
+                <div key={idx} className="mb-4 px-4 flex justify-start">
                   <div className="px-2 py-2 rounded-xl border-2 border-secondary bg-white w-full max-w-full">
                     <PlotChart data={item.text} />
                   </div>
@@ -861,9 +867,10 @@ const Quiz = () => {
 
           {/* Show text input for chat mode */}
           {isChatMode && !loading && (
-            <div className="mt-4">
+            <div className="mt-4 fixed px-4 pb-4 bottom-0 w-full max-w-3xl bg-white">
               <div className="flex gap-2 relative">
                 <input
+                ref={chatInputRef}
                   type="text"
                   value={textInput}
                   onChange={(e) => setTextInput(e.target.value)}
@@ -883,6 +890,7 @@ const Quiz = () => {
                   <img src={sendIcon} alt="send" className="w-6 mt-4 mb-4" />
                 </button>
               </div>
+
             </div>
           )}
 

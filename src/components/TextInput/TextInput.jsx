@@ -1,6 +1,7 @@
 import sendIcon from "../../assets/send.svg";
 import { useState, useEffect } from "react";
 import api from "../../api/api";
+import { useRef } from "react";
 
 export const TextInput = ({
   value,
@@ -14,6 +15,13 @@ export const TextInput = ({
   const [isValid, setIsValid] = useState(true);
   const [validationMessage, setValidationMessage] = useState(null);
   const [loading, setLoading] = useState(false);
+  const inputRef = useRef(null);
+
+  useEffect(() => {
+    if (inputRef.current) {
+      inputRef.current.focus();
+    }
+  }, [inputRef]);
 
   useEffect(() => {
     if (validationMessage && scrollToBottom) {
@@ -115,8 +123,13 @@ export const TextInput = ({
 
   return (
     <div className="flex flex-col gap-2">
+        {validationMessage && (
+          <p className="text-red-500 jost text-sm">{validationMessage}</p>
+        )}
       <div className="relative">
+        
         <input
+          ref={inputRef}
           type={isAgeInput ? "number" : "text"}
           inputMode={validateAsZip || isAgeInput ? "numeric" : "text"}
           pattern={validateAsZip || isAgeInput ? "\\d*" : undefined}
@@ -128,11 +141,12 @@ export const TextInput = ({
             validateAsZip
               ? "Enter ZIP code (3–6 digits)"
               : isAgeInput
-                ? "Enter your age (18+)"
-                : "Type your answer here..."
+              ? "Enter your age (18+)"
+              : "Type your answer here..."
           }
-          className={`w-full px-4 py-2 pr-10 border-2 jost rounded-xl text-sm focus:outline-none focus:border-secondary ${isValid ? "border-gray-300" : "border-red-500"
-            }`}
+          className={`w-full px-4 py-3 pr-10 border-2 jost rounded-xl text-sm focus:outline-none focus:border-secondary ${
+            isValid ? "border-gray-300" : "border-red-500"
+          }`}
         />
         <button
           onClick={handleSubmit}
@@ -142,9 +156,6 @@ export const TextInput = ({
           <img src={sendIcon} alt="send" className="w-6 mt-4 mb-4" />
         </button>
       </div>
-      {validationMessage && (
-        <p className="text-red-500 jost text-sm">{validationMessage}</p>
-      )}
     </div>
   );
 };

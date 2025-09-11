@@ -21,7 +21,7 @@ export const ChatMessage = ({
   }
 
   return (
-    <div className={`mb-3 flex ${isAnswer ? "justify-end" : "justify-start"}`}>
+    <div className={`mb-3 px-4 flex ${isAnswer ? "justify-end" : "justify-start"}`}>
       {isAnswer && isLastAnswer && canReload && !loading && (
         <ReloadButton onReload={onReload} />
       )}
