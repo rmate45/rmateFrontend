@@ -880,7 +880,7 @@ const Quiz = () => {
                     }
                   }}
                   placeholder="Ask me anything about your retirement plan..."
-                  className={`w-full px-4 py-2 pr-10 border-2 jost rounded-xl text-sm focus:outline-none border-gray-300 focus:border-secondary`}
+                  className={`w-full px-4 py-3 pr-10 border-2 jost rounded-xl text-sm focus:outline-none border-gray-300 focus:border-secondary`}
                 />
                 <button
                   onClick={() => handleChatInput(textInput)}
