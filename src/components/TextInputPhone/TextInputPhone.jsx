@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import PhoneInput from "react-phone-input-2";
 import "react-phone-input-2/lib/style.css";
 import sendIcon from "../../assets/send.svg";
@@ -12,6 +12,18 @@ export const TextInputPhone = ({
   const [isValid, setIsValid] = useState(true);
   const [validationMessage, setValidationMessage] = useState(null);
   const [loading, setLoading] = useState(false);
+  const inputRef = useRef(null);
+
+  // Auto focus on mount
+  useEffect(() => {
+    if (inputRef.current) {
+      // react-phone-input-2 nests the input, so we target it
+      const inputEl = inputRef.current.querySelector("input");
+      if (inputEl) {
+        inputEl.focus();
+      }
+    }
+  }, []);
 
   const validatePhoneNumber = (phone) => {
     if (!phone || phone.length < 7 || phone.length > 15) {
@@ -46,7 +58,7 @@ export const TextInputPhone = ({
       {validationMessage && (
         <p className="text-red-500 jost text-sm">{validationMessage}</p>
       )}
-      <div className="relative flex">
+      <div className="relative flex" ref={inputRef}>
         <PhoneInput
           country={"us"} // default country
           value={value}
@@ -65,13 +77,6 @@ export const TextInputPhone = ({
           inputProps={{
             name: "phone",
             required: true,
-            autoFocus: false,
-          }}
-          dropdownStyle={{
-            top: "auto", // disable normal "below"
-            bottom: "100%", // place above input
-            position: "absolute",
-            zIndex: 1000, // keep above other UI
           }}
         />
 
