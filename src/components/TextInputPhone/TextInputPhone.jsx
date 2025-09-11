@@ -58,7 +58,9 @@ export const TextInputPhone = ({
           inputClass={`!w-full !pl-12 !pr-10 !py-3 !text-sm !border-2 !rounded-xl !h-[50px] jost ${
             isValid ? "!border-gray-300" : "!border-red-500 "
           }`}
-          buttonClass="!border-2 !border-gray-300 !rounded-l-xl"
+          buttonClass={`!border-2 !rounded-l-xl ${
+            isValid ? "!border-gray-300" : "!border-red-500 "
+          }`}
           containerClass="w-full jost"
           inputProps={{
             name: "phone",

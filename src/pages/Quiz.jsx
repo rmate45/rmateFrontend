@@ -815,7 +815,7 @@ const Quiz = () => {
         pb-4 w-full max-w-3xl  flex flex-col relative"
       >
         {/* <div className="flex-1"></div> */}
-        <div className={`flex flex-col flex-1 grow pt-4  ${currentQuestion?.inputType == "free_text" || isChatMode ? "pb-24" : "pb-4"}`}>
+        <div className={`flex flex-col flex-1 grow pt-20  ${currentQuestion?.inputType == "free_text" || isChatMode ? "pb-24" : "pb-4"}`}>
           {conversation.map((item, idx) => {
             const isLastAnswer =
               item.type === "answer" &&
