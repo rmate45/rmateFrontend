@@ -46,7 +46,7 @@ export const RangeSlider = ({
           onClick={onSubmit}
           className="flex  w-full items-center gap-2 px-3 py-2 p-0 text-blue border border-primary rounded-xl"
         >
-          <img src={sendIcon} alt="send" className="w-5 h-5" />
+          <img src={sendIcon} alt="send" className="w-6 h-6" />
         </button>
       </div>
     </div>
