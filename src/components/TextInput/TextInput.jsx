@@ -16,63 +16,128 @@ export const TextInput = ({
   const [validationMessage, setValidationMessage] = useState(null);
   const [loading, setLoading] = useState(false);
   const inputRef = useRef(null);
-  const [hasFocused, setHasFocused] = useState(false);
+  const [isDOMReady, setIsDOMReady] = useState(false);
+  const [hasAttemptedFocus, setHasAttemptedFocus] = useState(false);
 
-  // Enhanced focus handling with better mobile support
+  // Wait for DOM to be fully ready
   useEffect(() => {
-    const focusInput = () => {
-      if (inputRef.current && !hasFocused) {
-        const isMobile =
-          /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
-            navigator.userAgent
-          );
-
-        if (isMobile) {
-          // For mobile, use a user interaction to trigger focus
-          // This works better than automatic focus
-          const handleFirstInteraction = () => {
-            if (inputRef.current && !hasFocused) {
-              inputRef.current.focus();
-              setHasFocused(true);
-            }
-            // Remove listeners after first interaction
-            document.removeEventListener("touchstart", handleFirstInteraction);
-            document.removeEventListener("click", handleFirstInteraction);
-          };
-
-          // Add listeners for user interaction
-          document.addEventListener("touchstart", handleFirstInteraction, {
-            once: true,
-          });
-          document.addEventListener("click", handleFirstInteraction, {
-            once: true,
-          });
-
-          // Also try delayed focus as backup
-          setTimeout(() => {
-            if (inputRef.current && !hasFocused) {
-              inputRef.current.focus();
-              inputRef.current.click();
-              setHasFocused(true);
-            }
-          }, 500);
-        } else {
-          // Desktop - normal focus
-          inputRef.current.focus();
-          setHasFocused(true);
-        }
+    const checkDOMReady = () => {
+      if (document.readyState === 'complete') {
+        setIsDOMReady(true);
+      } else {
+        const handleLoad = () => {
+          setIsDOMReady(true);
+          document.removeEventListener('DOMContentLoaded', handleLoad);
+          window.removeEventListener('load', handleLoad);
+        };
+        
+        document.addEventListener('DOMContentLoaded', handleLoad);
+        window.addEventListener('load', handleLoad);
+        
+        return () => {
+          document.removeEventListener('DOMContentLoaded', handleLoad);
+          window.removeEventListener('load', handleLoad);
+        };
       }
     };
 
-    // Use requestAnimationFrame for better timing
-    const animationFrame = requestAnimationFrame(() => {
-      setTimeout(focusInput, 100);
+    checkDOMReady();
+  }, []);
+
+  // Enhanced focus handling that waits for DOM readiness
+  useEffect(() => {
+    if (!isDOMReady || !inputRef.current || hasAttemptedFocus) return;
+
+    const focusInput = () => {
+      const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
+        navigator.userAgent
+      );
+
+      if (isMobile) {
+        // Strategy 1: Immediate focus attempt
+        inputRef.current.focus();
+        
+        // Strategy 2: User interaction listener
+        const handleInteraction = (e) => {
+          if (inputRef.current && document.activeElement !== inputRef.current) {
+            e.preventDefault();
+            inputRef.current.focus();
+          }
+          document.removeEventListener('touchstart', handleInteraction, { capture: true });
+          document.removeEventListener('click', handleInteraction, { capture: true });
+        };
+
+        document.addEventListener('touchstart', handleInteraction, { 
+          capture: true, 
+          once: true,
+          passive: false 
+        });
+        document.addEventListener('click', handleInteraction, { 
+          capture: true, 
+          once: true 
+        });
+
+        // Strategy 3: Delayed attempts with increasing intervals
+        const delays = [100, 300, 600, 1000];
+        delays.forEach((delay) => {
+          setTimeout(() => {
+            if (inputRef.current && document.activeElement !== inputRef.current) {
+              inputRef.current.focus();
+              inputRef.current.click();
+            }
+          }, delay);
+        });
+
+        // Strategy 4: Intersection Observer for when input comes into view
+        const observer = new IntersectionObserver(
+          ([entry]) => {
+            if (entry.isIntersecting && inputRef.current) {
+              setTimeout(() => {
+                inputRef.current.focus();
+              }, 100);
+              observer.disconnect();
+            }
+          },
+          { threshold: 0.1 }
+        );
+
+        if (inputRef.current) {
+          observer.observe(inputRef.current);
+        }
+
+      } else {
+        // Desktop - simpler approach
+        inputRef.current.focus();
+      }
+
+      setHasAttemptedFocus(true);
+    };
+
+    // Use multiple timing strategies
+    requestAnimationFrame(() => {
+      setTimeout(focusInput, 50);
     });
 
-    return () => {
-      cancelAnimationFrame(animationFrame);
+  }, [isDOMReady, hasAttemptedFocus]);
+
+  // Re-attempt focus when component becomes visible (for chat switching)
+  useEffect(() => {
+    if (hasAttemptedFocus) return;
+
+    const handleVisibilityChange = () => {
+      if (!document.hidden && inputRef.current) {
+        setTimeout(() => {
+          inputRef.current.focus();
+        }, 100);
+      }
     };
-  }, [hasFocused]);
+
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+    
+    return () => {
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+    };
+  }, [hasAttemptedFocus]);
 
   useEffect(() => {
     if (validationMessage && scrollToBottom) {
@@ -172,15 +237,21 @@ export const TextInput = ({
     }
   };
 
+  // Handle container tap for mobile focus
+  const handleContainerTap = () => {
+    if (inputRef.current && document.activeElement !== inputRef.current) {
+      inputRef.current.focus();
+    }
+  };
+
   return (
-    <div className="flex flex-col gap-2">
+    <div className="flex flex-col gap-2" onTouchStart={handleContainerTap}>
       {validationMessage && (
         <p className="text-red-500 jost text-sm">{validationMessage}</p>
       )}
       <div className="relative">
         <input
           ref={inputRef}
-          autoFocus
           type={isAgeInput ? "number" : "text"}
           inputMode={validateAsZip || isAgeInput ? "numeric" : "text"}
           pattern={validateAsZip || isAgeInput ? "\\d*" : undefined}
@@ -188,6 +259,28 @@ export const TextInput = ({
           value={value}
           onChange={(e) => handleChange(e.target.value)}
           onKeyDown={handleKeyDown}
+          onFocus={(e) => {
+            // Ensure the input stays focused and scrolls into view
+            e.target.scrollIntoView({ 
+              behavior: 'smooth', 
+              block: 'center',
+              inline: 'nearest'
+            });
+          }}
+          onBlur={(e) => {
+            // Immediately refocus on blur (prevents keyboard closing accidentally)
+            const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
+              navigator.userAgent
+            );
+            
+            if (isMobile && !hasAttemptedFocus) {
+              setTimeout(() => {
+                if (inputRef.current && document.activeElement !== inputRef.current) {
+                  inputRef.current.focus();
+                }
+              }, 50);
+            }
+          }}
           placeholder={
             validateAsZip
               ? "Enter ZIP code (3–6 digits)"
@@ -195,6 +288,10 @@ export const TextInput = ({
               ? "Enter your age (18+)"
               : "Type your answer here..."
           }
+          style={{ 
+            fontSize: '16px', // Prevent iOS zoom
+            WebkitAppearance: 'none' // Remove iOS styling
+          }}
           className={`w-full px-4 py-3 pr-10 border-2 jost rounded-xl text-sm focus:outline-none focus:border-secondary ${
             isValid ? "border-gray-300" : "border-red-500"
           }`}
