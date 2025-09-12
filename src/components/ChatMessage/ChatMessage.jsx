@@ -31,8 +31,8 @@ export const ChatMessage = ({
           isAnswer
             ? "rounded-br-none bg-green-300 text-left text-black"
             : isComment
-            ? "rounded-tl-none bg-blue-100 border-2 border-blue-300 text-black italic  text-left"
-            : "rounded-tl-none border-2 border-secondary text-black"
+            ? "rounded-tl-none bg-blue-100 border-1 border-blue-300 text-black italic  text-left"
+            : "rounded-tl-none border-1 border-green-300 text-black"
         }`}
       >
         {chatMode && !text ? (

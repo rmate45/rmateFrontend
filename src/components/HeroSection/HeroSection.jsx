@@ -1,14 +1,15 @@
 // components/HeroSection/HeroSection.js
 import React, { useEffect, useRef, useState } from "react";
+import { isMobile } from "react-device-detect";
 import { useNavigate } from "react-router-dom";
 
-const HeroSection = ({ searchIcon, micIcon, onSearch, onVoiceSearch }) => {
+const HeroSection = ({ searchIcon, onSearch, onVoiceSearch }) => {
   const [searchQuery, setSearchQuery] = useState("");
   const navigate = useNavigate();
   const inputRef = useRef(null);
 
   useEffect(() => {
-    if (inputRef.current) {
+    if (inputRef.current && !isMobile) {
       inputRef.current.focus();
     }
   }, [])

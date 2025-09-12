@@ -1,6 +1,5 @@
 import { useState, useEffect } from "react";
 import { QuestionOptions } from "../QuestionOptions/QuestionOptions";
-import { RangeSlider } from "../RangeSlider/RangeSlider";
 import { TextInput } from "../TextInput/TextInput";
 import { TextInputPhone } from "../TextInputPhone/TextInputPhone";
 
@@ -59,7 +58,7 @@ export const QuestionDisplay = ({
 
   return (
     <div className={`mt-0`}>
-      <div className="mb-2 mx-4 jost text-sm border-2 border-secondary px-4 py-2 text-center rounded-xl text-gray-800 font-semibold max-w-sm">
+      <div className="mb-2 mx-4 jost text-sm border-2 border-green-300 px-4 py-2 text-center rounded-xl text-gray-800 font-semibold max-w-sm">
         {currentQuestion.questionText}
       </div>
 
@@ -105,9 +104,9 @@ export const QuestionDisplay = ({
               <button
                 key={idx}
                 onClick={() => handleMultiSelectToggle(option)}
-                className={`w-full p-3 text-left border-2 rounded-lg transition-all ${selectedMultiOptions.find(item => item.text === option.text)
-                    ? 'border-green-500 bg-green-50 text-green-700'
-                    : 'border-gray-300 hover:border-green-400'
+                className={`w-full px-3 py-2 text-left border-2 rounded-lg transition-all ${selectedMultiOptions.find(item => item.text === option.text)
+                    ? 'border-green-300 bg-green-50 text-primary'
+                    : 'border-gray-300 hover:border-green-300'
                   }`}
               >
                 <div className="flex items-center justify-between jost">
