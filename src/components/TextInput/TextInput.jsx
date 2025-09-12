@@ -17,11 +17,32 @@ export const TextInput = ({
   const [loading, setLoading] = useState(false);
   const inputRef = useRef(null);
 
+  // Enhanced focus handling with mobile keyboard support
   useEffect(() => {
-    if (inputRef.current) {
-      inputRef.current.focus();
-    }
-  }, [inputRef]);
+    const focusInput = () => {
+      if (inputRef.current) {
+        inputRef.current.focus();
+
+        // Force mobile keyboard to open
+        if (
+          /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
+            navigator.userAgent
+          )
+        ) {
+          // For mobile devices, trigger a click event to ensure keyboard opens
+          setTimeout(() => {
+            inputRef.current.click();
+            inputRef.current.focus();
+          }, 100);
+        }
+      }
+    };
+
+    // Use a longer timeout to ensure component is fully mounted
+    const timer = setTimeout(focusInput, 300);
+
+    return () => clearTimeout(timer);
+  }, []);
 
   useEffect(() => {
     if (validationMessage && scrollToBottom) {
@@ -123,11 +144,10 @@ export const TextInput = ({
 
   return (
     <div className="flex flex-col gap-2">
-        {validationMessage && (
-          <p className="text-red-500 jost text-sm">{validationMessage}</p>
-        )}
+      {validationMessage && (
+        <p className="text-red-500 jost text-sm">{validationMessage}</p>
+      )}
       <div className="relative">
-        
         <input
           ref={inputRef}
           type={isAgeInput ? "number" : "text"}
