@@ -210,7 +210,6 @@ const Quiz = () => {
           { type: "system", text: "No questions available for this topic." },
         ]);
       }
-      setIsScroll(true);
     } catch (error) {
       console.error("Error fetching questions:", error);
       setConversation((prev) => [
@@ -223,6 +222,13 @@ const Quiz = () => {
   };
 
   const moveToNextQuestion = () => {
+
+    console.log(currentQuestionIndex, "currentQuestionIndex");
+
+    if (currentQuestionIndex == 0) {
+      setIsScroll(true);
+    }
+
     const nextIndex = currentQuestionIndex + 1;
 
     if (nextIndex < allQuestions.length) {
@@ -818,7 +824,7 @@ const Quiz = () => {
       >
         {/* <div className="flex-1"></div> */}
         <div
-          className={`flex flex-col  mt-20  ${
+          className={`flex flex-col  mt-24  ${
             currentQuestion?.inputType == "free_text" || isChatMode
               ? "pb-24"
               : "pb-4"
