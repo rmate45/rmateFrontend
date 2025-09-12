@@ -820,7 +820,7 @@ const Quiz = () => {
       <div
         ref={chatRef}
         className="bg-white rounded-lg
-        pb-4 w-full max-w-3xl  flex flex-col relative"
+        pb-4 w-full max-w-3xl h-[calc(var(--vh,1vh)*100)] flex flex-col relative"
       >
         {/* <div className="flex-1"></div> */}
         <div
