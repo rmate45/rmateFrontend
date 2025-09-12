@@ -150,6 +150,7 @@ export const TextInput = ({
       <div className="relative">
         <input
           ref={inputRef}
+          autoFocus
           type={isAgeInput ? "number" : "text"}
           inputMode={validateAsZip || isAgeInput ? "numeric" : "text"}
           pattern={validateAsZip || isAgeInput ? "\\d*" : undefined}
