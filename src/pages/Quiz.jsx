@@ -815,98 +815,101 @@ const Quiz = () => {
   }
 
   return (
-    <div className="bg-white h-screen max-h-screen overflow-hidden flex flex-col">
+    <div className="bg-white flex flex-col items-center relative">
       <ChatHeader logo={logo} />
-      
-      {/* Chat messages container - takes remaining space */}
-      <div className="flex-1 overflow-y-auto">
-        <div className="max-w-3xl mx-auto">
-          <div className={`flex flex-col mt-6 ${
-            currentQuestion?.inputType === "free_text" || isChatMode ? "pb-6" : "pb-4"
-          }`}>
-            
-            {conversation.map((item, idx) => {
-              const isLastAnswer =
-                item.type === "answer" &&
-                (idx === conversation.length - 1 ||
-                  (idx === conversation.length - 2 &&
-                    conversation[idx + 1]?.type === "comment"));
+      <div
+        ref={chatRef}
+        className="bg-white rounded-lg
+        pb-4 w-full max-w-3xl h-[calc(var(--vh,1vh)*100)] flex flex-col relative"
+      >
+        {/* <div className="flex-1"></div> */}
+        <div
+          className={`flex flex-col  mt-24  ${
+            currentQuestion?.inputType == "free_text" || isChatMode
+              ? "pb-24"
+              : "pb-4"
+          }`}
+        >
+          {conversation.map((item, idx) => {
+            const isLastAnswer =
+              item.type === "answer" &&
+              (idx === conversation.length - 1 ||
+                (idx === conversation.length - 2 &&
+                  conversation[idx + 1]?.type === "comment"));
 
-              if (item.type === "chart") {
-                return (
-                  <div key={idx} className="mb-4 px-4 flex justify-start">
-                    <div className="px-2 py-2 rounded-xl border-1 border-green-300 bg-white w-full max-w-full">
-                      <PlotChart data={item.text} />
-                    </div>
-                  </div>
-                );
-              }
-
+            // Render chart if the message type is 'chart'
+            if (item.type === "chart") {
               return (
-                <ChatMessage
-                  key={idx}
-                  message={item}
-                  isLastAnswer={isLastAnswer}
-                  canReload={canReload && !isChatMode}
-                  loading={loading}
-                  onReload={handleReloadAnswer}
-                  chatMode={isChatMode}
-                />
+                <div key={idx} className="mb-4 px-4 flex justify-start">
+                  <div className="px-2 py-2 rounded-xl border-1 border-green-300 bg-white w-full max-w-full">
+                    <PlotChart data={item.text} />
+                  </div>
+                </div>
               );
-            })}
+            }
 
-            <LoadingIndicator loading={loading && !isChatMode} />
-
-            {/* Show QuestionDisplay only if not in chat mode */}
-            {!isChatMode && currentQuestion && (
-              <QuestionDisplay
-                onValidationError={scrollUp}
-                scrollUp={scrollToBottom}
-                scrollToBottom={scrollToBottom}
-                currentQuestion={currentQuestion}
+            return (
+              <ChatMessage
+                key={idx}
+                message={item}
+                isLastAnswer={isLastAnswer}
+                canReload={canReload && !isChatMode}
                 loading={loading}
-                textInput={textInput}
-                onTextChange={setTextInput}
-                onOptionClick={handleOptionClick}
-                onTextSubmit={handleTextSubmit}
-                onMultiSelectSubmit={handleMultiSelectSubmit}
+                onReload={handleReloadAnswer}
+                chatMode={isChatMode}
               />
-            )}
+            );
+          })}
 
-            <div id="overview" ref={overviewRef} className="scroll-mt-20"></div>
-          </div>
+          <LoadingIndicator loading={loading && !isChatMode} />
+
+          {/* Show QuestionDisplay only if not in chat mode and there's a current question */}
+          {!isChatMode && currentQuestion && (
+            <QuestionDisplay
+              onValidationError={scrollUp}
+              scrollUp={scrollToBottom} // This was already scrollToBottom in your code
+              scrollToBottom={scrollToBottom} // Add this new prop for error scrolling
+              currentQuestion={currentQuestion}
+              loading={loading}
+              textInput={textInput}
+              onTextChange={setTextInput}
+              onOptionClick={handleOptionClick}
+              onTextSubmit={handleTextSubmit}
+              onMultiSelectSubmit={handleMultiSelectSubmit}
+            />
+          )}
+
+          {/* Show text input for chat mode */}
+          {isChatMode && !loading && (
+            <div className="mt-4 fixed px-4 pb-4 bottom-0 w-full max-w-3xl bg-white">
+              <div className="flex gap-2 relative">
+                <input
+                  ref={chatInputRef}
+                  type="text"
+                  value={textInput}
+                  onChange={(e) => setTextInput(e.target.value)}
+                  onKeyPress={(e) => {
+                    if (e.key === "Enter") {
+                      handleChatInput(textInput);
+                    }
+                  }}
+                  placeholder="Ask me anything about your retirement plan..."
+                  className={`w-full px-4 py-3 pr-10 border-2 jost rounded-xl text-sm focus:outline-none border-gray-300 focus:border-secondary`}
+                />
+                <button
+                  onClick={() => handleChatInput(textInput)}
+                  disabled={!textInput.trim() || loading}
+                  className="absolute right-2 top-1/2 -translate-y-1/2 p-1 disabled:text-gray-400 disabled:cursor-not-allowed"
+                >
+                  <img src={sendIcon} alt="send" className="w-6 mt-4 mb-4" />
+                </button>
+              </div>
+            </div>
+          )}
+
+          <div id="overview" ref={overviewRef} className="scroll-mt-20"></div>
         </div>
       </div>
-
-      {/* Fixed input for chat mode - stays at bottom */}
-      {isChatMode && (
-        <div className="bg-white border-t border-gray-200 p-4 flex-shrink-0">
-          <div className="max-w-3xl mx-auto">
-            <div className="flex gap-2 relative">
-              <input
-                ref={chatInputRef}
-                type="text"
-                value={textInput}
-                onChange={(e) => setTextInput(e.target.value)}
-                onKeyPress={(e) => {
-                  if (e.key === "Enter") {
-                    handleChatInput(textInput);
-                  }
-                }}
-                placeholder="Ask me anything about your retirement plan..."
-                className="w-full px-4 py-3 pr-10 border-2 jost rounded-xl text-sm focus:outline-none border-gray-300 focus:border-secondary"
-              />
-              <button
-                onClick={() => handleChatInput(textInput)}
-                disabled={!textInput.trim() || loading}
-                className="absolute right-2 top-1/2 -translate-y-1/2 p-1 disabled:text-gray-400 disabled:cursor-not-allowed"
-              >
-                <img src={sendIcon} alt="send" className="w-6 mt-4 mb-4" />
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 };
