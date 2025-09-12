@@ -16,33 +16,63 @@ export const TextInput = ({
   const [validationMessage, setValidationMessage] = useState(null);
   const [loading, setLoading] = useState(false);
   const inputRef = useRef(null);
+  const [hasFocused, setHasFocused] = useState(false);
 
-  // Enhanced focus handling with mobile keyboard support
+  // Enhanced focus handling with better mobile support
   useEffect(() => {
     const focusInput = () => {
-      if (inputRef.current) {
-        inputRef.current.focus();
-
-        // Force mobile keyboard to open
-        if (
+      if (inputRef.current && !hasFocused) {
+        const isMobile =
           /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
             navigator.userAgent
-          )
-        ) {
-          // For mobile devices, trigger a click event to ensure keyboard opens
+          );
+
+        if (isMobile) {
+          // For mobile, use a user interaction to trigger focus
+          // This works better than automatic focus
+          const handleFirstInteraction = () => {
+            if (inputRef.current && !hasFocused) {
+              inputRef.current.focus();
+              setHasFocused(true);
+            }
+            // Remove listeners after first interaction
+            document.removeEventListener("touchstart", handleFirstInteraction);
+            document.removeEventListener("click", handleFirstInteraction);
+          };
+
+          // Add listeners for user interaction
+          document.addEventListener("touchstart", handleFirstInteraction, {
+            once: true,
+          });
+          document.addEventListener("click", handleFirstInteraction, {
+            once: true,
+          });
+
+          // Also try delayed focus as backup
           setTimeout(() => {
-            inputRef.current.click();
-            inputRef.current.focus();
-          }, 100);
+            if (inputRef.current && !hasFocused) {
+              inputRef.current.focus();
+              inputRef.current.click();
+              setHasFocused(true);
+            }
+          }, 500);
+        } else {
+          // Desktop - normal focus
+          inputRef.current.focus();
+          setHasFocused(true);
         }
       }
     };
 
-    // Use a longer timeout to ensure component is fully mounted
-    const timer = setTimeout(focusInput, 300);
+    // Use requestAnimationFrame for better timing
+    const animationFrame = requestAnimationFrame(() => {
+      setTimeout(focusInput, 100);
+    });
 
-    return () => clearTimeout(timer);
-  }, []);
+    return () => {
+      cancelAnimationFrame(animationFrame);
+    };
+  }, [hasFocused]);
 
   useEffect(() => {
     if (validationMessage && scrollToBottom) {
