@@ -90,6 +90,7 @@ const Quiz = () => {
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
 
   const [userAnswers, setUserAnswers] = useState({});
+  const [isScroll, setIsScroll] = useState(false);
 
   // New states for chat functionality
   const [isChatMode, setIsChatMode] = useState(false);
@@ -105,10 +106,10 @@ const Quiz = () => {
   }, []);
 
   useEffect(() => {
-    if(chatInputRef && chatInputRef?.current) {
+    if (chatInputRef && chatInputRef?.current) {
       chatInputRef.current.focus();
     }
-  }, [chatInputRef, isChatMode, loading])
+  }, [chatInputRef, isChatMode, loading]);
 
   // Extract userId from phone number when available
   useEffect(() => {
@@ -209,6 +210,7 @@ const Quiz = () => {
           { type: "system", text: "No questions available for this topic." },
         ]);
       }
+      setIsScroll(true);
     } catch (error) {
       console.error("Error fetching questions:", error);
       setConversation((prev) => [
@@ -563,7 +565,7 @@ const Quiz = () => {
         return newMessages;
       });
     } finally {
-      if(chatInputRef && chatInputRef?.current) {
+      if (chatInputRef && chatInputRef?.current) {
         chatInputRef.current.focus();
       }
       setLoading(false);
@@ -653,7 +655,6 @@ const Quiz = () => {
   };
 
   const handleTextSubmit = async (inputData) => {
-
     // Handle both regular text input and phone data object
     let displayText = "";
     let storeValue = inputData;
@@ -771,7 +772,7 @@ const Quiz = () => {
   };
 
   const scrollUp = () => {
-     window.scrollTo({
+    window.scrollTo({
       top: document.documentElement.scrollHeight,
       behavior: "smooth",
     });
@@ -782,15 +783,16 @@ const Quiz = () => {
       top: document.documentElement.scrollHeight,
       behavior: "smooth",
     });
-
   };
 
   useEffect(() => {
-    window.scrollTo({
-      top: document.documentElement.scrollHeight,
-      behavior: "smooth",
-    });
-  }, [conversation, currentQuestion]);
+    if (isScroll) {
+      window.scrollTo({
+        top: document.documentElement.scrollHeight,
+        behavior: "smooth",
+      });
+    }
+  }, [conversation, currentQuestion, isScroll]);
 
   useEffect(() => {
     if (!currentQuestion && isLastQuestion && overviewRef.current) {
@@ -815,7 +817,13 @@ const Quiz = () => {
         pb-4 w-full max-w-3xl  flex flex-col relative"
       >
         {/* <div className="flex-1"></div> */}
-        <div className={`flex flex-col flex-1 grow mt-20  ${currentQuestion?.inputType == "free_text" || isChatMode ? "pb-24" : "pb-4"}`}>
+        <div
+          className={`flex flex-col flex-1 grow mt-20  ${
+            currentQuestion?.inputType == "free_text" || isChatMode
+              ? "pb-24"
+              : "pb-4"
+          }`}
+        >
           {conversation.map((item, idx) => {
             const isLastAnswer =
               item.type === "answer" &&
@@ -870,7 +878,7 @@ const Quiz = () => {
             <div className="mt-4 fixed px-4 pb-4 bottom-0 w-full max-w-3xl bg-white">
               <div className="flex gap-2 relative">
                 <input
-                ref={chatInputRef}
+                  ref={chatInputRef}
                   type="text"
                   value={textInput}
                   onChange={(e) => setTextInput(e.target.value)}
@@ -890,7 +898,6 @@ const Quiz = () => {
                   <img src={sendIcon} alt="send" className="w-6 mt-4 mb-4" />
                 </button>
               </div>
-
             </div>
           )}
 
