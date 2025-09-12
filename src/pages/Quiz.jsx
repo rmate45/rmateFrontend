@@ -104,11 +104,20 @@ const Quiz = () => {
     initializeFlow();
   }, []);
 
+  // Enhanced focus management with keyboard support
   useEffect(() => {
-    if(chatInputRef && chatInputRef?.current) {
-      chatInputRef.current.focus();
+    if (chatInputRef?.current) {
+      // Use a longer timeout for better mobile keyboard handling
+      setTimeout(() => {
+        chatInputRef.current.focus();
+        
+        // For mobile devices, trigger click to ensure keyboard opens
+        if (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
+          chatInputRef.current.click();
+        }
+      }, 300);
     }
-  }, [chatInputRef, isChatMode, loading])
+  }, [chatInputRef, isChatMode, loading, currentQuestion]);
 
   // Extract userId from phone number when available
   useEffect(() => {
@@ -563,9 +572,6 @@ const Quiz = () => {
         return newMessages;
       });
     } finally {
-      if(chatInputRef && chatInputRef?.current) {
-        chatInputRef.current.focus();
-      }
       setLoading(false);
     }
   };
@@ -771,30 +777,43 @@ const Quiz = () => {
   };
 
   const scrollUp = () => {
-     window.scrollTo({
-      top: document.documentElement.scrollHeight,
-      behavior: "smooth",
-    });
+    setTimeout(() => {
+      window.scrollTo({
+        top: 0,
+        behavior: "smooth",
+      });
+    }, 100);
   };
 
   const scrollToBottom = () => {
-    window.scrollTo({
-      top: document.documentElement.scrollHeight,
-      behavior: "smooth",
-    });
-
+    setTimeout(() => {
+      window.scrollTo({
+        top: document.documentElement.scrollHeight,
+        behavior: "smooth",
+      });
+    }, 100);
   };
 
+  // Enhanced scroll behavior with better timing
   useEffect(() => {
-    window.scrollTo({
-      top: document.documentElement.scrollHeight,
-      behavior: "smooth",
-    });
+    const timer = setTimeout(() => {
+      window.scrollTo({
+        top: document.documentElement.scrollHeight,
+        behavior: "smooth",
+      });
+    }, 200); // Increased delay for better UX
+
+    return () => clearTimeout(timer);
   }, [conversation, currentQuestion]);
 
   useEffect(() => {
     if (!currentQuestion && isLastQuestion && overviewRef.current) {
-      overviewRef.current.scrollIntoView({ behavior: "smooth" });
+      setTimeout(() => {
+        overviewRef.current.scrollIntoView({ 
+          behavior: "smooth",
+          block: "start"
+        });
+      }, 300);
     }
   }, [currentQuestion, isLastQuestion]);
 
@@ -807,94 +826,106 @@ const Quiz = () => {
   }
 
   return (
-    <div className="bg-white flex flex-col items-center relative">
+    <div className="bg-white flex flex-col items-center relative min-h-screen">
       <ChatHeader logo={logo} />
       <div
         ref={chatRef}
-        className="bg-white rounded-lg min-h-[98vh] max-h-[98vh] 
-        pb-4 w-full max-w-3xl  flex flex-col relative"
+        className="bg-white rounded-lg w-full max-w-3xl flex flex-col relative"
+        style={{ minHeight: 'calc(100vh - 80px)' }} // Adjust based on header height
       >
-        {/* <div className="flex-1"></div> */}
-        <div className={`flex flex-col flex-1 grow pt-20  ${currentQuestion?.inputType == "free_text" || isChatMode ? "pb-24" : "pb-4"}`}>
-          {conversation.map((item, idx) => {
-            const isLastAnswer =
-              item.type === "answer" &&
-              (idx === conversation.length - 1 ||
-                (idx === conversation.length - 2 &&
-                  conversation[idx + 1]?.type === "comment"));
+        {/* Main content container with proper spacing */}
+        <div className={`flex flex-col flex-1 pt-20 px-0 ${
+          currentQuestion?.inputType === "free_text" || isChatMode 
+            ? "pb-32" // More space for fixed input
+            : "pb-8"
+        }`}>
+          
+          {/* Conversation messages */}
+          <div className="flex-1">
+            {conversation.map((item, idx) => {
+              const isLastAnswer =
+                item.type === "answer" &&
+                (idx === conversation.length - 1 ||
+                  (idx === conversation.length - 2 &&
+                    conversation[idx + 1]?.type === "comment"));
 
-            // Render chart if the message type is 'chart'
-            if (item.type === "chart") {
-              return (
-                <div key={idx} className="mb-4 px-4 flex justify-start">
-                  <div className="px-2 py-2 rounded-xl border-1 border-green-300 bg-white w-full max-w-full">
-                    <PlotChart data={item.text} />
+              // Render chart if the message type is 'chart'
+              if (item.type === "chart") {
+                return (
+                  <div key={idx} className="mb-4 px-4 flex justify-start">
+                    <div className="px-2 py-2 rounded-xl border-1 border-green-300 bg-white w-full max-w-full">
+                      <PlotChart data={item.text} />
+                    </div>
                   </div>
-                </div>
-              );
-            }
+                );
+              }
 
-            return (
-              <ChatMessage
-                key={idx}
-                message={item}
-                isLastAnswer={isLastAnswer}
-                canReload={canReload && !isChatMode}
-                loading={loading}
-                onReload={handleReloadAnswer}
-                chatMode={isChatMode}
-              />
-            );
-          })}
-
-          <LoadingIndicator loading={loading && !isChatMode} />
-
-          {/* Show QuestionDisplay only if not in chat mode and there's a current question */}
-          {!isChatMode && currentQuestion && (
-            <QuestionDisplay
-              onValidationError={scrollUp}
-              scrollUp={scrollToBottom} // This was already scrollToBottom in your code
-              scrollToBottom={scrollToBottom} // Add this new prop for error scrolling
-              currentQuestion={currentQuestion}
-              loading={loading}
-              textInput={textInput}
-              onTextChange={setTextInput}
-              onOptionClick={handleOptionClick}
-              onTextSubmit={handleTextSubmit}
-              onMultiSelectSubmit={handleMultiSelectSubmit}
-            />
-          )}
-
-          {/* Show text input for chat mode */}
-          {isChatMode && !loading && (
-            <div className="mt-4 fixed px-4 pb-4 bottom-0 w-full max-w-3xl bg-white">
-              <div className="flex gap-2 relative">
-                <input
-                ref={chatInputRef}
-                  type="text"
-                  value={textInput}
-                  onChange={(e) => setTextInput(e.target.value)}
-                  onKeyPress={(e) => {
-                    if (e.key === "Enter") {
-                      handleChatInput(textInput);
-                    }
-                  }}
-                  placeholder="Ask me anything about your retirement plan..."
-                  className={`w-full px-4 py-3 pr-10 border-2 jost rounded-xl text-sm focus:outline-none border-gray-300 focus:border-secondary`}
+              return (
+                <ChatMessage
+                  key={idx}
+                  message={item}
+                  isLastAnswer={isLastAnswer}
+                  canReload={canReload && !isChatMode}
+                  loading={loading}
+                  onReload={handleReloadAnswer}
+                  chatMode={isChatMode}
                 />
-                <button
-                  onClick={() => handleChatInput(textInput)}
-                  disabled={!textInput.trim() || loading}
-                  className="absolute right-2 top-1/2 -translate-y-1/2 p-1 disabled:text-gray-400 disabled:cursor-not-allowed"
-                >
-                  <img src={sendIcon} alt="send" className="w-6 mt-4 mb-4" />
-                </button>
-              </div>
+              );
+            })}
 
+            <LoadingIndicator loading={loading && !isChatMode} />
+          </div>
+
+          {/* Question display - positioned relatively in flow */}
+          {!isChatMode && currentQuestion && (
+            <div className="mt-4">
+              <QuestionDisplay
+                onValidationError={scrollUp}
+                scrollUp={scrollToBottom}
+                scrollToBottom={scrollToBottom}
+                currentQuestion={currentQuestion}
+                loading={loading}
+                textInput={textInput}
+                onTextChange={setTextInput}
+                onOptionClick={handleOptionClick}
+                onTextSubmit={handleTextSubmit}
+                onMultiSelectSubmit={handleMultiSelectSubmit}
+              />
             </div>
           )}
 
-          <div id="overview" ref={overviewRef} className="scroll-mt-20"></div>
+          {/* Chat input - fixed at bottom */}
+          {isChatMode && (
+            <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 z-50">
+              <div className="max-w-3xl mx-auto px-4 py-4">
+                <div className="flex gap-2 relative">
+                  <input
+                    ref={chatInputRef}
+                    type="text"
+                    value={textInput}
+                    onChange={(e) => setTextInput(e.target.value)}
+                    onKeyPress={(e) => {
+                      if (e.key === "Enter" && !loading) {
+                        handleChatInput(textInput);
+                      }
+                    }}
+                    placeholder="Ask me anything about your retirement plan..."
+                    className="w-full px-4 py-3 pr-12 border-2 jost rounded-xl text-sm focus:outline-none border-gray-300 focus:border-green-500 transition-colors"
+                    disabled={loading}
+                  />
+                  <button
+                    onClick={() => handleChatInput(textInput)}
+                    disabled={!textInput.trim() || loading}
+                    className="absolute right-2 top-1/2 -translate-y-1/2 p-2 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-100 rounded-lg transition-colors"
+                  >
+                    <img src={sendIcon} alt="send" className="w-5 h-5" />
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
+
+          <div id="overview" ref={overviewRef} className="scroll-mt-20 h-4"></div>
         </div>
       </div>
     </div>
