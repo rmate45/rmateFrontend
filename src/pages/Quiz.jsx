@@ -827,7 +827,7 @@ const Quiz = () => {
             if (item.type === "chart") {
               return (
                 <div key={idx} className="mb-4 px-4 flex justify-start">
-                  <div className="px-2 py-2 rounded-xl border-2 border-green-300 bg-white w-full max-w-full">
+                  <div className="px-2 py-2 rounded-xl border-1 border-green-300 bg-white w-full max-w-full">
                     <PlotChart data={item.text} />
                   </div>
                 </div>
