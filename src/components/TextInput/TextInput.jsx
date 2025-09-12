@@ -149,14 +149,6 @@ export const TextInput = ({
       )}
       <div className="relative">
         <input
-          onFocus={(e) => {
-              // prevent iOS Safari/Chrome from auto-scrolling
-            setTimeout(() => {
-              e.target.scrollIntoView({ block: "nearest", inline: "nearest", behavior: "smooth" });
-            }, 100);
-          }}
-          
-           autoFocus
           ref={inputRef}
           type={isAgeInput ? "number" : "text"}
           inputMode={validateAsZip || isAgeInput ? "numeric" : "text"}
