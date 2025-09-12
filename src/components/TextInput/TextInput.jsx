@@ -278,7 +278,7 @@ export const TextInput = ({
                 if (inputRef.current && document.activeElement !== inputRef.current) {
                   inputRef.current.focus();
                 }
-              }, 50);
+              }, 500);
             }
           }}
           placeholder={
