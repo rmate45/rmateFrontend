@@ -819,7 +819,7 @@ const Quiz = () => {
       <ChatHeader logo={logo} />
       <div
         ref={chatRef}
-        className="bg-white rounded-lg min-h-[98vh] max-h-[98vh] 
+        className="bg-white rounded-lg
         pb-4 w-full max-w-3xl  flex flex-col relative"
       >
         {/* <div className="flex-1"></div> */}
