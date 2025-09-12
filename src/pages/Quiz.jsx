@@ -95,6 +95,7 @@ const Quiz = () => {
   // New states for chat functionality
   const [isChatMode, setIsChatMode] = useState(false);
   const [userId, setUserId] = useState(null);
+  const [keyboardOpen, setKeyboardOpen] = useState(false);
 
   // New state for chart data
   const [chartData, setChartData] = useState(null);
@@ -135,6 +136,18 @@ const Quiz = () => {
     }
   }, [userAnswers]);
 
+  useEffect(() => {
+    const threshold = 150; // px difference to assume keyboard
+    let initialHeight = window.innerHeight;
+
+    const handleResize = () => {
+      const diff = initialHeight - window.innerHeight;
+      setKeyboardOpen(diff > threshold);
+    };
+
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
   const initializeFlow = async () => {
     try {
       setLoading(true);
@@ -222,7 +235,6 @@ const Quiz = () => {
   };
 
   const moveToNextQuestion = () => {
-
     console.log(currentQuestionIndex, "currentQuestionIndex");
 
     if (currentQuestionIndex == 0) {
@@ -820,13 +832,15 @@ const Quiz = () => {
       <div
         ref={chatRef}
         className="bg-white rounded-lg min-h-[98vh] max-h-[98vh] 
-        pb-4 w-full max-w-3xl  flex flex-col relative"
+        pb-4 w-full max-w-3xl  flex flex-col relative "
       >
         {/* <div className="flex-1"></div> */}
         <div
-          className={`flex flex-col  mt-24  ${
+          className={`flex flex-col mt-24 ${
             currentQuestion?.inputType == "free_text" || isChatMode
-              ? "pb-24"
+              ? keyboardOpen
+                ? "pb-8" // less padding when keyboard open
+                : "pb-24"
               : "pb-4"
           }`}
         >
