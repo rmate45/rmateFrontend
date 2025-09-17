@@ -86,7 +86,7 @@ const STARTER_QUESTIONS = {
       id: "healthcare_budget",
       text: "How much should I budget for healthcare in retirement?",
     },
-  ]
+  ],
 };
 
 const Quiz = () => {
@@ -135,10 +135,10 @@ const Quiz = () => {
   }, []);
 
   useEffect(() => {
-    if(chatInputRef && chatInputRef?.current) {
+    if (chatInputRef && chatInputRef?.current) {
       chatInputRef.current.focus();
     }
-  }, [chatInputRef, isChatMode, loading])
+  }, [chatInputRef, isChatMode, loading]);
 
   // Extract userId from phone number when available
   useEffect(() => {
@@ -466,7 +466,10 @@ const Quiz = () => {
       await handleSendMessage(prompt, true);
     } catch (error) {
       console.error("Error handling starter question:", error);
-      addToConversation("system", "Sorry, there was an error processing your question. Please try again.");
+      addToConversation(
+        "system",
+        "Sorry, there was an error processing your question. Please try again."
+      );
       setLoading(false);
     }
   };
@@ -486,7 +489,10 @@ const Quiz = () => {
       await handleSendMessage(prompt, true);
     } catch (error) {
       console.error("Error handling follow-up question:", error);
-      addToConversation("system", "Sorry, there was an error processing your question. Please try again.");
+      addToConversation(
+        "system",
+        "Sorry, there was an error processing your question. Please try again."
+      );
       setLoading(false);
     }
   };
@@ -602,6 +608,8 @@ const Quiz = () => {
 
       // After the answer is complete, generate follow-up questions
       if (assistantMessage) {
+        setLoading(true);
+        setIsChatMode(false);
         setTimeout(async () => {
           await generateFollowUpQuestions();
         }, 1000);
@@ -658,7 +666,11 @@ const Quiz = () => {
   // Generate follow-up questions
   const generateFollowUpQuestions = async () => {
     try {
-      const followUpPrompt = "Based on the previous response, give me two follow-up questions that lead into broader aspects of retirement planning such as taxes planning, insurance, 401K, type retirement plans government benefits, social security. Provide only the questions from the first word to the ending question mark, separated by * with no commentary.";
+      const followUpPrompt =
+        "Based on the previous response, give me two follow-up questions that lead into broader aspects of retirement planning such as taxes planning, insurance, 401K, type retirement plans government benefits, social security. Provide only the questions from the first word to the ending question mark, separated by * with no commentary.";
+
+      setLoading(true);
+      setIsChatMode(false);
 
       const response = await fetch(
         "https://test-api.retiremate.com/api/chat/send",
@@ -707,9 +719,9 @@ const Quiz = () => {
       // Parse the questions (separated by *)
       if (questionsResponse) {
         const questions = questionsResponse
-          .split('*')
-          .map(q => q.trim())
-          .filter(q => q.length > 0 && q.includes('?'))
+          .split("*")
+          .map((q) => q.trim())
+          .filter((q) => q.length > 0 && q.includes("?"))
           .slice(0, 2); // Take only first 2 questions
 
         if (questions.length > 0) {
@@ -718,7 +730,11 @@ const Quiz = () => {
         }
       }
 
+      setLoading(false);
+      setIsChatMode(true);
     } catch (error) {
+      setLoading(false);
+      setIsChatMode(true);
       console.error("Error generating follow-up questions:", error);
     }
   };
@@ -806,7 +822,6 @@ const Quiz = () => {
   };
 
   const handleTextSubmit = async (inputData) => {
-
     // Handle both regular text input and phone data object
     let displayText = "";
     let storeValue = inputData;
@@ -924,7 +939,7 @@ const Quiz = () => {
   };
 
   const scrollUp = () => {
-     window.scrollTo({
+    window.scrollTo({
       top: document.documentElement.scrollHeight,
       behavior: "smooth",
     });
@@ -935,7 +950,6 @@ const Quiz = () => {
       top: document.documentElement.scrollHeight,
       behavior: "smooth",
     });
-
   };
 
   useEffect(() => {
@@ -943,7 +957,13 @@ const Quiz = () => {
       top: document.documentElement.scrollHeight,
       behavior: "smooth",
     });
-  }, [conversation, currentQuestion, showStarterQuestions, showFollowUpQuestions]);
+  }, [
+    conversation,
+    currentQuestion,
+    showStarterQuestions,
+    showFollowUpQuestions,
+    loading
+  ]);
 
   useEffect(() => {
     if (!currentQuestion && isLastQuestion && overviewRef.current) {
@@ -967,7 +987,13 @@ const Quiz = () => {
         className="bg-white rounded-lg min-h-[98vh] max-h-[98vh] 
         pb-4 w-full max-w-3xl  flex flex-col relative"
       >
-        <div className={`flex flex-col flex-1 grow mt-20 ${currentQuestion?.inputType == "free_text" || isChatMode ? "pb-24" : "pb-4"}`}>
+        <div
+          className={`flex flex-col flex-1 grow mt-20 ${
+            currentQuestion?.inputType == "free_text" || isChatMode
+              ? "pb-24"
+              : "pb-4"
+          }`}
+        >
           {conversation.map((item, idx) => {
             const isLastAnswer =
               item.type === "answer" &&
@@ -999,7 +1025,14 @@ const Quiz = () => {
             );
           })}
 
-          <LoadingIndicator loading={loading && !isChatMode && !showStarterQuestions && !showFollowUpQuestions} />
+          <LoadingIndicator
+            loading={
+              loading &&
+              !isChatMode &&
+              !showStarterQuestions &&
+              !showFollowUpQuestions
+            }
+          />
 
           {/* Show starter questions after quiz completion */}
           {showStarterQuestions && (
@@ -1042,20 +1075,22 @@ const Quiz = () => {
           )}
 
           {/* Show QuestionDisplay only if not in structured Q&A mode and there's a current question */}
-          {!showStarterQuestions && !showFollowUpQuestions && currentQuestion && (
-            <QuestionDisplay
-              onValidationError={scrollUp}
-              scrollUp={scrollToBottom}
-              scrollToBottom={scrollToBottom}
-              currentQuestion={currentQuestion}
-              loading={loading}
-              textInput={textInput}
-              onTextChange={setTextInput}
-              onOptionClick={handleOptionClick}
-              onTextSubmit={handleTextSubmit}
-              onMultiSelectSubmit={handleMultiSelectSubmit}
-            />
-          )}
+          {!showStarterQuestions &&
+            !showFollowUpQuestions &&
+            currentQuestion && (
+              <QuestionDisplay
+                onValidationError={scrollUp}
+                scrollUp={scrollToBottom}
+                scrollToBottom={scrollToBottom}
+                currentQuestion={currentQuestion}
+                loading={loading}
+                textInput={textInput}
+                onTextChange={setTextInput}
+                onOptionClick={handleOptionClick}
+                onTextSubmit={handleTextSubmit}
+                onMultiSelectSubmit={handleMultiSelectSubmit}
+              />
+            )}
 
           <div id="overview" ref={overviewRef} className="scroll-mt-20"></div>
         </div>
