@@ -6,7 +6,6 @@ import { ChatMessage } from "../components/ChatMessage/ChatMessage";
 import { LoadingIndicator } from "../components/LoadingIndicator/LoadingIndicator";
 import { QuestionDisplay } from "../components/QuestionDisplay/QuestionDisplay";
 import api from "../api/api.js";
-import sendIcon from "../assets/send.svg";
 import PlotChart from "../components/PlotChart/PlotChart.jsx";
 
 function buildPayload(response) {
@@ -107,6 +106,7 @@ const Quiz = () => {
   const [isLastQuestion, setIsLastQuestion] = useState(false);
   const overviewRef = useRef(null);
   const chatInputRef = useRef(null);
+  const [chatQuestion, setChatQuestion] = useState(null);
 
   // New states for handling the flow
   const [allQuestions, setAllQuestions] = useState([]);
@@ -128,6 +128,23 @@ const Quiz = () => {
   const [followUpQuestions, setFollowUpQuestions] = useState([]);
   const [showFollowUpQuestions, setShowFollowUpQuestions] = useState(false);
   const [userName, setUserName] = useState("");
+  const [customQuestionInput, setCustomQuestionInput] = useState("");
+  const [isScroll, setIsScroll] = useState(false);
+
+  // Create mock question objects for chat mode
+  const createStarterQuestion = () => ({
+    questionId: "STARTER",
+    questionText: STARTER_QUESTIONS.main,
+    inputType: "starter_questions",
+    options: STARTER_QUESTIONS.options,
+  });
+
+  const createFollowUpQuestion = () => ({
+    questionId: "FOLLOWUP",
+    questionText: "Choose your next question:",
+    inputType: "combined_input", // Use combined_input to show both options and text input
+    options: followUpQuestions,
+  });
 
   // Initialize the flow when component mounts
   useEffect(() => {
@@ -171,6 +188,16 @@ const Quiz = () => {
       setUserName(nameAnswer.answer);
     }
   }, [userAnswers]);
+
+  useEffect(() => {
+    if (showStarterQuestions) {
+      setChatQuestion(createStarterQuestion());
+    } else if (showFollowUpQuestions && followUpQuestions.length > 0) {
+      setChatQuestion(createFollowUpQuestion());
+    } else {
+      setChatQuestion(null);
+    }
+  }, [showStarterQuestions, showFollowUpQuestions, followUpQuestions]);
 
   const initializeFlow = async () => {
     try {
@@ -259,6 +286,11 @@ const Quiz = () => {
   };
 
   const moveToNextQuestion = () => {
+
+    if (currentQuestionIndex == 0) {
+      setIsScroll(true);
+    }
+
     const nextIndex = currentQuestionIndex + 1;
 
     if (nextIndex < allQuestions.length) {
@@ -489,6 +521,31 @@ const Quiz = () => {
       await handleSendMessage(prompt, true);
     } catch (error) {
       console.error("Error handling follow-up question:", error);
+      addToConversation(
+        "system",
+        "Sorry, there was an error processing your question. Please try again."
+      );
+      setLoading(false);
+    }
+  };
+
+  const handleCustomQuestionSubmit = async () => {
+    if (!customQuestionInput.trim() || loading) return;
+
+    setShowFollowUpQuestions(false);
+    setLoading(true);
+
+    // Add the custom question to conversation
+    addToConversation("answer", customQuestionInput);
+
+    // Create the prompt for Suze Orman style answer
+    const prompt = `Answer the question for **${userName}**. ${customQuestionInput} Answer suze orman style. Give concise answer under 4 lines`;
+
+    try {
+      await handleSendMessage(prompt, true);
+      setCustomQuestionInput(""); // Clear the input after submission
+    } catch (error) {
+      console.error("Error handling custom question:", error);
       addToConversation(
         "system",
         "Sorry, there was an error processing your question. Please try again."
@@ -730,6 +787,7 @@ const Quiz = () => {
         }
       }
 
+      scrollToBottom();
       setLoading(false);
       setIsChatMode(true);
     } catch (error) {
@@ -881,14 +939,6 @@ const Quiz = () => {
     );
   };
 
-  // New function to handle user input in chat mode (now unused, replaced by structured Q&A)
-  const handleChatInput = async (message) => {
-    if (!message.trim() || loading) return;
-
-    await handleSendMessage(message);
-    setTextInput(""); // Clear input after sending
-  };
-
   const handleReloadAnswer = async () => {
     if (!lastAnswerOption || !lastQuestionText || !lastQuestionData) return;
 
@@ -953,16 +1003,20 @@ const Quiz = () => {
   };
 
   useEffect(() => {
-    window.scrollTo({
-      top: document.documentElement.scrollHeight,
-      behavior: "smooth",
-    });
+   if (isScroll) {
+      window.scrollTo({
+        top: document.documentElement.scrollHeight,
+        behavior: "smooth",
+      });
+    }
   }, [
     conversation,
     currentQuestion,
     showStarterQuestions,
     showFollowUpQuestions,
-    loading
+    loading,
+    chatQuestion,
+    isScroll
   ]);
 
   useEffect(() => {
@@ -1033,51 +1087,32 @@ const Quiz = () => {
               !showFollowUpQuestions
             }
           />
-
-          {/* Show starter questions after quiz completion */}
-          {showStarterQuestions && (
-            <div className="mx-4 mt-4">
-              <div className="mb-4 jost text-sm border-2 border-green-300 px-4 py-2 text-center rounded-xl text-gray-800 font-semibold max-w-sm">
-                {STARTER_QUESTIONS.main}
-              </div>
-              <div className="space-y-2">
-                {STARTER_QUESTIONS.options.map((option, idx) => (
-                  <button
-                    key={idx}
-                    onClick={() => handleStarterQuestionSelect(option)}
-                    className="w-full py-2 px-3 text-left jost border-2 border-gray-300 rounded-lg hover:border-green-300 hover:bg-green-50 transition-all"
-                  >
-                    {option.text}
-                  </button>
-                ))}
-              </div>
-            </div>
-          )}
-
-          {/* Show follow-up questions */}
-          {showFollowUpQuestions && followUpQuestions.length > 0 && (
-            <div className="mx-4 mt-4">
-              <div className="mb-4 jost text-sm border-2 border-green-300 px-4 py-2 text-center rounded-xl text-gray-800 font-semibold">
-                Choose your next question:
-              </div>
-              <div className="space-y-2">
-                {followUpQuestions.map((question, idx) => (
-                  <button
-                    key={idx}
-                    onClick={() => handleFollowUpQuestionSelect(question)}
-                    className="w-full py-2 px-3 text-left jost border-2 border-gray-300 rounded-lg hover:border-green-300 hover:bg-green-50 transition-all"
-                  >
-                    {question}
-                  </button>
-                ))}
-              </div>
-            </div>
+          {chatQuestion && (
+            <QuestionDisplay
+              currentQuestion={chatQuestion}
+              loading={loading}
+              textInput={customQuestionInput}
+              onTextChange={setCustomQuestionInput}
+              onOptionClick={handleOptionClick}
+              onTextSubmit={handleCustomQuestionSubmit}
+              onMultiSelectSubmit={handleMultiSelectSubmit}
+              onValidationError={scrollUp}
+              scrollUp={scrollUp}
+              scrollToBottom={scrollToBottom}
+              // Chat-specific props
+              onStarterQuestionSelect={handleStarterQuestionSelect}
+              onFollowUpQuestionSelect={handleFollowUpQuestionSelect}
+              customQuestionInput={customQuestionInput}
+              onCustomQuestionChange={setCustomQuestionInput}
+              onCustomQuestionSubmit={handleCustomQuestionSubmit}
+            />
           )}
 
           {/* Show QuestionDisplay only if not in structured Q&A mode and there's a current question */}
           {!showStarterQuestions &&
             !showFollowUpQuestions &&
-            currentQuestion && (
+            currentQuestion &&
+            !chatQuestion && (
               <QuestionDisplay
                 onValidationError={scrollUp}
                 scrollUp={scrollToBottom}
