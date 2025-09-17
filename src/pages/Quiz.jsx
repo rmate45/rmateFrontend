@@ -107,6 +107,7 @@ const Quiz = () => {
   const [isLastQuestion, setIsLastQuestion] = useState(false);
   const overviewRef = useRef(null);
   const chatInputRef = useRef(null);
+    const [isScroll, setIsScroll] = useState(false);
 
   // New states for handling the flow
   const [allQuestions, setAllQuestions] = useState([]);
@@ -259,6 +260,11 @@ const Quiz = () => {
   };
 
   const moveToNextQuestion = () => {
+
+      if (currentQuestionIndex == 0) {
+      setIsScroll(true);
+    }
+
     const nextIndex = currentQuestionIndex + 1;
 
     if (nextIndex < allQuestions.length) {
@@ -953,16 +959,19 @@ const Quiz = () => {
   };
 
   useEffect(() => {
-    window.scrollTo({
-      top: document.documentElement.scrollHeight,
-      behavior: "smooth",
-    });
+    if (isScroll) {
+      window.scrollTo({
+        top: document.documentElement.scrollHeight,
+        behavior: "smooth",
+      });
+    }
   }, [
     conversation,
     currentQuestion,
     showStarterQuestions,
     showFollowUpQuestions,
-    loading
+    loading,
+    isScroll
   ]);
 
   useEffect(() => {
@@ -988,7 +997,7 @@ const Quiz = () => {
         pb-4 w-full max-w-3xl  flex flex-col relative"
       >
         <div
-          className={`flex flex-col flex-1 grow mt-36 sm:mt-20 ${
+          className={`flex flex-col flex-1 grow mt-20 ${
             currentQuestion?.inputType == "free_text" || isChatMode
               ? "pb-24"
               : "pb-4"
