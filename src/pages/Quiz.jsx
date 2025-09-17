@@ -66,6 +66,29 @@ function buildPayload(response) {
   };
 }
 
+// Predefined starter questions
+const STARTER_QUESTIONS = {
+  main: "What is your top concern for retirement planning?",
+  options: [
+    {
+      id: "behind_savings",
+      text: "Am I behind on retirement savings at my age?",
+    },
+    {
+      id: "spouse_kids",
+      text: "Am I saving enough to support a spouse and kids in retirement?",
+    },
+    {
+      id: "tax_implications",
+      text: "What are the tax implications of withdrawing retirement funds early?",
+    },
+    {
+      id: "healthcare_budget",
+      text: "How much should I budget for healthcare in retirement?",
+    },
+  ]
+};
+
 const Quiz = () => {
   const location = useLocation();
   const params = new URLSearchParams(location.search);
@@ -99,6 +122,13 @@ const Quiz = () => {
   const [chartData, setChartData] = useState(null);
   const [showChart, setShowChart] = useState(false);
 
+  // New states for structured Q&A flow
+  const [showStarterQuestions, setShowStarterQuestions] = useState(false);
+  const [selectedStarterQuestion, setSelectedStarterQuestion] = useState(null);
+  const [followUpQuestions, setFollowUpQuestions] = useState([]);
+  const [showFollowUpQuestions, setShowFollowUpQuestions] = useState(false);
+  const [userName, setUserName] = useState("");
+
   // Initialize the flow when component mounts
   useEffect(() => {
     initializeFlow();
@@ -131,6 +161,14 @@ const Quiz = () => {
       if (phoneNumber) {
         setUserId(phoneNumber);
       }
+    }
+  }, [userAnswers]);
+
+  // Extract user name from Q1 answer
+  useEffect(() => {
+    const nameAnswer = userAnswers["Q1"];
+    if (nameAnswer?.answer) {
+      setUserName(nameAnswer.answer);
     }
   }, [userAnswers]);
 
@@ -233,9 +271,9 @@ const Quiz = () => {
       setIsLastQuestion(true);
       setCanReload(false);
       setLoading(true);
-      // Call save API first, then start chat mode
+      // Call save API first, then start structured Q&A mode
       saveUserResponses().then(() => {
-        startChatMode();
+        startStructuredQA();
       });
     }
   };
@@ -340,8 +378,8 @@ const Quiz = () => {
     }
   };
 
-  // New function to start chat mode after quiz completion
-  const startChatMode = async () => {
+  // Modified function to start structured Q&A instead of open chat
+  const startStructuredQA = async () => {
     try {
       setLoading(true);
 
@@ -361,12 +399,14 @@ const Quiz = () => {
         return;
       }
 
-      console.log("Starting chat mode with userId:", userId);
+      console.log("Starting structured Q&A with userId:", userId);
       console.log("User answers:", userAnswers);
 
       const chartPayload = buildPayload(userAnswers);
 
       const response = await fetchChartData(chartPayload);
+
+      setIsChatMode(true);
 
       // Set chart data and show it
       if (response?.data?.data) {
@@ -382,35 +422,76 @@ const Quiz = () => {
         // Add chart component to conversation
         addToConversation("chart", response.data?.data?.data);
 
-        // Wait a bit, then show the chat assistance message
+        // Wait a bit, then show the structured questions
         setTimeout(() => {
           addToConversation(
             "system",
-            "Now you can ask me anything about your retirement plan, savings strategies, or any financial questions you might have!"
+            "Now, let's dive deeper into your retirement planning concerns:"
           );
+          setShowStarterQuestions(true);
           setLoading(false);
-          setIsChatMode(true);
         }, 2000);
       } else {
         addToConversation(
           "system",
-          "I couldn't generate your chart data, but I'm ready to help with any retirement planning questions you have!"
+          "I couldn't generate your chart data, but let's continue with your retirement planning questions!"
         );
+        setShowStarterQuestions(true);
         setLoading(false);
-        setIsChatMode(true);
       }
     } catch (error) {
-      console.error("Error starting chat mode:", error);
+      console.error("Error starting structured Q&A:", error);
       addToConversation(
         "system",
-        "Something went wrong while generating your analysis, but I'm still here to help with your retirement planning questions!"
+        "Something went wrong while generating your analysis, but let's continue with your retirement planning questions!"
       );
+      setShowStarterQuestions(true);
       setLoading(false);
-      setIsChatMode(true);
     }
   };
 
-  // New chat message handler with streaming
+  // Handle starter question selection
+  const handleStarterQuestionSelect = async (questionOption) => {
+    setSelectedStarterQuestion(questionOption);
+    setShowStarterQuestions(false);
+    setLoading(true);
+
+    // Add the selected question to conversation
+    addToConversation("answer", questionOption.text);
+
+    // Create the prompt for Suze Orman style answer
+    const prompt = `Answer the question for **${userName}**. ${questionOption.text} Answer suze orman style. Give concise answer under 4 lines`;
+
+    try {
+      await handleSendMessage(prompt, true);
+    } catch (error) {
+      console.error("Error handling starter question:", error);
+      addToConversation("system", "Sorry, there was an error processing your question. Please try again.");
+      setLoading(false);
+    }
+  };
+
+  // Handle follow-up question selection
+  const handleFollowUpQuestionSelect = async (questionText) => {
+    setShowFollowUpQuestions(false);
+    setLoading(true);
+
+    // Add the selected question to conversation
+    addToConversation("answer", questionText);
+
+    // Create the prompt for Suze Orman style answer
+    const prompt = `Answer the question for **${userName}**. ${questionText} Answer suze orman style. Give concise answer under 4 lines`;
+
+    try {
+      await handleSendMessage(prompt, true);
+    } catch (error) {
+      console.error("Error handling follow-up question:", error);
+      addToConversation("system", "Sorry, there was an error processing your question. Please try again.");
+      setLoading(false);
+    }
+  };
+
+  // Modified chat message handler with streaming and follow-up question generation
   const handleSendMessage = async (message, isInitialMessage = false) => {
     try {
       setLoading(true);
@@ -519,6 +600,13 @@ const Quiz = () => {
         });
       }
 
+      // After the answer is complete, generate follow-up questions
+      if (assistantMessage) {
+        setTimeout(async () => {
+          await generateFollowUpQuestions();
+        }, 1000);
+      }
+
       // Fallback: if no streaming data was received, mark as complete
       if (!assistantMessage) {
         console.warn("No streaming data received");
@@ -563,10 +651,75 @@ const Quiz = () => {
         return newMessages;
       });
     } finally {
-      if(chatInputRef && chatInputRef?.current) {
-        chatInputRef.current.focus();
-      }
       setLoading(false);
+    }
+  };
+
+  // Generate follow-up questions
+  const generateFollowUpQuestions = async () => {
+    try {
+      const followUpPrompt = "Based on the previous response, give me two follow-up questions that lead into broader aspects of retirement planning such as taxes planning, insurance, 401K, type retirement plans government benefits, social security. Provide only the questions from the first word to the ending question mark, separated by * with no commentary.";
+
+      const response = await fetch(
+        "https://test-api.retiremate.com/api/chat/send",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ userId, message: followUpPrompt }),
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const reader = response.body.getReader();
+      const decoder = new TextDecoder();
+      let questionsResponse = "";
+
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+
+        const chunk = decoder.decode(value);
+        const lines = chunk.split("\n");
+
+        lines.forEach((line) => {
+          if (line.startsWith("data: ")) {
+            try {
+              const jsonData = line.slice(5).trim();
+              if (jsonData === "[DONE]") return;
+
+              const data = JSON.parse(jsonData);
+
+              if (data.type === "delta" && data.content) {
+                questionsResponse += data.content;
+              }
+            } catch (e) {
+              console.error("Error parsing follow-up questions:", e);
+            }
+          }
+        });
+      }
+
+      // Parse the questions (separated by *)
+      if (questionsResponse) {
+        const questions = questionsResponse
+          .split('*')
+          .map(q => q.trim())
+          .filter(q => q.length > 0 && q.includes('?'))
+          .slice(0, 2); // Take only first 2 questions
+
+        if (questions.length > 0) {
+          setFollowUpQuestions(questions);
+          setShowFollowUpQuestions(true);
+        }
+      }
+
+    } catch (error) {
+      console.error("Error generating follow-up questions:", error);
     }
   };
 
@@ -713,7 +866,7 @@ const Quiz = () => {
     );
   };
 
-  // New function to handle user input in chat mode
+  // New function to handle user input in chat mode (now unused, replaced by structured Q&A)
   const handleChatInput = async (message) => {
     if (!message.trim() || loading) return;
 
@@ -790,7 +943,7 @@ const Quiz = () => {
       top: document.documentElement.scrollHeight,
       behavior: "smooth",
     });
-  }, [conversation, currentQuestion]);
+  }, [conversation, currentQuestion, showStarterQuestions, showFollowUpQuestions]);
 
   useEffect(() => {
     if (!currentQuestion && isLastQuestion && overviewRef.current) {
@@ -814,8 +967,7 @@ const Quiz = () => {
         className="bg-white rounded-lg min-h-[98vh] max-h-[98vh] 
         pb-4 w-full max-w-3xl  flex flex-col relative"
       >
-        {/* <div className="flex-1"></div> */}
-        <div className={`flex flex-col flex-1 grow mt-20  ${currentQuestion?.inputType == "free_text" || isChatMode ? "pb-24" : "pb-4"}`}>
+        <div className={`flex flex-col flex-1 grow mt-20 ${currentQuestion?.inputType == "free_text" || isChatMode ? "pb-24" : "pb-4"}`}>
           {conversation.map((item, idx) => {
             const isLastAnswer =
               item.type === "answer" &&
@@ -847,14 +999,54 @@ const Quiz = () => {
             );
           })}
 
-          <LoadingIndicator loading={loading && !isChatMode} />
+          <LoadingIndicator loading={loading && !isChatMode && !showStarterQuestions && !showFollowUpQuestions} />
 
-          {/* Show QuestionDisplay only if not in chat mode and there's a current question */}
-          {!isChatMode && currentQuestion && (
+          {/* Show starter questions after quiz completion */}
+          {showStarterQuestions && (
+            <div className="mx-4 mt-4">
+              <div className="mb-4 jost text-sm border-2 border-green-300 px-4 py-2 text-center rounded-xl text-gray-800 font-semibold max-w-sm">
+                {STARTER_QUESTIONS.main}
+              </div>
+              <div className="space-y-2">
+                {STARTER_QUESTIONS.options.map((option, idx) => (
+                  <button
+                    key={idx}
+                    onClick={() => handleStarterQuestionSelect(option)}
+                    className="w-full py-2 px-3 text-left jost border-2 border-gray-300 rounded-lg hover:border-green-300 hover:bg-green-50 transition-all"
+                  >
+                    {option.text}
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Show follow-up questions */}
+          {showFollowUpQuestions && followUpQuestions.length > 0 && (
+            <div className="mx-4 mt-4">
+              <div className="mb-4 jost text-sm border-2 border-green-300 px-4 py-2 text-center rounded-xl text-gray-800 font-semibold">
+                Choose your next question:
+              </div>
+              <div className="space-y-2">
+                {followUpQuestions.map((question, idx) => (
+                  <button
+                    key={idx}
+                    onClick={() => handleFollowUpQuestionSelect(question)}
+                    className="w-full py-2 px-3 text-left jost border-2 border-gray-300 rounded-lg hover:border-green-300 hover:bg-green-50 transition-all"
+                  >
+                    {question}
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Show QuestionDisplay only if not in structured Q&A mode and there's a current question */}
+          {!showStarterQuestions && !showFollowUpQuestions && currentQuestion && (
             <QuestionDisplay
               onValidationError={scrollUp}
-              scrollUp={scrollToBottom} // This was already scrollToBottom in your code
-              scrollToBottom={scrollToBottom} // Add this new prop for error scrolling
+              scrollUp={scrollToBottom}
+              scrollToBottom={scrollToBottom}
               currentQuestion={currentQuestion}
               loading={loading}
               textInput={textInput}
@@ -863,35 +1055,6 @@ const Quiz = () => {
               onTextSubmit={handleTextSubmit}
               onMultiSelectSubmit={handleMultiSelectSubmit}
             />
-          )}
-
-          {/* Show text input for chat mode */}
-          {isChatMode && !loading && (
-            <div className="mt-4 fixed px-4 pb-4 bottom-0 w-full max-w-3xl bg-white">
-              <div className="flex gap-2 relative">
-                <input
-                ref={chatInputRef}
-                  type="text"
-                  value={textInput}
-                  onChange={(e) => setTextInput(e.target.value)}
-                  onKeyPress={(e) => {
-                    if (e.key === "Enter") {
-                      handleChatInput(textInput);
-                    }
-                  }}
-                  placeholder="Ask me anything about your retirement plan..."
-                  className={`w-full px-4 py-3 pr-10 border-2 jost rounded-xl text-sm focus:outline-none border-gray-300 focus:border-secondary`}
-                />
-                <button
-                  onClick={() => handleChatInput(textInput)}
-                  disabled={!textInput.trim() || loading}
-                  className="absolute right-2 top-1/2 -translate-y-1/2 p-1 disabled:text-gray-400 disabled:cursor-not-allowed"
-                >
-                  <img src={sendIcon} alt="send" className="w-6 mt-4 mb-4" />
-                </button>
-              </div>
-
-            </div>
           )}
 
           <div id="overview" ref={overviewRef} className="scroll-mt-20"></div>
