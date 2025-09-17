@@ -997,7 +997,7 @@ const Quiz = () => {
         pb-4 w-full max-w-3xl  flex flex-col relative"
       >
         <div
-          className={`flex flex-col flex-1 grow mt-20 ${
+          className={`flex flex-col flex-1 grow mt-24 ${
             currentQuestion?.inputType == "free_text" || isChatMode
               ? "pb-24"
               : "pb-4"
