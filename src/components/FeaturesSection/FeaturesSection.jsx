@@ -1,6 +1,7 @@
 // components/FeaturesSection/FeaturesSection.js
 import React from 'react';
 import Carousel from '../Carousel/Carousel';
+import avatar from '../../assets/avatar.webp';
 const FeatureItem = ({ icon, description }) => {
   return (
     <div className="flex flex-col gap-1 justify-center items-center max-w-[305px]">
@@ -98,7 +99,7 @@ const FeaturesSection = ({ features = [], testimonials = [] }) => {
               renderItem={(currentItems) => (
                 <div className="flex flex-col p-5 rounded-xl gap-4 bg-white text-black h-full" style={{ boxShadow: "rgba(0, 0, 0, 0.15) 0px 4px 15px" }}>
                   <div className="flex gap-3 text-left items-center">
-                    {/* <img src={avatar} alt="Avatar" className="w-11 h-11" /> */}
+                    <img src={avatar} alt="Avatar" className="w-11 h-11 rounded-full" />
                     <div>
                       <h2 className="text-base font-medium">{currentItems.name}</h2>
                       <p className="text-sm jost font-light mt-1">{currentItems.title}</p>
