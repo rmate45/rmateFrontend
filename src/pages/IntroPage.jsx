@@ -20,6 +20,7 @@ import bookmark from "../assets/bookmark.png";
 import savings from "../assets/savings.png";
 import currency from "../assets/currency_exchange.png";
 import avatar from "../assets/Avatar.png";
+import RetiremateEdge from "../components/RetiremateEdge/RetiremateEdge";
 
 function IntroPage() {
   // Data for components
@@ -29,6 +30,7 @@ function IntroPage() {
       text: "How long will my savings last?",
       color: "#567257",
       tag: "Budget",
+      description: "Learn how your savings will grow and then decline in retirement for 3 lifestyle types.",
       tagcolor: "#FFDDB5",
     },
     {
@@ -36,6 +38,7 @@ function IntroPage() {
       text: "What age can I retire?",
       color: "#896A58",
       tag: "Age",
+      description: "Discover the earliest and most sustainable retirement age based on your savings, income, and lifestyle goals.",
       tagcolor: "#B5E0FF",
     },
       {
@@ -44,11 +47,13 @@ function IntroPage() {
       color: "#ACAB9E",
       tag: "Budget",
       tagcolor: "#FFDDB5",
+      description: "Find out the monthly savings you need today to stay on track for a secure and comfortable retirement.",
     },
     {
       id: 4,
       text: "What will my retirement income be?",
       color: "#ACAB9E",
+      description: "Estimate your retirement income from savings, Social Security, and other sources to see how much you’ll have each month.",
       tag: "Budget",
       tagcolor: "#FFDDB5",
     },
@@ -58,15 +63,16 @@ function IntroPage() {
       color: "#ACAB9E",
       tag: "Location",
       tagcolor: "#BEFFB5",
+      description: "Compare the benefits of claiming Social Security early versus delaying, and see which option maximizes your lifetime income.",
     },
     {
       id: 6,
       text: "How will inflation impact me?",
       color: "#ACAB9E",
+      description: "Understand how rising costs will affect your retirement expenses and what you can do to protect your purchasing power.",
       tag: "Category",
       tagcolor: "#DDB5FF",
     },
-  
   ];
 
   const questionsAsked = [
@@ -102,39 +108,6 @@ function IntroPage() {
       icon: chat,
       description:
         "Want to speak with a Certified Financial Planner? RetireMate will help you find the right one for you.",
-    },
-  ];
-
-  const testimonials = [
-    {
-      id: 1,
-      text: "I've always let my husband handle our finances, but I worry what would happen if I had to figure out retirement alone. RetireMate gives me confidence that I'd know exactly what to do.",
-      name: "Lisa M.",
-      title: "Recently Divorced, Part-time worker",
-    },
-    {
-      id: 2,
-      text: "Full-time Mom, Planning aheadWe've been saving for years, but we honestly don't know if it's enough. Between our mortgage, kids, and everything else, it's hard to know if we're on track. RetireMate gave us a roadmap to see where we stand and what we should do next.",
-      name: "Rachel T.",
-      title: "Full-time Mom, Planning ahead",
-    },
-    {
-      id: 3,
-      text: "I make a good living, but I never realized how much I'd need to maintain my lifestyle into my 90s. RetireMate gave me a roadmap to see the gap and how to close it.",
-      name: "David & Sarah K.",
-      title: "Working Parents, Homeowners",
-    },
-    {
-      id: 4,
-      text: "I drive for Uber and never had a retirement plan through work. I didn't even know where to start. RetireMate gave me simple steps to begin saving, even with an irregular income.",
-      name: "Dr. James R.",
-      title: "Cardiologist, High Earner",
-    },
-    {
-      id: 5,
-      text: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamc. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamc...",
-      name: "Marcus L.",
-      title: "Rideshare Driver, Contract Worker",
     },
   ];
 
@@ -179,6 +152,8 @@ function IntroPage() {
         onSearch={handleSearch}
         onVoiceSearch={handleVoiceSearch}
       />
+
+      <RetiremateEdge />
 
       <SuggestedQuestions
         questions={suggestedQuestions}

@@ -1,5 +1,5 @@
 // components/QuestionsToAction/QuestionsToAction.js
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Carousel from "../Carousel/Carousel";
 import { ChevronDown } from "lucide-react";
 
@@ -50,7 +50,6 @@ const FilterDropdown = ({ id, label, value, onChange, options }) => {
   );
 };
 
-
 const QuestionsToAction = ({
   questions = [],
   ageOptions = [],
@@ -58,8 +57,12 @@ const QuestionsToAction = ({
   onQuestionClick,
   onBrowseAllClick,
 }) => {
-  const [selectedAge, setSelectedAge] = useState("");
-  const [selectedGender, setSelectedGender] = useState("");
+  // Set default values
+  const [selectedAge, setSelectedAge] = useState("45-54");
+  const [selectedGender, setSelectedGender] = useState("Male");
+  const [apiQuestions, setApiQuestions] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
 
   const defaultQuestions = [
     { id: 1, text: "How does divorce impact my retirement benefits?" },
@@ -71,25 +74,93 @@ const QuestionsToAction = ({
   ];
 
   const defaultAgeOptions = [
-    { value: "18-20", label: "18-20" },
-    { value: "21-24", label: "21-24" },
-    { value: "25-29", label: "25-29" },
-    { value: "30-34", label: "30-34" },
-    { value: "35+", label: "35+" },
+    { value: "18-24", label: "18-24" },
+    { value: "25-34", label: "25-34" },
+    { value: "35-44", label: "35-44" },
+    { value: "45-54", label: "45-54" },
+    { value: "55-64", label: "55-64" },
+    { value: "65-74", label: "65-74" },
+    { value: "75-84", label: "75-84" },
+    { value: "85+", label: "85+" },
   ];
 
   const defaultGenderOptions = [
-    { value: "male", label: "Male" },
-    { value: "female", label: "Female" },
-    { value: "other", label: "Other" },
+    { value: "Male", label: "Male" },
+    { value: "Female", label: "Female" },
+    { value: "both", label: "Both" },
   ];
 
-  const questionsToDisplay =
-    questions.length > 0 ? questions : defaultQuestions;
   const ageOptionsToDisplay =
     ageOptions.length > 0 ? ageOptions : defaultAgeOptions;
   const genderOptionsToDisplay =
     genderOptions.length > 0 ? genderOptions : defaultGenderOptions;
+
+  // API call function
+  const fetchRetirementQuestions = async (ageGroup, gender) => {
+    setLoading(true);
+    setError(null);
+
+    try {
+      const response = await fetch(
+        `https://quiz-api.retiremate.com/api/v1/retirement-questions?ageGroup=${ageGroup}&gender=${gender}&page=1&limit=10`
+      );
+
+      if (!response.ok) {
+        throw new Error("Failed to fetch questions");
+      }
+
+      const data = await response.json();
+
+      if (data.type === "success" && data.data && data.data.questions) {
+        // Transform API response to match expected format
+        const transformedQuestions = data.data.questions.map(
+          (question, index) => ({
+            id: question._id || index + 1,
+            text: question.prompt,
+            ...question, // Include other properties if needed
+          })
+        );
+
+        setApiQuestions(transformedQuestions);
+      } else {
+        throw new Error("Invalid response format");
+      }
+    } catch (err) {
+      console.error("Error fetching retirement questions:", err);
+      setError(err.message);
+      // Fallback to default questions on error
+      setApiQuestions([]);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Fetch questions on component mount and when filters change
+  useEffect(() => {
+    if (selectedAge) {
+      fetchRetirementQuestions(selectedAge, selectedGender);
+    }
+  }, [selectedAge, selectedGender]);
+
+  // Handle age change
+  const handleAgeChange = (age) => {
+    setSelectedAge(age);
+  };
+
+  // Handle gender change
+  const handleGenderChange = (gender) => {
+    setSelectedGender(gender);
+  };
+
+  // Determine which questions to display
+  const questionsToDisplay = () => {
+    if (apiQuestions.length > 0) {
+      return apiQuestions;
+    }
+
+    // Fallback to provided questions or default questions
+    return questions.length > 0 ? questions : defaultQuestions;
+  };
 
   return (
     <div className="bg-[#D9D8D5] text-center px-4 sm:px-6 py-10 sm:py-16">
@@ -106,7 +177,7 @@ const QuestionsToAction = ({
                 id="age"
                 label="Age"
                 value={selectedAge}
-                onChange={setSelectedAge}
+                onChange={handleAgeChange}
                 options={ageOptionsToDisplay}
               />
 
@@ -114,7 +185,7 @@ const QuestionsToAction = ({
                 id="gender"
                 label="Gender"
                 value={selectedGender}
-                onChange={setSelectedGender}
+                onChange={handleGenderChange}
                 options={genderOptionsToDisplay}
               />
             </div>
@@ -124,7 +195,7 @@ const QuestionsToAction = ({
           <div className="w-full lg:flex-1 px-5">
             <div className="max-w-3xl mx-auto">
               <Carousel
-                items={questionsToDisplay}
+                items={questionsToDisplay()}
                 renderItem={(q) => (
                   <div className="flex h-full">
                     <button
@@ -132,18 +203,22 @@ const QuestionsToAction = ({
                         rounded-3xl 
                         text-left 
                         p-5 sm:p-7 
-                        bg-introPrimary 
+                        bg-introPrimary
                         tracking-wide 
                         shadow-md 
-                      
                         w-full 
                         text-white 
                         font-medium sm:font-normal 
                         text-base sm:text-lg 
                         flex items-start
                         mx-auto
+                        cursor-pointer
                       "
-                      onClick={() => onQuestionClick && onQuestionClick(q)}
+                      onClick={() => {
+                        if (onQuestionClick) {
+                          onQuestionClick(q);
+                        }
+                      }}
                     >
                       {q.text}
                     </button>
@@ -153,20 +228,6 @@ const QuestionsToAction = ({
             </div>
           </div>
         </div>
-
-        {/* Browse link */}
-        {/* <div className="mt-8 border-t border-[#D9D9D9] pt-4">
-          <a
-            href="#"
-            onClick={(e) => {
-              e.preventDefault();
-              onBrowseAllClick && onBrowseAllClick();
-            }}
-            className="text-[#2A2420] jost text-center font-semibold block"
-          >
-            Browse all questions
-          </a>
-        </div> */}
       </div>
     </div>
   );

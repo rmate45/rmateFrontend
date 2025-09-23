@@ -53,17 +53,20 @@ const handleQuestionClick = (question) => {
                 }}
                 onClick={() => handleQuestionClick(q)}
               >
-                <span
-                  style={{ backgroundColor: q.tagcolor }}
-                  className="text-xs inline-block p-1.5 rounded"
-                >
-                  {q.tag}
-                </span>
                 <p className="text-wrap font-bold text-lg md:text-2xl text-[#567257] grow-1">
                   {q.text}
                 </p>
-                <div className="flex justify-end w-full absolute right-3 bottom-3">
-                  <img src={AiImage} alt="chat" role="button" />
+                <p
+                  className="text-xs inline-block p-1.5 rounded"
+                >
+                  {q.description}
+                </p>
+                <div className="flex justify-end w-full">
+                  <button
+                    className="text-xs font-semibold border-2  placeholder-primary px-4 py-2 rounded-full"
+                  >
+                    Ask Retiremate
+                  </button>
                 </div>
               </div>
             )}
