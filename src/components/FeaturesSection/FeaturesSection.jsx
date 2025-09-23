@@ -76,7 +76,7 @@ const FeaturesSection = ({ features = [], testimonials = [] }) => {
       img: avatar5
     }
   ];
-
+//   console.log(testimonialsdata)
   const featuresToDisplay = features.length > 0 ? features : defaultFeatures;
 
   return (
