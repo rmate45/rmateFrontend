@@ -88,7 +88,6 @@ const FeaturesSection = ({ features = [], testimonials = [] }) => {
         <h2 className="text-introPrimary font-medium text-2xl">
           Planning for Retirement should always be this easy.
         </h2>
-
         <div className="flex gap-4 items-start justify-center my-10 flex-wrap mx-auto">
           {featuresToDisplay.map((feature, index) => (
             <FeatureItem
