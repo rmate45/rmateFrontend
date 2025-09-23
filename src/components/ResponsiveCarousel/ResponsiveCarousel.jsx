@@ -8,7 +8,7 @@ const ResponsiveCarousel = ({ items, renderItem, slidesToShow = 3 }) => {
 
   // Custom component for mobile slides (3 items per slide)
   const MobileSlide = ({ slideItems }) => (
-    <div className="flex flex-col gap-4 h-full justify-between">
+    <div className="flex flex-col gap-4 h-full">
       {slideItems.map((item, idx) => (
         <div key={idx} className="w-full">
           {renderItem(item, idx)}

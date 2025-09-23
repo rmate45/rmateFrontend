@@ -6,10 +6,6 @@ import ResponsiveCarousel from "../ResponsiveCarousel/ResponsiveCarousel";
 
 const SuggestedQuestions = ({ questions, onQuestionClick }) => {
   const handleQuestionClick = (question) => {
-    // Open quiz in a new tab with state passed via URL params
-    const queryParam = encodeURIComponent(question.text);
-    window.open(`/quiz?title=${queryParam}`, "_blank");
-
     // Still call the original onQuestionClick if provided
     if (onQuestionClick) {
       onQuestionClick(question);
@@ -49,7 +45,7 @@ const SuggestedQuestions = ({ questions, onQuestionClick }) => {
                 }}
                 onClick={() => handleQuestionClick(q)}
               >
-                <p className="text-wrap font-bold text-lg md:text-2xl text-[#567257] grow-1">
+                <p className="text-wrap font-bold text-lg md:text-[24px] text-[#567257] grow-1">
                   {q.text}
                 </p>
                 <p className="text-xs inline-block p-1.5 rounded">

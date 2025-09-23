@@ -255,6 +255,7 @@ export const TextInput = ({
           type={isAgeInput ? "number" : "text"}
           inputMode={validateAsZip || isAgeInput ? "numeric" : "text"}
           pattern={validateAsZip || isAgeInput ? "\\d*" : undefined}
+          disabled={loading }
           maxLength={validateAsZip ? 6 : undefined}
           value={value}
           onChange={(e) => handleChange(e.target.value)}

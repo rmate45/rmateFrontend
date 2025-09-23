@@ -1,7 +1,7 @@
 // components/QuestionsToAction/QuestionsToAction.js
 import React, { useState, useEffect } from "react";
-import Carousel from "../Carousel/Carousel";
 import { ChevronDown } from "lucide-react";
+import ResponsiveCarousel from "../ResponsiveCarousel/ResponsiveCarousel";
 
 const FilterDropdown = ({ id, label, value, onChange, options }) => {
   return (
@@ -194,10 +194,18 @@ const QuestionsToAction = ({
           {/* Right side: Carousel */}
           <div className="w-full lg:flex-1 px-5">
             <div className="max-w-3xl mx-auto">
-              <Carousel
+              <ResponsiveCarousel
                 items={questionsToDisplay()}
                 renderItem={(q) => (
-                  <div className="flex h-full">
+                  <div
+                    className="flex h-full"
+                    key={q.id}
+                    onClick={() => {
+                      if (onQuestionClick) {
+                        onQuestionClick(q);
+                      }
+                    }}
+                  >
                     <button
                       className="
                         rounded-3xl 
@@ -213,14 +221,20 @@ const QuestionsToAction = ({
                         flex items-start
                         mx-auto
                         cursor-pointer
+                        flex-col
+                        gap-4
+                        hover:opacity-90
+                        transition
+                        duration-200
                       "
-                      onClick={() => {
-                        if (onQuestionClick) {
-                          onQuestionClick(q);
-                        }
-                      }}
                     >
-                      {q.text}
+                      <p className="text-wrap grow-1 text-left">{q.text}</p>
+
+                      <div className="flex justify-end w-full">
+                        <button className="text-xs font-semibold border-2  placeholder-primary px-4 py-2 rounded-full">
+                          Ask Retiremate
+                        </button>
+                      </div>
                     </button>
                   </div>
                 )}

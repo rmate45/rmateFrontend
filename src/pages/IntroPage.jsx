@@ -30,7 +30,8 @@ function IntroPage() {
       text: "How long will my savings last?",
       color: "#567257",
       tag: "Budget",
-      description: "Learn how your savings will grow and then decline in retirement for 3 lifestyle types.",
+      description:
+        "Learn how your savings will grow and then decline in retirement for 3 lifestyle types.",
       tagcolor: "#FFDDB5",
     },
     {
@@ -38,22 +39,25 @@ function IntroPage() {
       text: "What age can I retire?",
       color: "#896A58",
       tag: "Age",
-      description: "Discover the earliest and most sustainable retirement age based on your savings, income, and lifestyle goals.",
+      description:
+        "Discover the earliest and most sustainable retirement age based on your savings, income, and lifestyle goals.",
       tagcolor: "#B5E0FF",
     },
-      {
+    {
       id: 3,
       text: "How much should I save per month?",
       color: "#ACAB9E",
       tag: "Budget",
       tagcolor: "#FFDDB5",
-      description: "Find out the monthly savings you need today to stay on track for a secure and comfortable retirement.",
+      description:
+        "Find out the monthly savings you need today to stay on track for a secure and comfortable retirement.",
     },
     {
       id: 4,
       text: "What will my retirement income be?",
       color: "#ACAB9E",
-      description: "Estimate your retirement income from savings, Social Security, and other sources to see how much you’ll have each month.",
+      description:
+        "Estimate your retirement income from savings, Social Security, and other sources to see how much you’ll have each month.",
       tag: "Budget",
       tagcolor: "#FFDDB5",
     },
@@ -63,13 +67,15 @@ function IntroPage() {
       color: "#ACAB9E",
       tag: "Location",
       tagcolor: "#BEFFB5",
-      description: "Compare the benefits of claiming Social Security early versus delaying, and see which option maximizes your lifetime income.",
+      description:
+        "Compare the benefits of claiming Social Security early versus delaying, and see which option maximizes your lifetime income.",
     },
     {
       id: 6,
       text: "How will inflation impact me?",
       color: "#ACAB9E",
-      description: "Understand how rising costs will affect your retirement expenses and what you can do to protect your purchasing power.",
+      description:
+        "Understand how rising costs will affect your retirement expenses and what you can do to protect your purchasing power.",
       tag: "Category",
       tagcolor: "#DDB5FF",
     },
@@ -128,8 +134,8 @@ function IntroPage() {
   };
 
   const handleQuestionClick = (question) => {
-    console.log("Question clicked:", question);
-    // This is now optional - navigation is handled in SuggestedQuestions
+    const queryParam = encodeURIComponent(question.text);
+    window.open(`/quiz?title=${queryParam}`, "_blank");
   };
 
   const handleBrowseAllClick = () => {

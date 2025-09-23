@@ -77,6 +77,12 @@ export const TextInputPhone = ({
           inputProps={{
             name: "phone",
             required: true,
+            onKeyDown: (e) => {
+              if (e.key === "Enter") {
+                e.preventDefault(); // prevent form submit reloads
+                handleSubmit();
+              }
+            },
           }}
         />
 

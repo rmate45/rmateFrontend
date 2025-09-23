@@ -219,7 +219,7 @@ const Quiz = () => {
       index++;
 
       if (index < statementsData.length) {
-        setTimeout(showNext, 1500);
+        setTimeout(showNext, 1000);
       } else {
         setTimeout(fetchQuestions, 1000);
       }
@@ -526,8 +526,6 @@ const Quiz = () => {
         return newConv;
       });
 
-      console.log("Sending message to API:", { userId, message }); // Debug log
-
       // Prepare for streaming response
       const response = await fetch(
         "https://test-api.retiremate.com/api/chat/send",
@@ -778,7 +776,7 @@ const Quiz = () => {
     if (comment && comment.trim()) {
       setTimeout(() => {
         addToConversation("comment", comment);
-      }, 1000);
+      }, 800);
     }
 
     setTimeout(
@@ -786,7 +784,7 @@ const Quiz = () => {
         moveToNextQuestion();
         setLoading(false);
       },
-      comment && comment.trim() ? 2500 : 1500
+      comment && comment.trim() ? 2000 : 1000
     );
   };
 
@@ -815,7 +813,7 @@ const Quiz = () => {
     if (comment && comment.trim()) {
       setTimeout(() => {
         addToConversation("comment", comment);
-      }, 1000);
+      }, 800);
     }
 
     setTimeout(
@@ -823,7 +821,7 @@ const Quiz = () => {
         moveToNextQuestion();
         setLoading(false);
       },
-      comment && comment.trim() ? 2500 : 1500
+      comment && comment.trim() ? 2000 : 1000
     );
   };
 
@@ -883,16 +881,8 @@ const Quiz = () => {
         moveToNextQuestion();
         setLoading(false);
       },
-      comment && comment.trim() ? 2500 : 1500
+      comment && comment.trim() ? 2000 : 1000
     );
-  };
-
-  // New function to handle user input in chat mode (now unused, replaced by structured Q&A)
-  const handleChatInput = async (message) => {
-    if (!message.trim() || loading) return;
-
-    await handleSendMessage(message);
-    setTextInput(""); // Clear input after sending
   };
 
   const handleReloadAnswer = async () => {
