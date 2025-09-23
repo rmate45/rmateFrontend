@@ -147,7 +147,7 @@ div#root {
 }
 
 .slick-list {
-  height: auto !important;
+  height: unset !important;
 }
 
 @media (max-width: 767px) {

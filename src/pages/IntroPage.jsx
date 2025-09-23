@@ -81,14 +81,6 @@ function IntroPage() {
     },
   ];
 
-  const questionsAsked = [
-    { id: 1, text: "How does divorce impact my retirement benefits?" },
-    {
-      id: 2,
-      text: "What retirement benefits can I claim from a deceased or ex-spouse",
-    },
-    { id: 3, text: "Should I increase contributions now that kids are older?" },
-  ];
 
   const features = [
     {
@@ -173,7 +165,6 @@ function IntroPage() {
       <FeaturesSection features={features} />
 
       <QuestionsToAction
-        questions={questionsAsked}
         onQuestionClick={handleQuestionClick}
         onBrowseAllClick={handleBrowseAllClick}
       />

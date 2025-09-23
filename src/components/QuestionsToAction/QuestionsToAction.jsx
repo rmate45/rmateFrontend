@@ -100,6 +100,9 @@ const QuestionsToAction = ({
     setLoading(true);
     setError(null);
 
+    console.log(ageGroup, "ageGroup");
+    console.log(gender, "gender");
+
     try {
       const response = await fetch(
         `https://quiz-api.retiremate.com/api/v1/retirement-questions?ageGroup=${ageGroup}&gender=${gender}&page=1&limit=10`
@@ -159,8 +162,10 @@ const QuestionsToAction = ({
     }
 
     // Fallback to provided questions or default questions
-    return questions.length > 0 ? questions : defaultQuestions;
+    return defaultQuestions;
   };
+
+  console.log(questionsToDisplay(), "questionsToDisplay");
 
   return (
     <div className="bg-[#D9D8D5] text-center px-4 sm:px-6 py-10 sm:py-16">
@@ -228,7 +233,9 @@ const QuestionsToAction = ({
                         duration-200
                       "
                     >
-                      <p className="text-wrap grow-1 text-left">{q.text}</p>
+                      <p className="text-wrap text-lg grow-1 text-left">
+                        {q.text}
+                      </p>
 
                       <div className="flex justify-end w-full">
                         <button className="text-xs font-semibold border-2  placeholder-primary px-4 py-2 rounded-full">

@@ -8,7 +8,7 @@ const ResponsiveCarousel = ({ items, renderItem, slidesToShow = 3 }) => {
 
   // Custom component for mobile slides (3 items per slide)
   const MobileSlide = ({ slideItems }) => (
-    <div className="flex flex-col gap-4 h-full">
+    <div className="flex flex-col gap-4">
       {slideItems.map((item, idx) => (
         <div key={idx} className="w-full">
           {renderItem(item, idx)}
@@ -52,6 +52,7 @@ const ResponsiveCarousel = ({ items, renderItem, slidesToShow = 3 }) => {
           dots: true,
           adaptiveHeight: true,
           arrows: false,
+          infinite: items.length > slidesToShow,
         },
       },
     ],
@@ -74,7 +75,7 @@ const ResponsiveCarousel = ({ items, renderItem, slidesToShow = 3 }) => {
       <div className="w-full  block md:hidden lg:hidden xl:hidden">
         <Slider ref={sliderRef} {...settings}>
           {mobileChunks.map((chunk, idx) => (
-            <div key={idx} className="px-2 h-full">
+            <div key={idx} className="px-2">
               <MobileSlide slideItems={chunk} />
             </div>
           ))}
