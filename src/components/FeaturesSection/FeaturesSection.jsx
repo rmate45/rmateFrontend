@@ -97,9 +97,6 @@ const FeaturesSection = ({ features = [], testimonials = [] }) => {
               items={testimonialsdata}
               renderItem={(currentItems) => (
                 <div className="flex flex-col p-5 rounded-xl gap-4 bg-white text-black h-full" style={{ boxShadow: "rgba(0, 0, 0, 0.15) 0px 4px 15px" }}>
-                  <p className="text-sm jost font-light line-clamp-5 text-left text-black grow-1">
-                    {currentItems.text}
-                  </p>
                   <div className="flex gap-3 text-left items-center">
                     {/* <img src={avatar} alt="Avatar" className="w-11 h-11" /> */}
                     <div>
@@ -107,6 +104,9 @@ const FeaturesSection = ({ features = [], testimonials = [] }) => {
                       <p className="text-sm jost font-light mt-1">{currentItems.title}</p>
                     </div>
                   </div>
+                  <p className="text-sm jost font-light line-clamp-5 text-left text-black grow-1">
+                    {currentItems.text}
+                  </p>
                 </div>
               )} />
           </div>
