@@ -81,7 +81,7 @@ const QuestionsToAction = ({
     { value: "55-64", label: "55-64" },
     { value: "65-74", label: "65-74" },
     { value: "75-84", label: "75-84" },
-    { value: "85+", label: "85+" },
+    { value: "85%2B", label: "85+" },
   ];
 
   const defaultGenderOptions = [
