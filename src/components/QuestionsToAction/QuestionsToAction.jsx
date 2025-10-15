@@ -105,7 +105,7 @@ const QuestionsToAction = ({
 
     try {
       const response = await fetch(
-        `https://quiz-api.retiremate.com/api/v1/retirement-questions?ageGroup=${ageGroup}&gender=${gender}&page=1&limit=10`
+        `https://dev-api.retiremate.com/api/v1/retirement-questions?ageGroup=${ageGroup}&gender=${gender}&page=1&limit=10`
       );
 
       if (!response.ok) {

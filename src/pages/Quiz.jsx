@@ -58,11 +58,13 @@ function buildPayload(response) {
   const age = parseInt(response?.Q3?.value, 10) || null;
   const householdIncome = parseMedian(response?.Q9?.value);
   const retirementSavings = parseMedian(response?.Q10?.value);
+  const otherSavings = parseMedian(response?.Q11?.value);
 
   return {
     age,
     householdIncome,
     retirementSavings,
+    otherSavings
   };
 }
 
@@ -528,7 +530,7 @@ const Quiz = () => {
 
       // Prepare for streaming response
       const response = await fetch(
-        "https://test-api.retiremate.com/api/chat/send",
+        "https://rag-api.retiremate.com/api/chat/send",
         {
           method: "POST",
           headers: {
@@ -677,7 +679,7 @@ const Quiz = () => {
       setIsChatMode(false);
 
       const response = await fetch(
-        "https://test-api.retiremate.com/api/chat/send",
+        "https://rag-api.retiremate.com/api/chat/send",
         {
           method: "POST",
           headers: {
@@ -1005,7 +1007,7 @@ const Quiz = () => {
               return (
                 <div key={idx} className="mb-4 px-4 flex justify-start">
                   <div className="px-2 py-2 rounded-xl border-1 border-green-300 bg-white w-full max-w-full">
-                    <PlotChart data={item.text} />
+                    <PlotChart data={item} />
                   </div>
                 </div>
               );

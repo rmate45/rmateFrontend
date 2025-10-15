@@ -3,7 +3,7 @@
 import axios from "axios";
 
 const api = axios.create({
-  baseURL: "https://quiz-api.retiremate.com/api/v1", // Centralized base URL
+  baseURL: "https://dev-api.retiremate.com/api/v1", // Centralized base URL
   headers: {
     "Content-Type": "application/json",
   },
