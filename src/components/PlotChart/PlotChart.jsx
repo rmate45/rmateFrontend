@@ -42,7 +42,7 @@ const PlotChart = ({ data }) => {
     typeof data.text === "string" ? JSON.parse(data.text) : data.text;
 
   // ===============================
-  // Generate Summary Insight
+  // Generate Insight Summary (refined phrasing)
   // ===============================
   let summaryText = "";
   if (parsedData && parsedData.length > 0) {
@@ -57,9 +57,9 @@ const PlotChart = ({ data }) => {
       .find((d) => d.savings > 0);
 
     if (depletionPoint) {
-      summaryText = `Based on your responses, your current savings and income sources are projected to last until around age ${depletionPoint.age}. Beyond this point, your savings may be depleted unless adjustments are made to your spending or withdrawals.`;
+      summaryText = `According to our analysis, your savings and income sources are projected to comfortably support you until around age ${depletionPoint.age}. Beyond that age, your savings may begin to run low — consider exploring ways to optimize spending or adjust your withdrawal strategy to extend your financial security.`;
     } else {
-      summaryText = `According to your responses, your savings appear sustainable through at least age ${endAge}, peaking at around ${dollarFormatter(
+      summaryText = `According to our analysis, your savings appear sustainable through at least age ${endAge}, peaking around ${dollarFormatter(
         peakSavings
       )} and remaining above ${dollarFormatter(
         minSavings
@@ -67,11 +67,11 @@ const PlotChart = ({ data }) => {
     }
 
     if (lastPositive && !depletionPoint) {
-      summaryText += ` This suggests a solid retirement plan with consistent income support until your late years.`;
+      summaryText += ` This suggests a strong and well-balanced retirement plan, with steady income and manageable expenses throughout your later years.`;
     }
   } else {
     summaryText =
-      "No data available to generate insights. Please review your responses and try again.";
+      "We couldn’t generate insights yet — please review your inputs and try again to see your personalized retirement outlook.";
   }
 
   // ===============================
@@ -118,6 +118,7 @@ const PlotChart = ({ data }) => {
           </LineChart>
         </ResponsiveContainer>
       </div>
+
       {/* Dynamic Summary Text */}
       <p className="jost text-sm text-gray-700 mt-4 leading-relaxed text-center">
         {summaryText}
