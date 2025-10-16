@@ -69,6 +69,10 @@
     height: 510px !important;
 }
 
+.label-set{
+    margin-top: 10px;
+}
+
 @media screen and (max-width: 678px) {
     .chart-container {
         height: 520px !important;

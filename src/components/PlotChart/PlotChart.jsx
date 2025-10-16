@@ -153,13 +153,14 @@ const PlotChart = ({ data }) => {
                   x={startPoint.age}
                   y={startPoint.savings}
                   r={5}
-                  fill="#374254"
+                  fill="#567257"
                 >
                   <Label
                     value="You are here"
                     position="right"
-                    fill="#374254"
+                    fill="#567257"
                     fontSize={11}
+                    className="label-set"
                   />
                 </ReferenceDot>
               </>
