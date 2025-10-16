@@ -60,3 +60,39 @@
 .plainPagecontainer strong {
     color: #222;
 }
+
+.recharts-wrapper {
+    height: 415px !important;
+}
+
+.chart-container {
+    height: 510px !important;
+}
+
+@media screen and (max-width: 678px) {
+    .chart-container {
+        height: 520px !important;
+    }
+
+}
+
+@media screen and (max-width: 530px) {
+    .chart-container {
+        height: 540px !important;
+    }
+
+}
+
+@media screen and (max-width: 435px) {
+    .chart-container {
+        height: 560px !important;
+    }
+
+}
+
+@media screen and (max-width: 360px) {
+    .chart-container {
+        height: 580px !important;
+    }
+
+}
