@@ -7,9 +7,10 @@ import {
   Tooltip,
   ResponsiveContainer,
   CartesianGrid,
-  ReferenceLine,
   ReferenceDot,
   Label,
+  ReferenceLine
+  
 } from "recharts";
 
 const dollarFormatter = (value) => `$${(value / 1000).toFixed(0)}K`;
@@ -46,6 +47,9 @@ const CustomTooltip = ({ active, payload }) => {
 };
 
 const PlotChart = ({ data }) => {
+
+  console.log(data, "data")
+
   const parsedData =
     typeof data.text === "string" ? JSON.parse(data.text) : data.text;
 
@@ -114,6 +118,15 @@ const PlotChart = ({ data }) => {
               tick={{ fontSize: 10 }}
             />
             <Tooltip content={<CustomTooltip />} />
+     
+{retirementPoint && (
+                <ReferenceLine 
+                    x={retirementPoint.age} 
+                    stroke="green" 
+                    strokeDasharray="3 3" 
+                    strokeWidth={1}
+                />
+            )}
 
             {/* Main savings line */}
             <Line
@@ -124,23 +137,36 @@ const PlotChart = ({ data }) => {
               dot={{ r: 3, fill: "#567257" }}
               activeDot={{ r: 5, fill: "#567257" }}
             />
+            
 
             {/* === Marker for Full Retirement Age (67) === */}
-            {retirementPoint && (
+        {retirementPoint && (
               <>
-                {/* Label the savings value at 67 */}
+                {/* Marker pointer at age 67 */}
                 <ReferenceDot
                   x={67}
                   y={retirementPoint.savings}
-                  r={5}
+                  r={8}
                   fill="#0e6634"
+                  stroke="#fff"
+                  strokeWidth={2}
                 >
-                  <Label
-                    value={`$${(retirementPoint.savings / 1000).toFixed(0)}K`}
+                  {/* <Label
+                    value="Full Retirement Age"
                     position="top"
                     fill="#0e6634"
                     fontSize={11}
                     fontWeight={600}
+                    offset={15}
+                  /> */}
+                  <Label
+                    value={`${(retirementPoint.savings / 1000).toFixed(0)}K`}
+                    position="top"
+                    fill="#0e6634"
+                    fontSize={11}
+                    fontWeight={600}
+                    offset={15}
+                    className="custom-saving"
                   />
                 </ReferenceDot>
               </>
@@ -161,12 +187,19 @@ const PlotChart = ({ data }) => {
                     fill="#567257"
                     fontSize={11}
                     className="label-set"
+                    offset={10}
                   />
                 </ReferenceDot>
               </>
             )}
           </LineChart>
         </ResponsiveContainer>
+
+           {retirementPoint && (
+          <div className="absolute top-0 left-0">
+            okascasc
+          </div>
+        )}
       </div>
 
       <p className="jost text-sm text-gray-700 mt-4 leading-relaxed text-center">
