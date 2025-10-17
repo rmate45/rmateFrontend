@@ -9,8 +9,7 @@ import {
   CartesianGrid,
   ReferenceDot,
   Label,
-  ReferenceLine
-  
+  ReferenceLine,
 } from "recharts";
 
 const dollarFormatter = (value) => `$${(value / 1000).toFixed(0)}K`;
@@ -47,8 +46,7 @@ const CustomTooltip = ({ active, payload }) => {
 };
 
 const PlotChart = ({ data }) => {
-
-  console.log(data, "data")
+  console.log(data, "data");
 
   const parsedData =
     typeof data.text === "string" ? JSON.parse(data.text) : data.text;
@@ -118,14 +116,14 @@ const PlotChart = ({ data }) => {
               tick={{ fontSize: 10 }}
             />
             <Tooltip content={<CustomTooltip />} />
-     
-{retirementPoint && (
-                <ReferenceLine 
-                    x={retirementPoint.age} 
-                    stroke="green" 
-                    strokeDasharray="3 3" 
-                    strokeWidth={1}
-                />
+
+            {retirementPoint && (
+              <ReferenceLine
+                x={retirementPoint.age}
+                stroke="green"
+                strokeDasharray="3 3"
+                strokeWidth={1}
+              />
             )}
 
             {/* Main savings line */}
@@ -137,10 +135,9 @@ const PlotChart = ({ data }) => {
               dot={{ r: 3, fill: "#567257" }}
               activeDot={{ r: 5, fill: "#567257" }}
             />
-            
 
             {/* === Marker for Full Retirement Age (67) === */}
-        {retirementPoint && (
+            {retirementPoint && (
               <>
                 {/* Marker pointer at age 67 */}
                 <ReferenceDot
@@ -194,12 +191,6 @@ const PlotChart = ({ data }) => {
             )}
           </LineChart>
         </ResponsiveContainer>
-
-           {retirementPoint && (
-          <div className="absolute top-0 left-0">
-            okascasc
-          </div>
-        )}
       </div>
 
       <p className="jost text-sm text-gray-700 mt-4 leading-relaxed text-center">

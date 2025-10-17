@@ -54,7 +54,7 @@ const HowLongCard = () => {
         and maintain a comfortable lifestyle.
       </p>
 
-      <div className="flex flex-wrap xl:flex-nowrap">
+      <div className="flex flex-wrap xl:flex-nowrap items-end">
         <div className="w-full h-64">
           <ResponsiveContainer>
             <LineChart

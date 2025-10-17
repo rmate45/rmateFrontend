@@ -44,7 +44,7 @@ const RetireAgeCard = () => {
         lifestyle in Los Angeles, CA, by saving <strong>$1,000/month</strong>.
       </p>
 
-      <div className="flex flex-wrap xl:flex-nowrap">
+      <div className="flex flex-wrap xl:flex-nowrap items-end">
         <div className="w-full h-64">
           <ResponsiveContainer>
             <BarChart
