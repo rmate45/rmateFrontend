@@ -190,7 +190,7 @@ function WelcomePage() {
                         A better way to plan <br /> & save for retirement
                     </Typography>
                     <Typography variant="h6" sx={{ color: '#fff', mb: 4, fontWeight: 300 }}>
-                        Retiremate is your dedicated AI assistant to chat and discuss about your need
+                        RetireMate is your dedicated AI assistant to chat and discuss about your need
                     </Typography>
                 </Container>
             </Box>

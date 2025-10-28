@@ -45,12 +45,12 @@ const HeroSection = ({ searchIcon, onSearch, onVoiceSearch }) => {
         <h1 className="font-medium mb-3 text-3xl md:text-5xl">
           Retirement is Scary.
         </h1>
-        <p className="text-lg sm:text-2xl font-light jost mb-9">
+        <p className="text-lg sm:text-2xl font-light jost ">
           Get a plan in minutes, not months
         </p>
 
         {/* Search Input */}
-        <form
+        {/* <form
           onSubmit={(e) => {
             e.preventDefault();
             handleSearch();
@@ -70,15 +70,9 @@ const HeroSection = ({ searchIcon, onSearch, onVoiceSearch }) => {
               className="flex-1 outline-none jost font-normal text-base px-2 text-introPrimary"
               placeholdertextcolor="#567257"
             />
-            {/* <button 
-              type="button"
-              className="ml-2"
-              onClick={handleVoiceSearch}
-            >
-              <img src={micIcon} alt="Microphone" className="w-8 h-8" />
-            </button> */}
+           
           </div>
-        </form>
+        </form> */}
       </div>
     </div>
   );
