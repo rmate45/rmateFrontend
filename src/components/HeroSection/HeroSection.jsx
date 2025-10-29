@@ -42,7 +42,7 @@ const HeroSection = ({ searchIcon, onSearch, onVoiceSearch }) => {
         </p>
 
         <button 
-        onClick={() => navigate("/quiz")}
+        onClick={() => window.open("/quiz")}
         className="border mt-10 border-white text-white text-lg !font-normal rounded-[10px] jost px-5 py-2 hover:bg-white hover:text-[#567257] transition">
           Check if you're prepared
         </button>

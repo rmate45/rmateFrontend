@@ -122,7 +122,6 @@ const FeaturesSection = ({ features = [], testimonials = [] }) => {
 
       {/* Testimonials Section */}
 
-      <TestimonialsGrid testimonials={testimonialsData || []} />
     </div>
   );
 };

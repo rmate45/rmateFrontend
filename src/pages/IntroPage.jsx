@@ -21,6 +21,7 @@ import savings from "../assets/savings.png";
 import currency from "../assets/currency_exchange.png";
 import avatar from "../assets/Avatar.png";
 import RetiremateEdge from "../components/RetiremateEdge/RetiremateEdge";
+import TestimonialsGrid from "../components/FeaturesSection/components/TestimonialsGrid";
 
 function IntroPage() {
   // Data for components
@@ -149,6 +150,8 @@ function IntroPage() {
         onSearch={handleSearch}
         onVoiceSearch={handleVoiceSearch}
       />
+
+      <TestimonialsGrid />
 
       <RetiremateEdge />
 
