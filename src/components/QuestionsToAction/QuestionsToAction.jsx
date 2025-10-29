@@ -2,6 +2,7 @@
 import React, { useState, useEffect } from "react";
 import { ChevronDown } from "lucide-react";
 import ResponsiveCarousel from "../ResponsiveCarousel/ResponsiveCarousel";
+import api from "../../api/api";
 
 const FilterDropdown = ({ id, label, value, onChange, options }) => {
   return (
@@ -104,16 +105,10 @@ const QuestionsToAction = ({
     console.log(gender, "gender");
 
     try {
-      const response = await fetch(
-        `https://dev-api.retiremate.com/api/v1/retirement-questions?ageGroup=${ageGroup}&gender=${gender}&page=1&limit=10`
+      const response = await api.get(
+        `/retirement-questions?ageGroup=${ageGroup}&gender=${gender}&page=1&limit=10`
       );
-
-      if (!response.ok) {
-        throw new Error("Failed to fetch questions");
-      }
-
-      const data = await response.json();
-
+      const data = response.data;
       if (data.type === "success" && data.data && data.data.questions) {
         // Transform API response to match expected format
         const transformedQuestions = data.data.questions.map(

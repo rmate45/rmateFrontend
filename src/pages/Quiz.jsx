@@ -6,8 +6,9 @@ import { ChatMessage } from "../components/ChatMessage/ChatMessage";
 import { LoadingIndicator } from "../components/LoadingIndicator/LoadingIndicator";
 import { QuestionDisplay } from "../components/QuestionDisplay/QuestionDisplay";
 import api from "../api/api.js";
-import sendIcon from "../assets/send.svg";
 import PlotChart from "../components/PlotChart/PlotChart.jsx";
+
+const chatApiUrl = import.meta.env.VITE_CHAT_API_URL || import.meta.env.REACT_APP_CHAT_API_URL;
 
 function buildPayload(response) {
   const parseMedian = (str) => {
@@ -64,7 +65,7 @@ function buildPayload(response) {
     age,
     householdIncome,
     retirementSavings,
-    otherSavings
+    otherSavings,
   };
 }
 
@@ -109,7 +110,7 @@ const Quiz = () => {
   const [isLastQuestion, setIsLastQuestion] = useState(false);
   const overviewRef = useRef(null);
   const chatInputRef = useRef(null);
-    const [isScroll, setIsScroll] = useState(false);
+  const [isScroll, setIsScroll] = useState(false);
 
   // New states for handling the flow
   const [allQuestions, setAllQuestions] = useState([]);
@@ -262,8 +263,7 @@ const Quiz = () => {
   };
 
   const moveToNextQuestion = () => {
-
-      if (currentQuestionIndex == 0) {
+    if (currentQuestionIndex == 0) {
       setIsScroll(true);
     }
 
@@ -529,16 +529,13 @@ const Quiz = () => {
       });
 
       // Prepare for streaming response
-      const response = await fetch(
-        "https://rag-api.retiremate.com/api/chat/send",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ userId, message }),
-        }
-      );
+      const response = await fetch(`${chatApiUrl}/chat/send`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ userId, message }),
+      });
 
       console.log("API Response status:", response.status); // Debug log
 
@@ -679,7 +676,7 @@ const Quiz = () => {
       setIsChatMode(false);
 
       const response = await fetch(
-        "https://rag-api.retiremate.com/api/chat/send",
+        `${chatApiUrl}/chat/send`,   
         {
           method: "POST",
           headers: {
@@ -963,7 +960,7 @@ const Quiz = () => {
     showStarterQuestions,
     showFollowUpQuestions,
     loading,
-    isScroll
+    isScroll,
   ]);
 
   useEffect(() => {
