@@ -8,6 +8,8 @@ import { QuestionDisplay } from "../components/QuestionDisplay/QuestionDisplay";
 import api from "../api/api.js";
 import PlotChart from "../components/PlotChart/PlotChart.jsx";
 
+const chatApiUrl = import.meta.env.VITE_CHAT_API_URL;
+
 function buildPayload(response) {
   const parseMedian = (str) => {
     if (!str) return null;
@@ -544,7 +546,7 @@ const Quiz = () => {
 
       // Prepare for streaming response
       const response = await fetch(
-        "https://rag-api.retiremate.com/api/chat/send",
+        `${chatApiUrl}/chat/send`,        
         {
           method: "POST",
           headers: {
@@ -693,7 +695,7 @@ const Quiz = () => {
       setIsChatMode(false);
 
       const response = await fetch(
-        "https://rag-api.retiremate.com/api/chat/send",
+         `${chatApiUrl}/chat/send`,   
         {
           method: "POST",
           headers: {
