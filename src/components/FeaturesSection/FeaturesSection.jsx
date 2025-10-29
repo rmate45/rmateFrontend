@@ -5,17 +5,8 @@ import avatar2 from "../../assets/avatar-2.webp";
 import avatar3 from "../../assets/avatar-3.jpeg";
 import avatar4 from "../../assets/avatar-4.jpeg";
 import avatar5 from "../../assets/avatar-5.jpg";
-
-const FeatureItem = ({ icon, description }) => {
-  return (
-    <div className="flex flex-col gap-1 justify-center items-center max-w-[305px]">
-      {icon && <img src={icon} alt="Feature" className="w-8 h-8" />}
-      <p className="text-base font-normal text-introPrimary jost text-center">
-        {description}
-      </p>
-    </div>
-  );
-};
+import TestimonialsGrid from "./components/TestimonialsGrid";
+import FeatureItem from "./components/FeatureItem";
 
 const FeaturesSection = ({ features = [], testimonials = [] }) => {
   const defaultFeatures = [
@@ -109,13 +100,7 @@ const FeaturesSection = ({ features = [], testimonials = [] }) => {
   ];
 
   const featuresToDisplay = features.length > 0 ? features : defaultFeatures;
-  const testimonialsToShow = testimonials.length > 0 ? testimonials : testimonialsData;
-
-  const [visibleCount, setVisibleCount] = useState(6);
-
-  const handleViewMore = () => {
-    setVisibleCount((prev) => prev + 6);
-  };
+ 
 
   return (
     <div>
@@ -136,64 +121,8 @@ const FeaturesSection = ({ features = [], testimonials = [] }) => {
       </div>
 
       {/* Testimonials Section */}
-      <div className="text-center px-6 py-10 sm:py-16">
-        <div className="max-w-7xl mx-auto flex flex-col justify-center px-5">
-          <h2 className="text-introPrimary font-medium text-2xl mb-8">
-            Explore retirement through stories like yours
-          </h2>
 
-          <div
-            className="
-              grid 
-              grid-cols-1 
-              sm:grid-cols-2 
-              lg:grid-cols-3 
-              gap-6
-            "
-          >
-            {testimonialsToShow.slice(0, visibleCount).map((item) => (
-              <div
-                key={item.id}
-                className="flex flex-col p-5 rounded-xl gap-4 bg-white text-black h-full shadow-md"
-              >
-                <div className="flex gap-2 items-center">
-                  <h2 className="text-base font-medium">
-                    {item.name}, {item.age}
-                  </h2>
-                  <span className="text-sm jost font-light">- {item.title}</span>
-                </div>
-                <div className="flex gap-3 h-full items-start">
-                  <img
-                    src={item.img}
-                    alt="Avatar"
-                    className="w-14 h-14 rounded-full object-cover"
-                  />
-                  <div className="flex flex-col justify-between h-full text-left">
-                    <p className="text-sm jost grow h-full font-light text-black">
-                      {item.text}
-                    </p>
-                    <button className="mt-4 w-fit text-xs rounded-lg px-4 py-2 bg-[#567257] text-white">
-                      Explore this retirement
-                    </button>
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-
-          {/* View More Button */}
-          {visibleCount < testimonialsToShow.length && (
-            <div className="mt-10 flex justify-center">
-              <button
-                onClick={handleViewMore}
-                className="px-6 py-2 bg-[#567257] text-white text-sm rounded-lg hover:bg-[#456045] transition"
-              >
-                View More +
-              </button>
-            </div>
-          )}
-        </div>
-      </div>
+      <TestimonialsGrid testimonials={testimonialsData || []} />
     </div>
   );
 };

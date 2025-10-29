@@ -6,7 +6,6 @@ import { ChatMessage } from "../components/ChatMessage/ChatMessage";
 import { LoadingIndicator } from "../components/LoadingIndicator/LoadingIndicator";
 import { QuestionDisplay } from "../components/QuestionDisplay/QuestionDisplay";
 import api from "../api/api.js";
-import sendIcon from "../assets/send.svg";
 import PlotChart from "../components/PlotChart/PlotChart.jsx";
 
 function buildPayload(response) {
