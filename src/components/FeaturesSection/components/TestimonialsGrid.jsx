@@ -2,6 +2,13 @@ import React, { useState, useEffect } from "react";
 import TestimonialCard from "./TestimonialCard";
 import api from "../../../api/api";
 
+import testimonial2 from "../../../assets/testimonial-1.png";
+import testimonial1 from "../../../assets/testimonial-2.jpeg";
+import testimonial3 from "../../../assets/testimonial-3.jpeg";
+import testimonial4 from "../../../assets/testimonial-4.jpeg";
+import testimonial6 from "../../../assets/testimonial-5.jpeg";
+import testimonial5 from "../../../assets/testimonial-6.jpeg";
+
 const TestimonialsGrid = () => {
   const [testimonials, setTestimonials] = useState([]);
   const [visibleCount, setVisibleCount] = useState(6);
@@ -19,15 +26,15 @@ const TestimonialsGrid = () => {
 
       if (response.data?.type === "success" && response.data?.data) {
         // Transform API data to match TestimonialCard props
-        const transformedData = response.data.data.map((persona) => ({
+        const transformedData = response.data.data.map((persona, idx) => ({
           id: persona._id,
           name: persona.name,
           age: persona.age,
           title: persona.profession,
           text: persona.persona_description,
           question: persona.persona_question,
-          chatBubble : persona.chat_bubble,
-          img: getAvatarImage(persona.gender, persona.ethnicity),
+          chatBubble: persona.chat_bubble,
+          img: getAvatarImage(idx),
           // Include original data for potential use
           personaId: persona.persona_id,
           gender: persona.gender,
@@ -50,20 +57,17 @@ const TestimonialsGrid = () => {
   };
 
   // Helper function to get avatar image based on gender and ethnicity
-  const getAvatarImage = (gender, ethnicity) => {
-    // You can customize this logic based on your avatar images
-    // For now, using placeholder images
-    const genderKey = gender.toLowerCase();
-    const ethnicityKey = ethnicity.toLowerCase().replace(/\s+/g, "-");
-
-    // Option 1: Use actual avatar paths if you have them
-    // return `/assets/avatars/${genderKey}-${ethnicityKey}.jpg`;
-
-    // Option 2: Use placeholder service
-    return `https://ui-avatars.com/api/?name=${encodeURIComponent(
-      gender + " " + ethnicity
-    )}&background=567257&color=fff&size=128`;
-  };
+  const getAvatarImage = (index = 0) => {
+    const images = [
+      testimonial1,
+      testimonial2,
+      testimonial3,
+      testimonial4,
+      testimonial5,
+      testimonial6,
+    ];
+    return images[index % images.length];
+  }; // Closing brace for getAvatarImage function
 
   if (loading) {
     return (
