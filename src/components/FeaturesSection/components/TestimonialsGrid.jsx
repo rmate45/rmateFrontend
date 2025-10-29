@@ -16,7 +16,7 @@ const TestimonialsGrid = () => {
     try {
       setLoading(true);
       const response = await api.get("/get-personas");
-      
+
       if (response.data?.type === "success" && response.data?.data) {
         // Transform API data to match TestimonialCard props
         const transformedData = response.data.data.map((persona) => ({
@@ -26,6 +26,7 @@ const TestimonialsGrid = () => {
           title: persona.profession,
           text: persona.persona_description,
           question: persona.persona_question,
+          chatBubble : persona.chat_bubble,
           img: getAvatarImage(persona.gender, persona.ethnicity),
           // Include original data for potential use
           personaId: persona.persona_id,
@@ -35,7 +36,7 @@ const TestimonialsGrid = () => {
           totalSavings: persona.total_savings,
           persona_question: persona.persona_question,
         }));
-        
+
         setTestimonials(transformedData);
       } else {
         setError("Failed to load testimonials");
@@ -53,11 +54,11 @@ const TestimonialsGrid = () => {
     // You can customize this logic based on your avatar images
     // For now, using placeholder images
     const genderKey = gender.toLowerCase();
-    const ethnicityKey = ethnicity.toLowerCase().replace(/\s+/g, '-');
-    
+    const ethnicityKey = ethnicity.toLowerCase().replace(/\s+/g, "-");
+
     // Option 1: Use actual avatar paths if you have them
     // return `/assets/avatars/${genderKey}-${ethnicityKey}.jpg`;
-    
+
     // Option 2: Use placeholder service
     return `https://ui-avatars.com/api/?name=${encodeURIComponent(
       gender + " " + ethnicity

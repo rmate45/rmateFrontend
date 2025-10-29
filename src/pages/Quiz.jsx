@@ -133,6 +133,11 @@ const Quiz = () => {
   const [showFollowUpQuestions, setShowFollowUpQuestions] = useState(false);
   const [userName, setUserName] = useState("");
 
+  // item passed from TestimonialCard via navigate('/quiz', { state: { item } })
+  const passedItem = location.state?.item || null;
+
+  console.log(passedItem, "passedItem");
+
   // Initialize the flow when component mounts
   useEffect(() => {
     initializeFlow();
@@ -191,6 +196,10 @@ const Quiz = () => {
     try {
       setLoading(true);
 
+      if (passedItem) {
+        await initialChartMessage();
+      }
+
       if (initialText) {
         // Show the user's selected question/text first
         setConversation([{ type: "answer", text: initialText }]);
@@ -201,7 +210,8 @@ const Quiz = () => {
 
       if (
         statementsResponse.data?.data &&
-        statementsResponse.data.data.length > 0
+        statementsResponse.data.data.length > 0 &&
+        !passedItem
       ) {
         // Start showing statements one by one
         showStatementsSequentially(statementsResponse.data.data);
@@ -273,11 +283,7 @@ const Quiz = () => {
     }
   };
 
-  console.log(userAnswers, "userAnswers out");
-
   const moveToNextQuestion = (answers) => {
-    console.log(answers, "answers");
-
     if (currentQuestionIndex == 0) {
       setIsScroll(true);
     }
@@ -399,6 +405,92 @@ const Quiz = () => {
     } catch (error) {
       console.error("Error fetching chart data:", error);
       throw error;
+    }
+  };
+
+  const initialChartMessage = async () => {
+    const chartPayload = {
+      age: passedItem?.age,
+      householdIncome: passedItem?.annualIncome,
+      retirementSavings: passedItem?.totalSavings,
+      otherSavings: passedItem?.otherSavings || 0,
+    };
+
+    // Initial greeting with loading delay
+    setConversation([{ type: "system", text: "Hey there, I am RetireMate" }]);
+
+    // Second message after 1 second
+    setTimeout(() => {
+      setConversation((prev) => [
+        ...prev,
+        {
+          type: "system",
+          text: `I'm your AI retirement assistant to provide you with answers to all your retirement questions in minutes, instead of months.`,
+        },
+      ]);
+    }, 1000);
+
+    // Third message (persona specific) after 2 seconds
+    setTimeout(() => {
+      setConversation((prev) => [
+        ...prev,
+        {
+          type: "system",
+          text: passedItem?.chatBubble,
+        },
+      ]);
+    }, 2000);
+
+    // Fourth message about the plot after 3 seconds
+    setTimeout(() => {
+      setConversation((prev) => [
+        ...prev,
+        {
+          type: "system",
+          text: "Here is the plot on how long shall savings last in retirement.",
+        },
+      ]);
+      setIsScroll(true);
+    }, 3000);
+
+    try {
+      setLoading(true);
+      // Delay the chart data fetch to allow messages to display
+      setTimeout(async () => {
+        const response = await fetchChartData(chartPayload);
+        if (response?.data?.data) {
+          setChartData(response.data.data);
+          setShowChart(true);
+          addToConversation("chart", response.data?.data?.data);
+          setLoading(false);
+
+          setTimeout(() => {
+            setConversation((prev) => [
+              ...prev,
+              {
+                type: "system",
+                text: "Let's go ahead with your assessment",
+              },
+            ]);
+          }, 1000);
+
+          setTimeout(fetchQuestions, 1000);
+        } else {
+          addToConversation(
+            "system",
+            "I couldn't generate your chart data, but let's continue with your retirement planning questions!"
+          );
+          setLoading(false);
+        }
+      }, 4000);
+    } catch (error) {
+      console.error("Error starting structured Q&A:", error);
+      addToConversation(
+        "system",
+        "Something went wrong while generating your analysis, but let's continue with your retirement planning questions!"
+      );
+      scrollUp();
+      setLoading(false);
     }
   };
 
@@ -545,16 +637,13 @@ const Quiz = () => {
       });
 
       // Prepare for streaming response
-      const response = await fetch(
-        `${chatApiUrl}/chat/send`,        
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ userId, message }),
-        }
-      );
+      const response = await fetch(`${chatApiUrl}/chat/send`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ userId, message }),
+      });
 
       console.log("API Response status:", response.status); // Debug log
 
@@ -694,16 +783,13 @@ const Quiz = () => {
       setLoading(true);
       setIsChatMode(false);
 
-      const response = await fetch(
-         `${chatApiUrl}/chat/send`,   
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ userId, message: followUpPrompt }),
-        }
-      );
+      const response = await fetch(`${chatApiUrl}/chat/send`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ userId, message: followUpPrompt }),
+      });
 
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
