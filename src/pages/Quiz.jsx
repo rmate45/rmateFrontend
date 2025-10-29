@@ -143,28 +143,39 @@ const Quiz = () => {
   }, [chatInputRef, isChatMode, loading]);
 
   // Extract userId from phone number when available
-  // useEffect(() => {
-  //   const phoneNumberAnswer = userAnswers["Q2"];
-  //   if (phoneNumberAnswer) {
-  //     let phoneNumber = "";
+  useEffect(() => {
+    const phoneNumberAnswer = userAnswers["Q2"];
+    if (phoneNumberAnswer) {
+      let phoneNumber = "";
 
-  //     if (
-  //       phoneNumberAnswer.value &&
-  //       typeof phoneNumberAnswer.value === "object" &&
-  //       phoneNumberAnswer.value.fullNumber
-  //     ) {
-  //       phoneNumber = phoneNumberAnswer.value.fullNumber;
-  //     } else if (typeof phoneNumberAnswer.value === "string") {
-  //       phoneNumber = phoneNumberAnswer.value;
-  //     } else if (typeof phoneNumberAnswer.answer === "string") {
-  //       phoneNumber = phoneNumberAnswer.answer;
-  //     }
+      if (
+        phoneNumberAnswer.value &&
+        typeof phoneNumberAnswer.value === "object" &&
+        phoneNumberAnswer.value.fullNumber
+      ) {
+        phoneNumber = phoneNumberAnswer.value.fullNumber;
+      } else if (typeof phoneNumberAnswer.value === "string") {
+        phoneNumber = phoneNumberAnswer.value;
+      } else if (typeof phoneNumberAnswer.answer === "string") {
+        phoneNumber = phoneNumberAnswer.answer;
+      }
 
-  //     if (phoneNumber) {
-  //       setUserId(phoneNumber);
-  //     }
-  //   }
-  // }, [userAnswers]);
+      if (phoneNumber) {
+        setUserId(phoneNumber);
+      }
+    }
+
+    const ageAnswer = userAnswers["Q1"];
+    if (ageAnswer) {
+      let uniqueId = "User";
+      if (ageAnswer.value) {
+        uniqueId +=
+          `_${ageAnswer.value}` + `_${Math.floor(Math.random() * 10000)}`;
+      }
+
+      setUserId(uniqueId);
+    }
+  }, [userAnswers]);
 
   // Extract user name from Q1 answer
   // useEffect(() => {
@@ -283,18 +294,18 @@ const Quiz = () => {
       setLoading(true);
       // Call save API first, then start structured Q&A mode
       startStructuredQA(answers);
-      // saveUserResponses().then(() => {
+      // saveUserResponses(answers).then(() => {
       //   startStructuredQA(answers);
       // });
     }
   };
 
   // New function to save user responses
-  const saveUserResponses = async () => {
+  const saveUserResponses = async (answers) => {
     try {
       setLoading(true);
       // Format the payload according to the required structure
-      const payload = formatSavePayload();
+      const payload = formatSavePayload(answers);
 
       console.log("Saving user responses:", payload);
 
@@ -314,28 +325,28 @@ const Quiz = () => {
   };
 
   // Function to format the payload for the save API
-  const formatSavePayload = () => {
+  const formatSavePayload = (answers) => {
     // Extract phone number from Q2 (assuming Q2 is the phone number question)
-    const phoneNumberAnswer = userAnswers["Q2"];
+    const phoneNumberAnswer = answers["Q2"];
     let phoneNumber = "";
 
-    if (phoneNumberAnswer) {
-      // Check if it's a phone data object with fullNumber
-      if (
-        phoneNumberAnswer.value &&
-        typeof phoneNumberAnswer.value === "object" &&
-        phoneNumberAnswer.value.fullNumber
-      ) {
-        phoneNumber = phoneNumberAnswer.value.fullNumber;
-      } else if (typeof phoneNumberAnswer.value === "string") {
-        phoneNumber = phoneNumberAnswer.value;
-      } else if (typeof phoneNumberAnswer.answer === "string") {
-        phoneNumber = phoneNumberAnswer.answer;
-      }
-    }
+    // if (phoneNumberAnswer) {
+    //   // Check if it's a phone data object with fullNumber
+    //   if (
+    //     phoneNumberAnswer.value &&
+    //     typeof phoneNumberAnswer.value === "object" &&
+    //     phoneNumberAnswer.value.fullNumber
+    //   ) {
+    //     phoneNumber = phoneNumberAnswer.value.fullNumber;
+    //   } else if (typeof phoneNumberAnswer.value === "string") {
+    //     phoneNumber = phoneNumberAnswer.value;
+    //   } else if (typeof phoneNumberAnswer.answer === "string") {
+    //     phoneNumber = phoneNumberAnswer.answer;
+    //   }
+    // }
 
     // Format responses array
-    const responses = Object.entries(userAnswers).map(
+    const responses = Object.entries(answers).map(
       ([questionId, answerData]) => {
         let answer = answerData.answer;
 
