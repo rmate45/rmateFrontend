@@ -1,6 +1,5 @@
 // components/FeaturesSection/FeaturesSection.js
-import React from "react";
-import Carousel from "../Carousel/Carousel";
+import React, { useState } from "react";
 import avatar1 from "../../assets/avatar-1.jpg";
 import avatar2 from "../../assets/avatar-2.webp";
 import avatar3 from "../../assets/avatar-3.jpeg";
@@ -10,8 +9,8 @@ import avatar5 from "../../assets/avatar-5.jpg";
 const FeatureItem = ({ icon, description }) => {
   return (
     <div className="flex flex-col gap-1 justify-center items-center max-w-[305px]">
-      <img src={icon} alt="Feature" className="w-8 h-8" />
-      <p className="text-base font-normal text-introPrimary jost">
+      {icon && <img src={icon} alt="Feature" className="w-8 h-8" />}
+      <p className="text-base font-normal text-introPrimary jost text-center">
         {description}
       </p>
     </div>
@@ -42,48 +41,85 @@ const FeaturesSection = ({ features = [], testimonials = [] }) => {
     },
   ];
 
-  const testimonialsdata = [
+  const testimonialsData = [
     {
       id: 1,
       text: "I spent years focused on raising my kids. After my divorce, I felt lost about how to start saving for retirement. RetireMate showed me the steps I need to take now - and that it's not too late.",
-      name: "Lisa M.",
-      title: "Recently Divorced, Part-time worker",
+      name: "Lisa M",
+      title: "Part-time worker",
+      age: "45",
       img: avatar1,
     },
     {
       id: 2,
       text: "I've always let my husband handle our finances, but I worry what would happen if I had to figure out retirement alone. RetireMate gives me confidence that I'd know exactly what to do.",
-      name: "Rachel T.",
-      title: "Full-time Mom, Planning ahead",
+      name: "Rachel T",
+      title: "Planning ahead",
+      age: "38",
       img: avatar2,
     },
     {
       id: 3,
       text: "We've been saving for years, but we honestly don't know if it's enough. Between our mortgage, kids, and everything else, it's hard to know if we're on track. RetireMate gave us a roadmap to see where we stand and what we should do next.",
-      name: "David & Sarah K.",
-      title: "Working Parents, Homeowners",
+      name: "David & Sarah K",
+      title: "Homeowners",
+      age: "50",
       img: avatar3,
     },
     {
       id: 4,
       text: "I make a good living, but I never realized how much I'd need to maintain my lifestyle into my 90s. RetireMate gave me a roadmap to see the gap and how to close it.",
-      name: "Dr. James R.",
-      title: "Cardiologist, High Earner",
+      name: "Dr. James R",
+      title: "Cardiologist",
+      age: "55",
       img: avatar4,
     },
     {
       id: 5,
       text: "I drive for Uber and never had a retirement plan through work. I didn't even know where to start. RetireMate gave me simple steps to begin saving, even with an irregular income.",
-      name: "Marcus L.",
-      title: "Rideshare Driver, Contract Worker",
+      name: "Marcus L",
+      title: "Contract Worker",
+      age: "32",
       img: avatar5,
     },
+    {
+      id: 6,
+      text: "RetireMate simplified everything for me. I now know exactly where I stand and how to retire comfortably.",
+      name: "Alan W",
+      title: "Engineer",
+      age: "42",
+      img: avatar1,
+    },
+    {
+      id: 7,
+      text: "I didn’t think about retirement until I turned 40. RetireMate helped me get on track quickly and easily.",
+      name: "Priya S",
+      title: "Teacher",
+      age: "41",
+      img: avatar2,
+    },
+    {
+      id: 8,
+      text: "The app feels like talking to a real advisor, but way simpler. I recommend it to all my friends.",
+      name: "Carlos M",
+      title: "Freelancer",
+      age: "36",
+      img: avatar3,
+    },
   ];
-//   console.log(testimonialsdata)
+
   const featuresToDisplay = features.length > 0 ? features : defaultFeatures;
+  const testimonialsToShow = testimonials.length > 0 ? testimonials : testimonialsData;
+
+  const [visibleCount, setVisibleCount] = useState(6);
+
+  const handleViewMore = () => {
+    setVisibleCount((prev) => prev + 6);
+  };
 
   return (
     <div>
+      {/* Features Section */}
       <div className="bg-gray-50 text-center py-12">
         <h2 className="text-introPrimary font-medium text-2xl">
           Planning for Retirement should always be this easy.
@@ -98,41 +134,64 @@ const FeaturesSection = ({ features = [], testimonials = [] }) => {
           ))}
         </div>
       </div>
+
+      {/* Testimonials Section */}
       <div className="text-center px-6 py-10 sm:py-16">
         <div className="max-w-7xl mx-auto flex flex-col justify-center px-5">
-          <div className="">
-            <h2 className="text-introPrimary font-medium text-2xl mb-5">
-              Who We Help
-            </h2>
-            <Carousel
-              items={testimonialsdata}
-              renderItem={(currentItems) => (
-                <div
-                  className="flex flex-col p-5 rounded-xl gap-4 bg-white text-black h-full"
-                  style={{ boxShadow: "rgba(0, 0, 0, 0.15) 0px 4px 15px" }}
-                >
-                  <div className="flex gap-3 text-left items-center">
-                    <img
-                      src={currentItems.img}
-                      alt="Avatar"
-                      className="w-11 h-11 rounded-full"
-                    />
-                    <div>
-                      <h2 className="text-base font-medium">
-                        {currentItems.name}
-                      </h2>
-                      <p className="text-sm jost font-light mt-1">
-                        {currentItems.title}
-                      </p>
-                    </div>
-                  </div>
-                  <p className="text-sm jost font-light line-clamp-5 text-left text-black grow-1">
-                    {currentItems.text}
-                  </p>
+          <h2 className="text-introPrimary font-medium text-2xl mb-8">
+            Explore retirement through stories like yours
+          </h2>
+
+          <div
+            className="
+              grid 
+              grid-cols-1 
+              sm:grid-cols-2 
+              lg:grid-cols-3 
+              gap-6
+            "
+          >
+            {testimonialsToShow.slice(0, visibleCount).map((item) => (
+              <div
+                key={item.id}
+                className="flex flex-col p-5 rounded-xl gap-4 bg-white text-black h-full shadow-md"
+              >
+                <div className="flex gap-2 items-center">
+                  <h2 className="text-base font-medium">
+                    {item.name}, {item.age}
+                  </h2>
+                  <span className="text-sm jost font-light">- {item.title}</span>
                 </div>
-              )}
-            />
+                <div className="flex gap-3 h-full items-start">
+                  <img
+                    src={item.img}
+                    alt="Avatar"
+                    className="w-14 h-14 rounded-full object-cover"
+                  />
+                  <div className="flex flex-col justify-between h-full text-left">
+                    <p className="text-sm jost grow h-full font-light text-black">
+                      {item.text}
+                    </p>
+                    <button className="mt-4 w-fit text-xs rounded-lg px-4 py-2 bg-[#567257] text-white">
+                      Explore this retirement
+                    </button>
+                  </div>
+                </div>
+              </div>
+            ))}
           </div>
+
+          {/* View More Button */}
+          {visibleCount < testimonialsToShow.length && (
+            <div className="mt-10 flex justify-center">
+              <button
+                onClick={handleViewMore}
+                className="px-6 py-2 bg-[#567257] text-white text-sm rounded-lg hover:bg-[#456045] transition"
+              >
+                View More +
+              </button>
+            </div>
+          )}
         </div>
       </div>
     </div>
