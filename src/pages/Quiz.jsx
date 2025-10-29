@@ -95,6 +95,14 @@ const STARTER_QUESTIONS = {
 const Quiz = () => {
   const location = useLocation();
   const params = new URLSearchParams(location.search);
+  const urlData = {
+    age: Number(params.get("age")) || null,
+    householdIncome: Number(params.get("householdIncome")) || null,
+    retirementSavings: Number(params.get("retirementSavings")) || null,
+    otherSavings: Number(params.get("otherSavings")) || 0,
+    chatBubble: params.get("chatBubble") || null,
+    isPersona: params.get("isPersona") === "true" || false,
+  };
 
   const initialText = location.state?.title || params.get("title") || "";
 
@@ -134,9 +142,6 @@ const Quiz = () => {
   const [userName, setUserName] = useState("");
 
   // item passed from TestimonialCard via navigate('/quiz', { state: { item } })
-  const passedItem = location.state?.item || null;
-
-  console.log(passedItem, "passedItem");
 
   // Initialize the flow when component mounts
   useEffect(() => {
@@ -196,7 +201,7 @@ const Quiz = () => {
     try {
       setLoading(true);
 
-      if (passedItem) {
+      if (urlData?.isPersona) {
         await initialChartMessage();
       }
 
@@ -211,7 +216,7 @@ const Quiz = () => {
       if (
         statementsResponse.data?.data &&
         statementsResponse.data.data.length > 0 &&
-        !passedItem
+        !urlData?.isPersona
       ) {
         // Start showing statements one by one
         showStatementsSequentially(statementsResponse.data.data);
@@ -410,10 +415,10 @@ const Quiz = () => {
 
   const initialChartMessage = async () => {
     const chartPayload = {
-      age: passedItem?.age,
-      householdIncome: passedItem?.annualIncome,
-      retirementSavings: passedItem?.totalSavings,
-      otherSavings: passedItem?.otherSavings || 0,
+      age: urlData?.age,
+      householdIncome: urlData?.householdIncome,
+      retirementSavings: urlData?.retirementSavings,
+      otherSavings: urlData?.otherSavings || 0,
     };
 
     // Initial greeting with loading delay
@@ -436,7 +441,7 @@ const Quiz = () => {
         ...prev,
         {
           type: "system",
-          text: passedItem?.chatBubble,
+          text: urlData?.chatBubble,
         },
       ]);
     }, 2000);
