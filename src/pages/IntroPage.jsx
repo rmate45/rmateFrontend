@@ -81,7 +81,6 @@ function IntroPage() {
     },
   ];
 
-
   const features = [
     {
       id: 1,

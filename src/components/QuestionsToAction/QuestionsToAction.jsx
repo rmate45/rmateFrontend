@@ -100,9 +100,6 @@ const QuestionsToAction = ({
     setLoading(true);
     setError(null);
 
-    console.log(ageGroup, "ageGroup");
-    console.log(gender, "gender");
-
     try {
       const response = await fetch(
         `https://dev-api.retiremate.com/api/v1/retirement-questions?ageGroup=${ageGroup}&gender=${gender}&page=1&limit=10`

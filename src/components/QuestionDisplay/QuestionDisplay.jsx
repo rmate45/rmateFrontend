@@ -29,8 +29,8 @@ export const QuestionDisplay = ({
   if (!currentQuestion || loading) return null;
 
   const isValidateZip = currentQuestion?.questionId === "Q7"; // Question 7 asks for zip code
-  const isPhoneInput = currentQuestion?.questionId === "Q2"; // Question 2 is for phone number
-  const isAgeInput = currentQuestion?.questionId === "Q3"; // Question 1 is for age range
+  const isPhoneInput = false;
+  const isAgeInput = currentQuestion?.questionId === "Q1"; // Question 1 is for age range
 
   const handleMultiSelectToggle = (option) => {
     setSelectedMultiOptions(prev => {

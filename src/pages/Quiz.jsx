@@ -54,16 +54,16 @@ function buildPayload(response) {
     return nums.length % 2 === 1 ? nums[mid] : (nums[mid - 1] + nums[mid]) / 2;
   };
 
-  const age = parseInt(response?.Q3?.value, 10) || null;
-  const householdIncome = parseMedian(response?.Q9?.value);
-  const retirementSavings = parseMedian(response?.Q10?.value);
-  const otherSavings = parseMedian(response?.Q11?.value);
+  const age = parseInt(response?.Q1?.value, 10) || null;
+  const householdIncome = parseMedian(response?.Q5?.value);
+  const retirementSavings = parseMedian(response?.Q3?.value);
+  const otherSavings = parseMedian(response?.Q4?.value);
 
   return {
     age,
     householdIncome,
     retirementSavings,
-    otherSavings
+    otherSavings,
   };
 }
 
@@ -108,7 +108,7 @@ const Quiz = () => {
   const [isLastQuestion, setIsLastQuestion] = useState(false);
   const overviewRef = useRef(null);
   const chatInputRef = useRef(null);
-    const [isScroll, setIsScroll] = useState(false);
+  const [isScroll, setIsScroll] = useState(false);
 
   // New states for handling the flow
   const [allQuestions, setAllQuestions] = useState([]);
@@ -143,36 +143,36 @@ const Quiz = () => {
   }, [chatInputRef, isChatMode, loading]);
 
   // Extract userId from phone number when available
-  useEffect(() => {
-    const phoneNumberAnswer = userAnswers["Q2"];
-    if (phoneNumberAnswer) {
-      let phoneNumber = "";
+  // useEffect(() => {
+  //   const phoneNumberAnswer = userAnswers["Q2"];
+  //   if (phoneNumberAnswer) {
+  //     let phoneNumber = "";
 
-      if (
-        phoneNumberAnswer.value &&
-        typeof phoneNumberAnswer.value === "object" &&
-        phoneNumberAnswer.value.fullNumber
-      ) {
-        phoneNumber = phoneNumberAnswer.value.fullNumber;
-      } else if (typeof phoneNumberAnswer.value === "string") {
-        phoneNumber = phoneNumberAnswer.value;
-      } else if (typeof phoneNumberAnswer.answer === "string") {
-        phoneNumber = phoneNumberAnswer.answer;
-      }
+  //     if (
+  //       phoneNumberAnswer.value &&
+  //       typeof phoneNumberAnswer.value === "object" &&
+  //       phoneNumberAnswer.value.fullNumber
+  //     ) {
+  //       phoneNumber = phoneNumberAnswer.value.fullNumber;
+  //     } else if (typeof phoneNumberAnswer.value === "string") {
+  //       phoneNumber = phoneNumberAnswer.value;
+  //     } else if (typeof phoneNumberAnswer.answer === "string") {
+  //       phoneNumber = phoneNumberAnswer.answer;
+  //     }
 
-      if (phoneNumber) {
-        setUserId(phoneNumber);
-      }
-    }
-  }, [userAnswers]);
+  //     if (phoneNumber) {
+  //       setUserId(phoneNumber);
+  //     }
+  //   }
+  // }, [userAnswers]);
 
   // Extract user name from Q1 answer
-  useEffect(() => {
-    const nameAnswer = userAnswers["Q1"];
-    if (nameAnswer?.answer) {
-      setUserName(nameAnswer.answer);
-    }
-  }, [userAnswers]);
+  // useEffect(() => {
+  //   const nameAnswer = userAnswers["Q1"];
+  //   if (nameAnswer?.answer) {
+  //     setUserName(nameAnswer.answer);
+  //   }
+  // }, [userAnswers]);
 
   const initializeFlow = async () => {
     try {
@@ -260,9 +260,12 @@ const Quiz = () => {
     }
   };
 
-  const moveToNextQuestion = () => {
+  console.log(userAnswers, "userAnswers out");
 
-      if (currentQuestionIndex == 0) {
+  const moveToNextQuestion = (answers) => {
+    console.log(answers, "answers");
+
+    if (currentQuestionIndex == 0) {
       setIsScroll(true);
     }
 
@@ -279,9 +282,10 @@ const Quiz = () => {
       setCanReload(false);
       setLoading(true);
       // Call save API first, then start structured Q&A mode
-      saveUserResponses().then(() => {
-        startStructuredQA();
-      });
+      startStructuredQA(answers);
+      // saveUserResponses().then(() => {
+      //   startStructuredQA(answers);
+      // });
     }
   };
 
@@ -386,7 +390,7 @@ const Quiz = () => {
   };
 
   // Modified function to start structured Q&A instead of open chat
-  const startStructuredQA = async () => {
+  const startStructuredQA = async (answers) => {
     try {
       setLoading(true);
 
@@ -398,18 +402,18 @@ const Quiz = () => {
         );
       }, 2000);
 
-      if (!userId) {
-        addToConversation(
-          "system",
-          "Error: Unable to identify user. Please try again."
-        );
-        return;
-      }
+      // if (!userId) {
+      //   addToConversation(
+      //     "system",
+      //     "Error: Unable to identify user. Please try again."
+      //   );
+      //   return;
+      // }
 
       console.log("Starting structured Q&A with userId:", userId);
-      console.log("User answers:", userAnswers);
+      console.log("User answers:", answers);
 
-      const chartPayload = buildPayload(userAnswers);
+      const chartPayload = buildPayload(answers);
 
       const response = await fetchChartData(chartPayload);
 
@@ -745,6 +749,7 @@ const Quiz = () => {
   };
 
   const storeAnswer = (questionId, questionText, value, displayLabel) => {
+    console.log(questionId, "userAnswers questionId");
     setUserAnswers((prev) => ({
       ...prev,
       [questionId]: {
@@ -761,12 +766,27 @@ const Quiz = () => {
     setLoading(true);
 
     // Store the answer
-    storeAnswer(
-      currentQuestion.questionId,
-      currentQuestion.questionText,
-      option.text,
-      option.text
-    );
+    // storeAnswer(
+    //   currentQuestion.questionId,
+    //   currentQuestion.questionText,
+    //   option.text,
+    //   option.text
+    // );
+
+    const answer = {
+      questionText: currentQuestion.questionText,
+      answer: option.text,
+      value: option.text,
+    };
+
+    const updatedAnswers = {
+      ...userAnswers,
+      [currentQuestion.questionId]: {
+        ...answer,
+      },
+    };
+
+    setUserAnswers(updatedAnswers);
 
     setLastAnswerOption(option);
     setLastQuestionText(currentQuestion.questionText);
@@ -782,7 +802,7 @@ const Quiz = () => {
 
     setTimeout(
       () => {
-        moveToNextQuestion();
+        moveToNextQuestion(updatedAnswers);
         setLoading(false);
       },
       comment && comment.trim() ? 2000 : 1000
@@ -799,12 +819,27 @@ const Quiz = () => {
     setLoading(true);
 
     // Store the multi-select answer with array value
-    storeAnswer(
-      currentQuestion.questionId,
-      currentQuestion.questionText,
-      selectedTexts, // Store as array for multi-select
-      answerText
-    );
+    // storeAnswer(
+    //   currentQuestion.questionId,
+    //   currentQuestion.questionText,
+    //   selectedTexts,
+    //   answerText
+    // );
+
+    const answer = {
+      questionText: currentQuestion.questionText,
+      answer: selectedTexts,
+      value: answerText,
+    };
+
+    const updatedAnswers = {
+      ...userAnswers,
+      [currentQuestion.questionId]: {
+        ...answer,
+      },
+    };
+
+    setUserAnswers(updatedAnswers);
 
     setLastAnswerOption({ text: answerText, selectedOptions });
     setLastQuestionText(currentQuestion.questionText);
@@ -819,7 +854,7 @@ const Quiz = () => {
 
     setTimeout(
       () => {
-        moveToNextQuestion();
+        moveToNextQuestion(updatedAnswers);
         setLoading(false);
       },
       comment && comment.trim() ? 2000 : 1000
@@ -853,12 +888,27 @@ const Quiz = () => {
     addToConversation("answer", displayText);
 
     // Store the answer (phone object or regular text)
-    storeAnswer(
-      currentQuestion.questionId,
-      questionText,
-      storeValue,
-      displayText
-    );
+    // storeAnswer(
+    //   currentQuestion.questionId,
+    //   questionText,
+    //   storeValue,
+    //   displayText
+    // );
+
+    const answer = {
+      questionText: questionText,
+      answer: displayText,
+      value: storeValue,
+    };
+
+    const updatedAnswers = {
+      ...userAnswers,
+      [currentQuestion.questionId]: {
+        ...answer,
+      },
+    };
+
+    setUserAnswers(updatedAnswers);
 
     setLastQuestionText(questionText);
     setLastQuestionData(currentQuestion);
@@ -868,9 +918,9 @@ const Quiz = () => {
     setLoading(true);
 
     let comment = currentQuestion.defaultComment;
-    if (currentQuestion.questionId == "Q1") {
-      comment = `Nice to meet you, ${textInput}`;
-    }
+    // if (currentQuestion.questionId == "Q1") {
+    //   comment = `Nice to meet you, ${textInput}`;
+    // }
     if (comment && comment.trim()) {
       setTimeout(() => {
         addToConversation("comment", comment);
@@ -879,7 +929,7 @@ const Quiz = () => {
 
     setTimeout(
       () => {
-        moveToNextQuestion();
+        moveToNextQuestion(updatedAnswers);
         setLoading(false);
       },
       comment && comment.trim() ? 2000 : 1000
@@ -962,7 +1012,7 @@ const Quiz = () => {
     showStarterQuestions,
     showFollowUpQuestions,
     loading,
-    isScroll
+    isScroll,
   ]);
 
   useEffect(() => {
