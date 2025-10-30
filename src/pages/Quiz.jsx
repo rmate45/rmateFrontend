@@ -96,11 +96,7 @@ const Quiz = () => {
   const location = useLocation();
   const params = new URLSearchParams(location.search);
   const urlData = {
-    age: Number(params.get("age")) || null,
-    householdIncome: Number(params.get("householdIncome")) || 0,
-    retirementSavings: Number(params.get("retirementSavings")) || 0,
-    otherSavings: Number(params.get("otherSavings")) || 0,
-    chatBubble: params.get("chatBubble") || null,
+    id: params.get("id") || "",
     isPersona: params.get("isPersona") === "true" || false,
   };
 
@@ -119,6 +115,7 @@ const Quiz = () => {
   const overviewRef = useRef(null);
   const chatInputRef = useRef(null);
   const [isScroll, setIsScroll] = useState(false);
+    const [personaData, setPersonaData] = useState(null);
 
   // New states for handling the flow
   const [allQuestions, setAllQuestions] = useState([]);
@@ -197,12 +194,29 @@ const Quiz = () => {
   //   }
   // }, [userAnswers]);
 
+    const fetchPersonaById = async (id) => {
+    if (!id) return null;
+    try {
+      const res = await api.get(`/get-persona/${id}`);
+      if (res.data?.type === "success" && res.data?.data) {
+        setPersonaData(res.data.data);
+        return res.data.data;
+      }
+      return null;
+    } catch (err) {
+      console.error("Error fetching persona:", err);
+      return null;
+    }
+  };
+
+
   const initializeFlow = async () => {
     try {
       setLoading(true);
 
-      if (urlData?.isPersona) {
-        await initialChartMessage();
+       if (urlData?.isPersona && urlData.id) {
+        const fetched = await fetchPersonaById(urlData.id);
+        await initialChartMessage(fetched);
       }
 
       if (initialText) {
@@ -413,12 +427,13 @@ const Quiz = () => {
     }
   };
 
-  const initialChartMessage = async () => {
+  const initialChartMessage = async (personaData) => {
+
     const chartPayload = {
-      age: urlData?.age,
-      householdIncome: urlData?.householdIncome,
-      retirementSavings: urlData?.retirementSavings,
-      otherSavings: urlData?.otherSavings || 0,
+      age: personaData?.age,
+      householdIncome: personaData?.annual_income || 0,
+      retirementSavings: personaData?.total_savings || 0,
+      otherSavings: personaData?.otherSavings || 0,
     };
 
     // Initial greeting with loading delay
@@ -441,7 +456,7 @@ const Quiz = () => {
         ...prev,
         {
           type: "system",
-          text: urlData?.chatBubble,
+          text: personaData?.chat_bubble,
         },
       ]);
     }, 2000);
@@ -541,7 +556,7 @@ const Quiz = () => {
         );
 
         // Add chart component to conversation
-        addToConversation("chart", response.data?.data?.data);
+        addToConversation("chart", response.data?.data);
 
         // Wait a bit, then show the structured questions
         setTimeout(() => {

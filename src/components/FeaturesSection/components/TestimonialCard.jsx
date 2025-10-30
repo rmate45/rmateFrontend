@@ -1,14 +1,18 @@
 import React from "react";
 
 const TestimonialCard = ({ item }) => {
+
+  console.log(item, "item")
+
   const handleClick = () => {
     const params = new URLSearchParams({
-      age: item.age || "",
-      householdIncome: item.annualIncome || "0",
-      retirementSavings: item.totalSavings || "0",
-      otherSavings: item.otherSavings || "0",
-      chatBubble: item.chatBubble || "",
+      // age: item.age || "",
+      // householdIncome: item.annualIncome || "0",
+      // retirementSavings: item.totalSavings || "0",
+      // otherSavings: item.otherSavings || "0",
+      // chatBubble: item.chatBubble || "",
       isPersona: "true",
+      id: item.id || "",
     });
 
     window.open(`/quiz?${params.toString()}`, "_blank");
