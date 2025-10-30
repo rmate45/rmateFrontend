@@ -18,7 +18,7 @@ export const FilterDropdown = ({ id, label, value, onChange, options }) => {
           className="
             block w-full rounded-xl border border-gray-300 bg-white 
             pl-4 pr-10 py-2.5 text-sm font-medium text-[#2A2420] 
-            shadow-sm focus:outline-none focus:ring-2 focus:ring-[#2A2420] focus:border-[#2A2420]
+            shadow-sm focus:outline-none focus:ring-1 focus:ring-[#567257] focus:border-[#567257]
             cursor-pointer
             appearance-none
           "

@@ -98,6 +98,7 @@ const Quiz = () => {
   const urlData = {
     id: params.get("id") || "",
     isPersona: params.get("isPersona") === "true" || false,
+    isCustomPersona: params.get("isCustomPersona") === "true" || false,
   };
 
   const initialText = location.state?.title || params.get("title") || "";
@@ -115,7 +116,7 @@ const Quiz = () => {
   const overviewRef = useRef(null);
   const chatInputRef = useRef(null);
   const [isScroll, setIsScroll] = useState(false);
-    const [personaData, setPersonaData] = useState(null);
+  const [personaData, setPersonaData] = useState(null);
 
   // New states for handling the flow
   const [allQuestions, setAllQuestions] = useState([]);
@@ -194,7 +195,7 @@ const Quiz = () => {
   //   }
   // }, [userAnswers]);
 
-    const fetchPersonaById = async (id) => {
+  const fetchPersonaById = async (id) => {
     if (!id) return null;
     try {
       const res = await api.get(`/get-persona/${id}`);
@@ -209,14 +210,33 @@ const Quiz = () => {
     }
   };
 
+  const fetchSavedPersonaById = async (id) => {
+    if (!id) return null;
+    try {
+      const res = await api.get(`/get-demographic/${id}`);
+      if (res.data?.type === "success" && res.data?.data) {
+        setPersonaData(res.data.data);
+        return res.data.data;
+      }
+      return null;
+    } catch (err) {
+      console.error("Error fetching persona:", err);
+      return null;
+    }
+  };
 
   const initializeFlow = async () => {
     try {
       setLoading(true);
 
-       if (urlData?.isPersona && urlData.id) {
+      if (urlData?.isPersona && urlData.id) {
         const fetched = await fetchPersonaById(urlData.id);
         await initialChartMessage(fetched);
+      }
+
+      if (urlData?.isCustomPersona && urlData.id) {
+        const fetched = await fetchSavedPersonaById(urlData.id);
+        await initialCustomChartMessage(fetched);
       }
 
       if (initialText) {
@@ -230,7 +250,8 @@ const Quiz = () => {
       if (
         statementsResponse.data?.data &&
         statementsResponse.data.data.length > 0 &&
-        !urlData?.isPersona
+        !urlData?.isPersona &&
+        !urlData?.isCustomPersona
       ) {
         // Start showing statements one by one
         showStatementsSequentially(statementsResponse.data.data);
@@ -428,7 +449,6 @@ const Quiz = () => {
   };
 
   const initialChartMessage = async (personaData) => {
-
     const chartPayload = {
       age: personaData?.age,
       householdIncome: personaData?.annual_income || 0,
@@ -493,6 +513,71 @@ const Quiz = () => {
               },
             ]);
           }, 1000);
+
+          setTimeout(fetchQuestions, 1000);
+        } else {
+          addToConversation(
+            "system",
+            "I couldn't generate your chart data, but let's continue with your retirement planning questions!"
+          );
+          setLoading(false);
+        }
+      }, 4000);
+    } catch (error) {
+      console.error("Error starting structured Q&A:", error);
+      addToConversation(
+        "system",
+        "Something went wrong while generating your analysis, but let's continue with your retirement planning questions!"
+      );
+      scrollUp();
+      setLoading(false);
+    }
+  };
+
+  const initialCustomChartMessage = async (personaData) => {
+    const chartPayload = {
+      age: personaData?.age,
+      householdIncome: personaData?.income || 0,
+      retirementSavings: personaData?.savings || 0,
+      otherSavings: personaData?.otherSavings || 0,
+    };
+
+    // Initial greeting with loading delay
+    setConversation([{ type: "system", text: "Hey there, I am RetireMate" }]);
+
+    // Second message after 1 second
+    setTimeout(() => {
+      setConversation((prev) => [
+        ...prev,
+        {
+          type: "system",
+          text: `I'm your AI retirement assistant to provide you with answers to all your retirement questions in minutes, instead of months.`,
+        },
+      ]);
+    }, 1000);
+
+    // Fourth message about the plot after 3 seconds
+    setTimeout(() => {
+      setConversation((prev) => [
+        ...prev,
+        {
+          type: "system",
+          text: "Here is the plot on how long shall savings last in retirement.",
+        },
+      ]);
+      setIsScroll(true);
+    }, 3000);
+
+    try {
+      setLoading(true);
+      // Delay the chart data fetch to allow messages to display
+      setTimeout(async () => {
+        const response = await fetchChartData(chartPayload);
+        if (response?.data?.data) {
+          setChartData(response.data.data);
+          setShowChart(true);
+          addToConversation("chart", response.data?.data);
+          setLoading(false);
 
           setTimeout(fetchQuestions, 1000);
         } else {

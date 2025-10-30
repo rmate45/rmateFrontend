@@ -25,6 +25,7 @@ import TestimonialsGrid from "../components/FeaturesSection/components/Testimoni
 import AskAnything from "../components/AskAnything/AskAnything";
 import LinkSection from "../components/LinkSection/LinkSection";
 import ArticleSection from "../components/ArticleSection/ArticleSection";
+import CustomStory from "../components/CustomStory/CustomStory";
 
 function IntroPage() {
   // Data for components
@@ -155,6 +156,8 @@ function IntroPage() {
       />
 
       <TestimonialsGrid />
+
+      <CustomStory />
 
       <RetiremateEdge />
 
