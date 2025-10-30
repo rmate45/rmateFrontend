@@ -15,8 +15,8 @@ const cards = [
 
 const RetireMateAdvantage = () => {
   return (
-    <section className="py-15 bg-white">
-      <div className="max-w-7xl mx-auto px-6 text-center">
+    <section className=" px-6 py-10 sm:py-16 bg-white">
+      <div className="max-w-7xl mx-auto text-center">
         {/* Section Heading */}
         <h2 className="text-introPrimary font-medium text-2xl ">
           The RetireMate Advantage

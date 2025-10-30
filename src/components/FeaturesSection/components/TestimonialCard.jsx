@@ -4,8 +4,8 @@ const TestimonialCard = ({ item }) => {
   const handleClick = () => {
     const params = new URLSearchParams({
       age: item.age || "",
-      householdIncome: item.annualIncome || "",
-      retirementSavings: item.totalSavings || "",
+      householdIncome: item.annualIncome || "0",
+      retirementSavings: item.totalSavings || "0",
       otherSavings: item.otherSavings || "0",
       chatBubble: item.chatBubble || "",
       isPersona: "true",

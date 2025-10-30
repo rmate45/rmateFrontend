@@ -12,7 +12,18 @@ import {
   ReferenceLine,
 } from "recharts";
 
-const dollarFormatter = (value) => `$${(value / 1000).toFixed(0)}K`;
+const dollarFormatter = (value) => {
+  if (value >= 1_000_000) {
+    // Format in millions with 1 decimal place
+    return `$${(value / 1_000_000).toFixed(1)}M`;
+  } else if (value >= 1_000) {
+    // Format in thousands with no decimals
+    return `$${(value / 1_000).toFixed(0)}K`;
+  } else {
+    // For values under 1000, show full number
+    return `$${value?.toLocaleString()}`;
+  }
+};
 
 const CustomTooltip = ({ active, payload }) => {
   if (active && payload && payload.length) {
@@ -49,7 +60,9 @@ const PlotChart = ({ data }) => {
   console.log(data, "data");
 
   const parsedData =
-    typeof data.text === "string" ? JSON.parse(data.text) : data.text;
+    typeof data.text === "string"
+      ? JSON.parse(data.text?.data)
+      : data.text?.data;
 
   const filteredData = parsedData?.filter((item) => item.savings > 0);
 
@@ -83,7 +96,7 @@ const PlotChart = ({ data }) => {
   }
 
   return (
-    <div className="w-full chart-container">
+    <div className="w-full">
       <h1 className="jost text-gray-700 mb-2 mt-2 leading-relaxed text-center">
         How Long Will My Savings Last?
       </h1>
@@ -157,7 +170,7 @@ const PlotChart = ({ data }) => {
                     offset={15}
                   /> */}
                   <Label
-                    value={`${(retirementPoint.savings / 1000).toFixed(0)}K`}
+                    value={`${dollarFormatter(retirementPoint.savings)}`}
                     position="top"
                     fill="#0e6634"
                     fontSize={11}
@@ -193,9 +206,21 @@ const PlotChart = ({ data }) => {
         </ResponsiveContainer>
       </div>
 
-      <p className="jost text-sm text-gray-700 mt-4 leading-relaxed text-center">
-        {summaryText}
-      </p>
+      <div className=" text-sm  mt-4 px-4">
+         <p className="jost text-gray-700 leading-relaxed ">
+          Recommendations from RetireMate:
+         </p>
+         <ul className="max-w-xl mx-auto">
+          {data?.text?.recommendations?.recommendations?.map((rec, index) => (
+            <li key={index} className="jost text-left text-gray-700 leading-relaxed ">
+              <span className="text-lg font-semibold mr-1">•</span> {rec}
+            </li>
+          ))}
+          <li>
+
+          </li>
+         </ul>
+      </div>
     </div>
   );
 };

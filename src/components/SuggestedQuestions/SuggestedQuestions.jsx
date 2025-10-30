@@ -14,7 +14,7 @@ const SuggestedQuestions = ({ questions, onQuestionClick }) => {
 
   return (
     <div className="text-center px-6 py-10 sm:py-16">
-      <div className="max-w-7xl mx-auto px-5">
+      <div className="max-w-7xl mx-auto">
         <p className="text-[#2A2420] font-medium text-xl sm:text-2xl text-center">
           Not sure where to start?
         </p>

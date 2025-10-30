@@ -103,13 +103,13 @@ const FeaturesSection = ({ features = [], testimonials = [] }) => {
  
 
   return (
-    <div>
+    <div className="bg-gray-50 px-6 py-10 sm:py-16">
       {/* Features Section */}
-      <div className="bg-gray-50 text-center py-12">
+      <div className="max-w-7xl mx-auto text-center">
         <h2 className="text-introPrimary font-medium text-2xl">
           Planning for Retirement should always be this easy.
         </h2>
-        <div className="flex gap-4 items-start justify-center my-10 flex-wrap mx-auto">
+        <div className="flex gap-4 items-start justify-center mt-10 flex-wrap mx-auto">
           {featuresToDisplay.map((feature, index) => (
             <FeatureItem
               key={index}
@@ -119,9 +119,6 @@ const FeaturesSection = ({ features = [], testimonials = [] }) => {
           ))}
         </div>
       </div>
-
-      {/* Testimonials Section */}
-
     </div>
   );
 };

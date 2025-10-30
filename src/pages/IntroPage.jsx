@@ -22,6 +22,9 @@ import currency from "../assets/currency_exchange.png";
 import avatar from "../assets/Avatar.png";
 import RetiremateEdge from "../components/RetiremateEdge/RetiremateEdge";
 import TestimonialsGrid from "../components/FeaturesSection/components/TestimonialsGrid";
+import AskAnything from "../components/AskAnything/AskAnything";
+import LinkSection from "../components/LinkSection/LinkSection";
+import ArticleSection from "../components/ArticleSection/ArticleSection";
 
 function IntroPage() {
   // Data for components
@@ -166,10 +169,16 @@ function IntroPage() {
 
       <FeaturesSection features={features} />
 
+      <AskAnything />
+
       <QuestionsToAction
         onQuestionClick={handleQuestionClick}
         onBrowseAllClick={handleBrowseAllClick}
       />
+      
+      <ArticleSection />
+
+      <LinkSection />
 
       <ResourcesSection />
 
