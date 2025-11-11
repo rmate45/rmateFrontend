@@ -68,8 +68,8 @@ const ResourcesSection = ({ columns = [] }) => {
   const columnsToDisplay = columns.length > 0 ? columns : defaultColumns;
 
   return (
-    <section className="bg-white border-t border-[#D9D9D9]">
-      <div className="max-w-7xl mx-auto px-6 py-10 sm:py-16">
+    <section className="bg-white px-6 py-10 sm:py-16">
+      <div className="max-w-7xl mx-auto ">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-12">
           {columnsToDisplay.map((column) => (
             <ResourceColumn

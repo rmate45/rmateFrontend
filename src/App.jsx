@@ -3,7 +3,6 @@ import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import { Navigate, Route, Routes } from "react-router-dom";
 import Quiz from "./pages/Quiz";
-import WelcomePage from "./pages/WelcomePage";
 import IntroPage from "./pages/IntroPage";
 import PlanPage from "./pages/PlanPage";
 

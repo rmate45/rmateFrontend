@@ -6,7 +6,7 @@ import checklist from "../../assets/checklist.png";
 const RetiremateEdge = () => {
   return (
     <div className="text-center px-6 pt-10 sm:pt-16">
-      <div className="max-w-7xl mx-auto px-5">
+      <div className="max-w-7xl mx-auto">
         <p className="text-[#2A2420] font-medium text-xl sm:text-2xl text-center">
           The RetireMate Edge
         </p>

@@ -21,6 +21,11 @@ import savings from "../assets/savings.png";
 import currency from "../assets/currency_exchange.png";
 import avatar from "../assets/Avatar.png";
 import RetiremateEdge from "../components/RetiremateEdge/RetiremateEdge";
+import TestimonialsGrid from "../components/FeaturesSection/components/TestimonialsGrid";
+import AskAnything from "../components/AskAnything/AskAnything";
+import LinkSection from "../components/LinkSection/LinkSection";
+import ArticleSection from "../components/ArticleSection/ArticleSection";
+import CustomStory from "../components/CustomStory/CustomStory";
 
 function IntroPage() {
   // Data for components
@@ -80,7 +85,6 @@ function IntroPage() {
       tagcolor: "#DDB5FF",
     },
   ];
-
 
   const features = [
     {
@@ -151,6 +155,10 @@ function IntroPage() {
         onVoiceSearch={handleVoiceSearch}
       />
 
+      <TestimonialsGrid />
+
+      {/* <CustomStory /> */}
+
       <RetiremateEdge />
 
       <SuggestedQuestions
@@ -164,10 +172,16 @@ function IntroPage() {
 
       <FeaturesSection features={features} />
 
+      <AskAnything />
+
       <QuestionsToAction
         onQuestionClick={handleQuestionClick}
         onBrowseAllClick={handleBrowseAllClick}
       />
+      
+      <ArticleSection />
+
+      <LinkSection />
 
       <ResourcesSection />
 

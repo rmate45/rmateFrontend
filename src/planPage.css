@@ -66,7 +66,7 @@
 } */
 
 .chart-container {
-    height: 510px !important;
+    height: 530px !important;
 }
 
 .label-set{
@@ -75,28 +75,28 @@
 
 @media screen and (max-width: 678px) {
     .chart-container {
-        height: 520px !important;
+        height: 550px !important;
     }
 
 }
 
 @media screen and (max-width: 530px) {
     .chart-container {
-        height: 540px !important;
+        height: 560px !important;
     }
 
 }
 
 @media screen and (max-width: 435px) {
     .chart-container {
-        height: 560px !important;
+        height: 580px !important;
     }
 
 }
 
 @media screen and (max-width: 360px) {
     .chart-container {
-        height: 580px !important;
+        height: 600px !important;
     }
 
 }

@@ -14,7 +14,7 @@ const SuggestedQuestions = ({ questions, onQuestionClick }) => {
 
   return (
     <div className="text-center px-6 py-10 sm:py-16">
-      <div className="max-w-7xl mx-auto px-5">
+      <div className="max-w-7xl mx-auto">
         <p className="text-[#2A2420] font-medium text-xl sm:text-2xl text-center">
           Not sure where to start?
         </p>
@@ -53,7 +53,7 @@ const SuggestedQuestions = ({ questions, onQuestionClick }) => {
                 </p>
                 <div className="flex justify-end w-full">
                   <button className="text-xs font-semibold border-2  placeholder-primary px-4 py-2 rounded-full">
-                    Ask Retiremate
+                    Ask RetireMate
                   </button>
                 </div>
               </div>

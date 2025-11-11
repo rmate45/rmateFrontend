@@ -6,8 +6,9 @@ import { ChatMessage } from "../components/ChatMessage/ChatMessage";
 import { LoadingIndicator } from "../components/LoadingIndicator/LoadingIndicator";
 import { QuestionDisplay } from "../components/QuestionDisplay/QuestionDisplay";
 import api from "../api/api.js";
-import sendIcon from "../assets/send.svg";
 import PlotChart from "../components/PlotChart/PlotChart.jsx";
+
+const chatApiUrl = import.meta.env.VITE_CHAT_API_URL;
 
 function buildPayload(response) {
   const parseMedian = (str) => {
@@ -55,16 +56,16 @@ function buildPayload(response) {
     return nums.length % 2 === 1 ? nums[mid] : (nums[mid - 1] + nums[mid]) / 2;
   };
 
-  const age = parseInt(response?.Q3?.value, 10) || null;
-  const householdIncome = parseMedian(response?.Q9?.value);
-  const retirementSavings = parseMedian(response?.Q10?.value);
-  const otherSavings = parseMedian(response?.Q11?.value);
+  const age = parseInt(response?.Q1?.value, 10) || null;
+  const householdIncome = parseMedian(response?.Q3?.value);
+  const retirementSavings = parseMedian(response?.Q4?.value);
+  const otherSavings = parseMedian(response?.Q5?.value);
 
   return {
     age,
     householdIncome,
     retirementSavings,
-    otherSavings
+    otherSavings,
   };
 }
 
@@ -94,6 +95,11 @@ const STARTER_QUESTIONS = {
 const Quiz = () => {
   const location = useLocation();
   const params = new URLSearchParams(location.search);
+  const urlData = {
+    id: params.get("id") || "",
+    isPersona: params.get("isPersona") === "true" || false,
+    isCustomPersona: params.get("isCustomPersona") === "true" || false,
+  };
 
   const initialText = location.state?.title || params.get("title") || "";
 
@@ -109,7 +115,8 @@ const Quiz = () => {
   const [isLastQuestion, setIsLastQuestion] = useState(false);
   const overviewRef = useRef(null);
   const chatInputRef = useRef(null);
-    const [isScroll, setIsScroll] = useState(false);
+  const [isScroll, setIsScroll] = useState(false);
+  const [personaData, setPersonaData] = useState(null);
 
   // New states for handling the flow
   const [allQuestions, setAllQuestions] = useState([]);
@@ -131,6 +138,8 @@ const Quiz = () => {
   const [followUpQuestions, setFollowUpQuestions] = useState([]);
   const [showFollowUpQuestions, setShowFollowUpQuestions] = useState(false);
   const [userName, setUserName] = useState("");
+
+  // item passed from TestimonialCard via navigate('/quiz', { state: { item } })
 
   // Initialize the flow when component mounts
   useEffect(() => {
@@ -165,19 +174,70 @@ const Quiz = () => {
         setUserId(phoneNumber);
       }
     }
+
+    const ageAnswer = userAnswers["Q1"];
+    if (ageAnswer) {
+      let uniqueId = "User";
+      if (ageAnswer.value) {
+        uniqueId +=
+          `_${ageAnswer.value}` + `_${Math.floor(Math.random() * 10000)}`;
+      }
+
+      setUserId(uniqueId);
+    }
   }, [userAnswers]);
 
   // Extract user name from Q1 answer
-  useEffect(() => {
-    const nameAnswer = userAnswers["Q1"];
-    if (nameAnswer?.answer) {
-      setUserName(nameAnswer.answer);
+  // useEffect(() => {
+  //   const nameAnswer = userAnswers["Q1"];
+  //   if (nameAnswer?.answer) {
+  //     setUserName(nameAnswer.answer);
+  //   }
+  // }, [userAnswers]);
+
+  const fetchPersonaById = async (id) => {
+    if (!id) return null;
+    try {
+      const res = await api.get(`/get-persona/${id}`);
+      if (res.data?.type === "success" && res.data?.data) {
+        setPersonaData(res.data.data);
+        return res.data.data;
+      }
+      return null;
+    } catch (err) {
+      console.error("Error fetching persona:", err);
+      return null;
     }
-  }, [userAnswers]);
+  };
+
+  const fetchSavedPersonaById = async (id) => {
+    if (!id) return null;
+    try {
+      const res = await api.get(`/get-demographic/${id}`);
+      if (res.data?.type === "success" && res.data?.data) {
+        setPersonaData(res.data.data);
+        return res.data.data;
+      }
+      return null;
+    } catch (err) {
+      console.error("Error fetching persona:", err);
+      return null;
+    }
+  };
 
   const initializeFlow = async () => {
     try {
       setLoading(true);
+
+      if (urlData?.isPersona && urlData.id) {
+        const fetched = await fetchPersonaById(urlData.id);
+        await initialChartMessage(fetched);
+      }
+
+      if (urlData?.isCustomPersona && urlData.id) {
+        const fetched = await fetchSavedPersonaById(urlData.id);
+        await initialCustomChartMessage(fetched);
+      }
 
       if (initialText) {
         // Show the user's selected question/text first
@@ -189,7 +249,9 @@ const Quiz = () => {
 
       if (
         statementsResponse.data?.data &&
-        statementsResponse.data.data.length > 0
+        statementsResponse.data.data.length > 0 &&
+        !urlData?.isPersona &&
+        !urlData?.isCustomPersona
       ) {
         // Start showing statements one by one
         showStatementsSequentially(statementsResponse.data.data);
@@ -261,9 +323,8 @@ const Quiz = () => {
     }
   };
 
-  const moveToNextQuestion = () => {
-
-      if (currentQuestionIndex == 0) {
+  const moveToNextQuestion = (answers) => {
+    if (currentQuestionIndex == 0) {
       setIsScroll(true);
     }
 
@@ -280,18 +341,19 @@ const Quiz = () => {
       setCanReload(false);
       setLoading(true);
       // Call save API first, then start structured Q&A mode
-      saveUserResponses().then(() => {
-        startStructuredQA();
-      });
+      startStructuredQA(answers);
+      // saveUserResponses(answers).then(() => {
+      //   startStructuredQA(answers);
+      // });
     }
   };
 
   // New function to save user responses
-  const saveUserResponses = async () => {
+  const saveUserResponses = async (answers) => {
     try {
       setLoading(true);
       // Format the payload according to the required structure
-      const payload = formatSavePayload();
+      const payload = formatSavePayload(answers);
 
       console.log("Saving user responses:", payload);
 
@@ -311,28 +373,28 @@ const Quiz = () => {
   };
 
   // Function to format the payload for the save API
-  const formatSavePayload = () => {
+  const formatSavePayload = (answers) => {
     // Extract phone number from Q2 (assuming Q2 is the phone number question)
-    const phoneNumberAnswer = userAnswers["Q2"];
+    const phoneNumberAnswer = answers["Q2"];
     let phoneNumber = "";
 
-    if (phoneNumberAnswer) {
-      // Check if it's a phone data object with fullNumber
-      if (
-        phoneNumberAnswer.value &&
-        typeof phoneNumberAnswer.value === "object" &&
-        phoneNumberAnswer.value.fullNumber
-      ) {
-        phoneNumber = phoneNumberAnswer.value.fullNumber;
-      } else if (typeof phoneNumberAnswer.value === "string") {
-        phoneNumber = phoneNumberAnswer.value;
-      } else if (typeof phoneNumberAnswer.answer === "string") {
-        phoneNumber = phoneNumberAnswer.answer;
-      }
-    }
+    // if (phoneNumberAnswer) {
+    //   // Check if it's a phone data object with fullNumber
+    //   if (
+    //     phoneNumberAnswer.value &&
+    //     typeof phoneNumberAnswer.value === "object" &&
+    //     phoneNumberAnswer.value.fullNumber
+    //   ) {
+    //     phoneNumber = phoneNumberAnswer.value.fullNumber;
+    //   } else if (typeof phoneNumberAnswer.value === "string") {
+    //     phoneNumber = phoneNumberAnswer.value;
+    //   } else if (typeof phoneNumberAnswer.answer === "string") {
+    //     phoneNumber = phoneNumberAnswer.answer;
+    //   }
+    // }
 
     // Format responses array
-    const responses = Object.entries(userAnswers).map(
+    const responses = Object.entries(answers).map(
       ([questionId, answerData]) => {
         let answer = answerData.answer;
 
@@ -386,8 +448,159 @@ const Quiz = () => {
     }
   };
 
+  const initialChartMessage = async (personaData) => {
+    const chartPayload = {
+      age: personaData?.age,
+      householdIncome: personaData?.annual_income || 0,
+      retirementSavings: personaData?.total_savings || 0,
+      otherSavings: personaData?.otherSavings || 0,
+    };
+
+    // Initial greeting with loading delay
+    setConversation([{ type: "system", text: "Hey there, I am RetireMate" }]);
+
+    // Second message after 1 second
+    setTimeout(() => {
+      setConversation((prev) => [
+        ...prev,
+        {
+          type: "system",
+          text: `I'm your AI retirement assistant to provide you with answers to all your retirement questions in minutes, instead of months.`,
+        },
+      ]);
+    }, 1000);
+
+    // Third message (persona specific) after 2 seconds
+    setTimeout(() => {
+      setConversation((prev) => [
+        ...prev,
+        {
+          type: "system",
+          text: personaData?.chat_bubble,
+        },
+      ]);
+    }, 2000);
+
+    // Fourth message about the plot after 3 seconds
+    setTimeout(() => {
+      setConversation((prev) => [
+        ...prev,
+        {
+          type: "system",
+          text: "Here is the plot on how long shall savings last in retirement.",
+        },
+      ]);
+      setIsScroll(true);
+    }, 3000);
+
+    try {
+      setLoading(true);
+      // Delay the chart data fetch to allow messages to display
+      setTimeout(async () => {
+        const response = await fetchChartData(chartPayload);
+        if (response?.data?.data) {
+          setChartData(response.data.data);
+          setShowChart(true);
+          addToConversation("chart", response.data?.data);
+          setLoading(false);
+
+          setTimeout(() => {
+            setConversation((prev) => [
+              ...prev,
+              {
+                type: "system",
+                text: "Let's go ahead with your assessment",
+              },
+            ]);
+          }, 1000);
+
+          setTimeout(fetchQuestions, 1000);
+        } else {
+          addToConversation(
+            "system",
+            "I couldn't generate your chart data, but let's continue with your retirement planning questions!"
+          );
+          setLoading(false);
+        }
+      }, 4000);
+    } catch (error) {
+      console.error("Error starting structured Q&A:", error);
+      addToConversation(
+        "system",
+        "Something went wrong while generating your analysis, but let's continue with your retirement planning questions!"
+      );
+      scrollUp();
+      setLoading(false);
+    }
+  };
+
+  const initialCustomChartMessage = async (personaData) => {
+    const chartPayload = {
+      age: personaData?.age,
+      householdIncome: personaData?.income || 0,
+      retirementSavings: personaData?.savings || 0,
+      otherSavings: personaData?.otherSavings || 0,
+    };
+
+    // Initial greeting with loading delay
+    setConversation([{ type: "system", text: "Hey there, I am RetireMate" }]);
+
+    // Second message after 1 second
+    setTimeout(() => {
+      setConversation((prev) => [
+        ...prev,
+        {
+          type: "system",
+          text: `I'm your AI retirement assistant to provide you with answers to all your retirement questions in minutes, instead of months.`,
+        },
+      ]);
+    }, 1000);
+
+    // Fourth message about the plot after 3 seconds
+    setTimeout(() => {
+      setConversation((prev) => [
+        ...prev,
+        {
+          type: "system",
+          text: "Here is the plot on how long shall savings last in retirement.",
+        },
+      ]);
+      setIsScroll(true);
+    }, 3000);
+
+    try {
+      setLoading(true);
+      // Delay the chart data fetch to allow messages to display
+      setTimeout(async () => {
+        const response = await fetchChartData(chartPayload);
+        if (response?.data?.data) {
+          setChartData(response.data.data);
+          setShowChart(true);
+          addToConversation("chart", response.data?.data);
+          setLoading(false);
+
+          setTimeout(fetchQuestions, 1000);
+        } else {
+          addToConversation(
+            "system",
+            "I couldn't generate your chart data, but let's continue with your retirement planning questions!"
+          );
+          setLoading(false);
+        }
+      }, 4000);
+    } catch (error) {
+      console.error("Error starting structured Q&A:", error);
+      addToConversation(
+        "system",
+        "Something went wrong while generating your analysis, but let's continue with your retirement planning questions!"
+      );
+      scrollUp();
+      setLoading(false);
+    }
+  };
+
   // Modified function to start structured Q&A instead of open chat
-  const startStructuredQA = async () => {
+  const startStructuredQA = async (answers) => {
     try {
       setLoading(true);
 
@@ -399,18 +612,18 @@ const Quiz = () => {
         );
       }, 2000);
 
-      if (!userId) {
-        addToConversation(
-          "system",
-          "Error: Unable to identify user. Please try again."
-        );
-        return;
-      }
+      // if (!userId) {
+      //   addToConversation(
+      //     "system",
+      //     "Error: Unable to identify user. Please try again."
+      //   );
+      //   return;
+      // }
 
       console.log("Starting structured Q&A with userId:", userId);
-      console.log("User answers:", userAnswers);
+      console.log("User answers:", answers);
 
-      const chartPayload = buildPayload(userAnswers);
+      const chartPayload = buildPayload(answers);
 
       const response = await fetchChartData(chartPayload);
 
@@ -428,7 +641,7 @@ const Quiz = () => {
         );
 
         // Add chart component to conversation
-        addToConversation("chart", response.data?.data?.data);
+        addToConversation("chart", response.data?.data);
 
         // Wait a bit, then show the structured questions
         setTimeout(() => {
@@ -529,16 +742,13 @@ const Quiz = () => {
       });
 
       // Prepare for streaming response
-      const response = await fetch(
-        "https://rag-api.retiremate.com/api/chat/send",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ userId, message }),
-        }
-      );
+      const response = await fetch(`${chatApiUrl}/chat/send`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ userId, message }),
+      });
 
       console.log("API Response status:", response.status); // Debug log
 
@@ -678,16 +888,13 @@ const Quiz = () => {
       setLoading(true);
       setIsChatMode(false);
 
-      const response = await fetch(
-        "https://rag-api.retiremate.com/api/chat/send",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ userId, message: followUpPrompt }),
-        }
-      );
+      const response = await fetch(`${chatApiUrl}/chat/send`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ userId, message: followUpPrompt }),
+      });
 
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
@@ -746,6 +953,7 @@ const Quiz = () => {
   };
 
   const storeAnswer = (questionId, questionText, value, displayLabel) => {
+    console.log(questionId, "userAnswers questionId");
     setUserAnswers((prev) => ({
       ...prev,
       [questionId]: {
@@ -762,12 +970,27 @@ const Quiz = () => {
     setLoading(true);
 
     // Store the answer
-    storeAnswer(
-      currentQuestion.questionId,
-      currentQuestion.questionText,
-      option.text,
-      option.text
-    );
+    // storeAnswer(
+    //   currentQuestion.questionId,
+    //   currentQuestion.questionText,
+    //   option.text,
+    //   option.text
+    // );
+
+    const answer = {
+      questionText: currentQuestion.questionText,
+      answer: option.text,
+      value: option.text,
+    };
+
+    const updatedAnswers = {
+      ...userAnswers,
+      [currentQuestion.questionId]: {
+        ...answer,
+      },
+    };
+
+    setUserAnswers(updatedAnswers);
 
     setLastAnswerOption(option);
     setLastQuestionText(currentQuestion.questionText);
@@ -783,7 +1006,7 @@ const Quiz = () => {
 
     setTimeout(
       () => {
-        moveToNextQuestion();
+        moveToNextQuestion(updatedAnswers);
         setLoading(false);
       },
       comment && comment.trim() ? 2000 : 1000
@@ -800,12 +1023,27 @@ const Quiz = () => {
     setLoading(true);
 
     // Store the multi-select answer with array value
-    storeAnswer(
-      currentQuestion.questionId,
-      currentQuestion.questionText,
-      selectedTexts, // Store as array for multi-select
-      answerText
-    );
+    // storeAnswer(
+    //   currentQuestion.questionId,
+    //   currentQuestion.questionText,
+    //   selectedTexts,
+    //   answerText
+    // );
+
+    const answer = {
+      questionText: currentQuestion.questionText,
+      answer: selectedTexts,
+      value: answerText,
+    };
+
+    const updatedAnswers = {
+      ...userAnswers,
+      [currentQuestion.questionId]: {
+        ...answer,
+      },
+    };
+
+    setUserAnswers(updatedAnswers);
 
     setLastAnswerOption({ text: answerText, selectedOptions });
     setLastQuestionText(currentQuestion.questionText);
@@ -820,7 +1058,7 @@ const Quiz = () => {
 
     setTimeout(
       () => {
-        moveToNextQuestion();
+        moveToNextQuestion(updatedAnswers);
         setLoading(false);
       },
       comment && comment.trim() ? 2000 : 1000
@@ -854,12 +1092,27 @@ const Quiz = () => {
     addToConversation("answer", displayText);
 
     // Store the answer (phone object or regular text)
-    storeAnswer(
-      currentQuestion.questionId,
-      questionText,
-      storeValue,
-      displayText
-    );
+    // storeAnswer(
+    //   currentQuestion.questionId,
+    //   questionText,
+    //   storeValue,
+    //   displayText
+    // );
+
+    const answer = {
+      questionText: questionText,
+      answer: displayText,
+      value: storeValue,
+    };
+
+    const updatedAnswers = {
+      ...userAnswers,
+      [currentQuestion.questionId]: {
+        ...answer,
+      },
+    };
+
+    setUserAnswers(updatedAnswers);
 
     setLastQuestionText(questionText);
     setLastQuestionData(currentQuestion);
@@ -869,9 +1122,9 @@ const Quiz = () => {
     setLoading(true);
 
     let comment = currentQuestion.defaultComment;
-    if (currentQuestion.questionId == "Q1") {
-      comment = `Nice to meet you, ${textInput}`;
-    }
+    // if (currentQuestion.questionId == "Q1") {
+    //   comment = `Nice to meet you, ${textInput}`;
+    // }
     if (comment && comment.trim()) {
       setTimeout(() => {
         addToConversation("comment", comment);
@@ -880,7 +1133,7 @@ const Quiz = () => {
 
     setTimeout(
       () => {
-        moveToNextQuestion();
+        moveToNextQuestion(updatedAnswers);
         setLoading(false);
       },
       comment && comment.trim() ? 2000 : 1000
@@ -963,7 +1216,7 @@ const Quiz = () => {
     showStarterQuestions,
     showFollowUpQuestions,
     loading,
-    isScroll
+    isScroll,
   ]);
 
   useEffect(() => {
@@ -1006,7 +1259,7 @@ const Quiz = () => {
             if (item.type === "chart") {
               return (
                 <div key={idx} className="mb-4 px-4 flex justify-start">
-                  <div className="px-2 py-2 rounded-xl border-1 border-green-300 bg-white w-full max-w-full chart-container">
+                  <div className="px-2 py-2 rounded-xl border-1 border-green-300 bg-white w-full max-w-full">
                     <PlotChart data={item} />
                   </div>
                 </div>

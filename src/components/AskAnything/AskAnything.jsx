@@ -1,18 +1,12 @@
-// components/HeroSection/HeroSection.js
-import React, { useEffect, useRef, useState } from "react";
-import { isMobile } from "react-device-detect";
+import React, { useState } from "react";
+import { useRef } from "react";
 import { useNavigate } from "react-router-dom";
+import searchIcon from "../../assets/search.png";
 
-const HeroSection = ({ searchIcon, onSearch, onVoiceSearch }) => {
+const AskAnything = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const navigate = useNavigate();
   const inputRef = useRef(null);
-
-  useEffect(() => {
-    if (inputRef.current && !isMobile) {
-      inputRef.current.focus();
-    }
-  }, []);
 
   const handleSearch = () => {
     if (searchQuery.trim()) {
@@ -32,29 +26,19 @@ const HeroSection = ({ searchIcon, onSearch, onVoiceSearch }) => {
   };
 
   return (
-    <div className="bg-[#567257] text-white py-12 md:py-28 md:pb-42 text-center px-2">
-      <div className="max-w-2xl mx-auto">
-        <h1 className="font-medium mb-3 text-3xl md:text-5xl">
-          Retirement is Scary.
+    <div className="bg-white  px-6 py-10 sm:py-16">
+      <div className="max-w-7xl mx-auto">
+        <h1 className="text-introPrimary text-center font-medium text-2xl mb-8">
+          What Retirement Questions You Should Be Asking.
         </h1>
-        <p className="text-lg sm:text-2xl font-semibold jost mt-10">
-          "Will I have enough?"
-        </p>
 
-        <button
-          onClick={() => window.open("/quiz")}
-          className="border mt-6 border-primary text-primary bg-[#e8fdba] text-lg !font-normal rounded-[10px] jost px-5 py-2 hover:bg-[#e8fdba]/95 hover:text-[#567257] transition">
-          Check if you're prepared
-        </button>
-
-        {/* Search Input */}
-        {/* <form
+        <form
           onSubmit={(e) => {
             e.preventDefault();
             handleSearch();
           }}
         >
-          <div className="bg-white rounded-full flex items-center px-3 py-3 max-w-xl mx-auto">
+          <div className="bg-white border border-[#567257] rounded-full flex items-center px-3 py-3 max-w-xl mx-auto">
             <button type="submit" onClick={handleSearch}>
               <img src={searchIcon} alt="Search" className="w-7 h-7" />
             </button>
@@ -68,12 +52,11 @@ const HeroSection = ({ searchIcon, onSearch, onVoiceSearch }) => {
               className="flex-1 outline-none jost font-normal text-base px-2 text-introPrimary"
               placeholdertextcolor="#567257"
             />
-           
           </div>
-        </form> */}
+        </form>
       </div>
     </div>
   );
 };
 
-export default HeroSection;
+export default AskAnything;
