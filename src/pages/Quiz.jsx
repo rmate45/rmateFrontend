@@ -307,11 +307,15 @@ const Quiz = () => {
             // Single answer - show it directly
             setConversation((prev) => [
               ...prev,
-              { type: "system", text: fetchedData?.answer },
+              {
+                type: "system",
+                text: fetchedData?.answer
+                  ?.replace(/<br\s*\/?>/gi, "\n") // replace <br> or <br/> with line breaks
+                  ?.trim(),
+              },
             ]);
 
-                        setIsScroll(true);
-
+            setIsScroll(true);
           }
 
           // Wait another second before continuing
@@ -864,7 +868,6 @@ const Quiz = () => {
         },
         body: JSON.stringify({ userId, message }),
       });
-
 
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
