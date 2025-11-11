@@ -99,6 +99,7 @@ const Quiz = () => {
     id: params.get("id") || "",
     isPersona: params.get("isPersona") === "true" || false,
     isCustomPersona: params.get("isCustomPersona") === "true" || false,
+    type: params.get("type") || "",
   };
 
   const initialText = location.state?.title || params.get("title") || "";
@@ -224,7 +225,7 @@ const Quiz = () => {
       return null;
     }
   };
-  const fetchQuestionById = async (id) => {
+  const fetchQuestionFinancialById = async (id) => {
     if (!id) return null;
     try {
       const res = await api.get(`/get-financial-planning/${id}`);
@@ -238,22 +239,79 @@ const Quiz = () => {
       return null;
     }
   };
+
+  const fetchQuestionExploreById = async (id) => {
+    if (!id) return null;
+    try {
+      const res = await api.get(`/get-explore-question/${id}`);
+      if (res.data?.type === "success" && res.data?.data) {
+        return res.data.data;
+      }
+      return null;
+    } catch (err) {
+      console.error("Error fetching persona:", err);
+      return null;
+    }
+  };
+
+  const fetchQuestionRothById = async (id) => {
+    if (!id) return null;
+    try {
+      const res = await api.get(`/get-roth-question/${id}`);
+      if (res.data?.type === "success" && res.data?.data) {
+        return res.data.data;
+      }
+      return null;
+    } catch (err) {
+      console.error("Error fetching persona:", err);
+      return null;
+    }
+  };
+
   const initializeFlow = async () => {
     try {
       setLoading(true);
-      const fetched = await fetchQuestionById(urlData.id);
 
-      if (fetched) {
-        await setTimeout(() => {
-          setConversation([{ type: "answer", text: fetched?.question }]);
-s        }, 1000);
-        await setTimeout(() => {
-          setConversation((prev) => [
-            ...prev,
-            { type: "system", text: fetched?.answer },
-          ]);
-        }, 1000);
-      };
+      // Handle different question types based on URL parameters
+      if (!urlData?.isPersona && urlData.id) {
+        const type = urlData.type;
+        let fetchedData = null;
+
+        if (type === "roth") {
+          fetchedData = await fetchQuestionRothById(urlData.id);
+        } else if (type === "explore") {
+          fetchedData = await fetchQuestionExploreById(urlData.id);
+        } else if (type === "financial") {
+          fetchedData = await fetchQuestionFinancialById(urlData.id);
+        }
+
+        if (fetchedData) {
+          // First message - question
+          setConversation([{ type: "answer", text: fetchedData?.question }]);
+
+          // Wait 1 second before showing answer(s)
+          await new Promise((resolve) => setTimeout(resolve, 1000));
+
+          // Check if answer is an array or a string
+          if (fetchedData?.answers) {
+            // Join all answers with newlines and show in single box
+            const combinedAnswer = fetchedData.answers.join("\n");
+            setConversation((prev) => [
+              ...prev,
+              { type: "system", text: combinedAnswer },
+            ]);
+          } else {
+            // Single answer - show it directly
+            setConversation((prev) => [
+              ...prev,
+              { type: "system", text: fetchedData?.answer },
+            ]);
+          }
+
+          // Wait another second before continuing
+          await new Promise((resolve) => setTimeout(resolve, 1000));
+        }
+      }
 
       if (urlData?.isPersona && urlData.id) {
         const fetched = await fetchPersonaById(urlData.id);
@@ -1268,10 +1326,11 @@ s        }, 1000);
         pb-4 w-full max-w-3xl  flex flex-col relative"
       >
         <div
-          className={`flex flex-col flex-1 grow mt-24 ${currentQuestion?.inputType == "free_text" || isChatMode
+          className={`flex flex-col flex-1 grow mt-24 ${
+            currentQuestion?.inputType == "free_text" || isChatMode
               ? "pb-24"
               : "pb-4"
-            }`}
+          }`}
         >
           {conversation.map((item, idx) => {
             const isLastAnswer =

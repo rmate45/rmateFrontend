@@ -26,8 +26,8 @@ const RothQuestions = () => {
         }
     };
     const handleQuestionClick = (question) => {
-        const queryParam = encodeURIComponent(question.question);
-        window.open(`/quiz?title=${queryParam}`, "_blank");
+        const queryParam = encodeURIComponent(question._id);
+        window.open(`/quiz?id=${queryParam}&type=roth`, "_blank");
     };
     if (loading) {
         return (
