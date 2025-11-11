@@ -7,6 +7,7 @@ import { LoadingIndicator } from "../components/LoadingIndicator/LoadingIndicato
 import { QuestionDisplay } from "../components/QuestionDisplay/QuestionDisplay";
 import api from "../api/api.js";
 import PlotChart from "../components/PlotChart/PlotChart.jsx";
+import PrivacyTrustModal from "../components/PrivacyTrustModal/PrivacyTrustModal.jsx";
 
 const chatApiUrl = import.meta.env.VITE_CHAT_API_URL;
 
@@ -139,6 +140,7 @@ const Quiz = () => {
   const [followUpQuestions, setFollowUpQuestions] = useState([]);
   const [showFollowUpQuestions, setShowFollowUpQuestions] = useState(false);
   const [userName, setUserName] = useState("");
+  const [showModal, setShowModal] = useState(false);
 
   // item passed from TestimonialCard via navigate('/quiz', { state: { item } })
 
@@ -300,12 +302,16 @@ const Quiz = () => {
               ...prev,
               { type: "system", text: combinedAnswer },
             ]);
+            setIsScroll(true);
           } else {
             // Single answer - show it directly
             setConversation((prev) => [
               ...prev,
               { type: "system", text: fetchedData?.answer },
             ]);
+
+                        setIsScroll(true);
+
           }
 
           // Wait another second before continuing
@@ -359,10 +365,35 @@ const Quiz = () => {
         return;
       }
 
-      setConversation((prev) => [
-        ...prev,
-        { type: "system", text: statement.question },
-      ]);
+      if (
+        statement?.question ==
+        "Your privacy matters! Anything you share stays private and is only used to improve your results. Learn more here."
+      ) {
+        setConversation((prev) => [
+          ...prev,
+          {
+            type: "system",
+            text: (
+              <p className="jost">
+                Your privacy matters! Anything you share stays private and is
+                only used to improve your results. Learn more{" "}
+                <span
+                  onClick={() => setShowModal(true)}
+                  className="jost text-primary hover:!underline cursor-pointer"
+                >
+                  {" "}
+                  here.
+                </span>
+              </p>
+            ),
+          },
+        ]);
+      } else {
+        setConversation((prev) => [
+          ...prev,
+          { type: "system", text: statement.question },
+        ]);
+      }
 
       index++;
 
@@ -834,7 +865,6 @@ const Quiz = () => {
         body: JSON.stringify({ userId, message }),
       });
 
-      console.log("API Response status:", response.status); // Debug log
 
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
@@ -1433,6 +1463,7 @@ const Quiz = () => {
           <div id="overview" ref={overviewRef} className="scroll-mt-20"></div>
         </div>
       </div>
+      <PrivacyTrustModal show={showModal} onClose={() => setShowModal(false)} />
     </div>
   );
 };
