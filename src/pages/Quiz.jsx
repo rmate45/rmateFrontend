@@ -57,9 +57,9 @@ function buildPayload(response) {
   };
 
   const age = parseInt(response?.Q1?.value, 10) || null;
-  const householdIncome = parseMedian(response?.Q5?.value);
-  const retirementSavings = parseMedian(response?.Q3?.value);
-  const otherSavings = parseMedian(response?.Q4?.value);
+  const householdIncome = parseMedian(response?.Q3?.value);
+  const retirementSavings = parseMedian(response?.Q4?.value);
+  const otherSavings = parseMedian(response?.Q5?.value);
 
   return {
     age,

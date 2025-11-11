@@ -157,7 +157,7 @@ function IntroPage() {
 
       <TestimonialsGrid />
 
-      <CustomStory />
+      {/* <CustomStory /> */}
 
       <RetiremateEdge />
 
