@@ -224,10 +224,36 @@ const Quiz = () => {
       return null;
     }
   };
-
+  const fetchQuestionById = async (id) => {
+    if (!id) return null;
+    try {
+      const res = await api.get(`/get-financial-planning/${id}`);
+      console.log(res, "testtt");
+      if (res.data?.type === "success" && res.data?.data) {
+        return res.data.data;
+      }
+      return null;
+    } catch (err) {
+      console.error("Error fetching persona:", err);
+      return null;
+    }
+  };
   const initializeFlow = async () => {
     try {
       setLoading(true);
+      const fetched = await fetchQuestionById(urlData.id);
+
+      if (fetched) {
+        await setTimeout(() => {
+          setConversation([{ type: "answer", text: fetched?.question }]);
+s        }, 1000);
+        await setTimeout(() => {
+          setConversation((prev) => [
+            ...prev,
+            { type: "system", text: fetched?.answer },
+          ]);
+        }, 1000);
+      };
 
       if (urlData?.isPersona && urlData.id) {
         const fetched = await fetchPersonaById(urlData.id);
@@ -465,7 +491,7 @@ const Quiz = () => {
         ...prev,
         {
           type: "system",
-          text: `I'm your AI retirement assistant to provide you with answers to all your retirement questions in minutes, instead of months.`,
+          text: `As your Ai retirement assistant, I can help you check if you're preparedfor retirement and decide what to do to get more prepared.`,
         },
       ]);
     }, 1000);
@@ -551,7 +577,7 @@ const Quiz = () => {
         ...prev,
         {
           type: "system",
-          text: `I'm your AI retirement assistant to provide you with answers to all your retirement questions in minutes, instead of months.`,
+          text: `As your Ai retirement assistant, I can help you check if you're preparedfor retirement and decide what to do to get more prepared.`,
         },
       ]);
     }, 1000);
@@ -1242,11 +1268,10 @@ const Quiz = () => {
         pb-4 w-full max-w-3xl  flex flex-col relative"
       >
         <div
-          className={`flex flex-col flex-1 grow mt-24 ${
-            currentQuestion?.inputType == "free_text" || isChatMode
+          className={`flex flex-col flex-1 grow mt-24 ${currentQuestion?.inputType == "free_text" || isChatMode
               ? "pb-24"
               : "pb-4"
-          }`}
+            }`}
         >
           {conversation.map((item, idx) => {
             const isLastAnswer =

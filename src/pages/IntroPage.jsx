@@ -26,6 +26,9 @@ import AskAnything from "../components/AskAnything/AskAnything";
 import LinkSection from "../components/LinkSection/LinkSection";
 import ArticleSection from "../components/ArticleSection/ArticleSection";
 import CustomStory from "../components/CustomStory/CustomStory";
+import RetirematePlanningQuestion from "../components/RetirematePlanningQuestion/RetirematePlanningQuestion";
+import RothQuestions from "../components/RothQuestions/RothQuestions";
+import ExploreMoreQuestions from "../components/ExploreMoreQuestions/ExploreMoreQuestions";
 
 function IntroPage() {
   // Data for components
@@ -160,7 +163,10 @@ function IntroPage() {
       {/* <CustomStory /> */}
 
       <RetiremateEdge />
-
+      <RetirematePlanningQuestion />
+      <ExploreMoreQuestions />
+      <RothQuestions />
+      <ExploreMoreQuestions />
       <SuggestedQuestions
         questions={suggestedQuestions}
         onQuestionClick={handleQuestionClick}
@@ -178,7 +184,7 @@ function IntroPage() {
         onQuestionClick={handleQuestionClick}
         onBrowseAllClick={handleBrowseAllClick}
       />
-      
+
       <ArticleSection />
 
       <LinkSection />
