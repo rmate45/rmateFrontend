@@ -269,6 +269,19 @@ const Quiz = () => {
       return null;
     }
   };
+  const fetchQuestionMedicareById = async (id) => {
+    if (!id) return null;
+    try {
+      const res = await api.get(`/get-medicare-question/${id}`);
+      if (res.data?.type === "success" && res.data?.data) {
+        return res.data.data;
+      }
+      return null;
+    } catch (err) {
+      console.error("Error fetching persona:", err);
+      return null;
+    }
+  };
 
   const initializeFlow = async () => {
     try {
@@ -285,6 +298,8 @@ const Quiz = () => {
           fetchedData = await fetchQuestionExploreById(urlData.id);
         } else if (type === "financial") {
           fetchedData = await fetchQuestionFinancialById(urlData.id);
+        } else if (type === "medicare") {
+          fetchedData = await fetchQuestionMedicareById(urlData.id);
         }
 
         if (fetchedData) {
@@ -590,7 +605,31 @@ const Quiz = () => {
     }, 1000);
 
     // Third message (persona specific) after 2 seconds
-    setTimeout(() => {
+ 
+     setTimeout(() => {
+      setConversation((prev) => [
+        ...prev,
+        {
+          type: "system",
+           text: (
+              <p className="jost">
+                Your privacy matters! Anything you share stays private and is
+                only used to improve your results. Learn more{" "}
+                <span
+                  onClick={() => setShowModal(true)}
+                  className="jost text-primary hover:!underline cursor-pointer"
+                >
+                  {" "}
+                  here.
+                </span>
+              </p>
+            ),
+        },
+      ]);
+      setIsScroll(true);
+    }, 2000);
+    // Fourth message about the plot after 3 seconds
+      setTimeout(() => {
       setConversation((prev) => [
         ...prev,
         {
@@ -598,9 +637,8 @@ const Quiz = () => {
           text: personaData?.chat_bubble,
         },
       ]);
-    }, 2000);
-
-    // Fourth message about the plot after 3 seconds
+    },  3000);
+    // Fifth message about the plot after 4 seconds
     setTimeout(() => {
       setConversation((prev) => [
         ...prev,
@@ -610,7 +648,7 @@ const Quiz = () => {
         },
       ]);
       setIsScroll(true);
-    }, 3000);
+    }, 4000);
 
     try {
       setLoading(true);
@@ -628,7 +666,7 @@ const Quiz = () => {
               ...prev,
               {
                 type: "system",
-                text: "Let's go ahead with your assessment",
+                text: "Let's get started with a few basic questions.",
               },
             ]);
           }, 1000);
@@ -641,7 +679,7 @@ const Quiz = () => {
           );
           setLoading(false);
         }
-      }, 4000);
+      }, 5000);
     } catch (error) {
       console.error("Error starting structured Q&A:", error);
       addToConversation(

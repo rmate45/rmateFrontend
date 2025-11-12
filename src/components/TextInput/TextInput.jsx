@@ -188,6 +188,10 @@ export const TextInput = ({
       cleaned = rawValue.replace(/\D/g, ""); // only digits
     } else if (isAgeInput) {
       cleaned = rawValue.replace(/\D/g, ""); // only digits for age too
+      // enforce max 3 digits for age
+      if (cleaned.length > 3) {
+        cleaned = cleaned.slice(0, 3);
+      }
     }
 
     onChange(cleaned);
@@ -201,9 +205,9 @@ export const TextInput = ({
       if (isZipValid) onSubmit();
     } else if (isAgeInput) {
       const age = parseInt(value, 10);
-      if (!age || isNaN(age) || age < 18) {
+      if (!age || isNaN(age) || age < 18 || age > 110) {
         setIsValid(false);
-        setValidationMessage("Age must be a number and at least 18.");
+        setValidationMessage("Age must be a number between 18 and 110.");
         onValidationError?.();
         if (scrollToBottom) {
           setTimeout(() => {
@@ -232,8 +236,53 @@ export const TextInput = ({
   };
 
   const handleKeyDown = (e) => {
+    // Block non-digit input for age (prevents 'e', '+', '-', '.')
+    if (isAgeInput) {
+      const allowedControlKeys = [
+        "Backspace",
+        "Delete",
+        "ArrowLeft",
+        "ArrowRight",
+        "Tab",
+        "Home",
+        "End",
+      ];
+      if (allowedControlKeys.includes(e.key)) return;
+      if (e.ctrlKey || e.metaKey) return; // allow copy/paste shortcuts; paste sanitized below
+
+      // prevent non-digits
+      if (!/^[0-9]$/.test(e.key)) {
+        e.preventDefault();
+        return;
+      }
+
+      // enforce max length 3 at keydown
+      const current = String(value || "");
+      if (current.length >= 3) {
+        e.preventDefault();
+        return;
+      }
+    }
+
     if (e.key === "Enter") {
       handleSubmit();
+    }
+  };
+
+  const handlePaste = (e) => {
+    if (!isAgeInput) return;
+    const text = (e.clipboardData || window.clipboardData)?.getData("text") || "";
+    const digits = text.replace(/\D/g, "");
+    const current = String(value || "");
+    if (!digits) {
+      e.preventDefault();
+      return;
+    }
+    const room = Math.max(0, 3 - current.length);
+    const toInsert = digits.slice(0, room);
+    e.preventDefault();
+    if (toInsert) {
+      handleChange(current + toInsert);
     }
   };
 
@@ -256,10 +305,14 @@ export const TextInput = ({
           inputMode={validateAsZip || isAgeInput ? "numeric" : "text"}
           pattern={validateAsZip || isAgeInput ? "\\d*" : undefined}
           disabled={loading }
-          maxLength={validateAsZip ? 6 : undefined}
+          maxLength={validateAsZip ? 6 : isAgeInput ? 3 : undefined}
+          min={isAgeInput ? 18 : undefined}
+          max={isAgeInput ? 110 : undefined}
+          step={isAgeInput ? 1 : undefined}
           value={value}
           onChange={(e) => handleChange(e.target.value)}
           onKeyDown={handleKeyDown}
+          onPaste={handlePaste}
           onFocus={(e) => {
             // Ensure the input stays focused and scrolls into view
             e.target.scrollIntoView({ 
@@ -286,7 +339,7 @@ export const TextInput = ({
             validateAsZip
               ? "Enter ZIP code (3–6 digits)"
               : isAgeInput
-              ? "Enter your age (18+)"
+              ? "Enter your age (18–110)"
               : "Type your answer here..."
           }
           style={{ 

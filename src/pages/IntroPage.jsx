@@ -29,6 +29,7 @@ import CustomStory from "../components/CustomStory/CustomStory";
 import RetirematePlanningQuestion from "../components/RetirematePlanningQuestion/RetirematePlanningQuestion";
 import RothQuestions from "../components/RothQuestions/RothQuestions";
 import ExploreMoreQuestions from "../components/ExploreMoreQuestions/ExploreMoreQuestions";
+import MedicareQuestions from "../components/MedicareQuestions/MedicareQuestions";
 
 function IntroPage() {
   // Data for components
@@ -166,6 +167,8 @@ function IntroPage() {
       <RetirematePlanningQuestion />
       <ExploreMoreQuestions />
       <RothQuestions />
+      <ExploreMoreQuestions />
+      <MedicareQuestions />
       <ExploreMoreQuestions />
       <SuggestedQuestions
         questions={suggestedQuestions}

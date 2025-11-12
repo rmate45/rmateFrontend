@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import api from "../../api/api";
 
 const ExploreMoreQuestions = () => {
@@ -6,9 +6,21 @@ const ExploreMoreQuestions = () => {
   const [data, setData] = useState([]);
   const [error, setError] = useState(null);
   const [selectedQuestion, setSelectedQuestion] = useState("");
+  const [dropdownOpen, setDropdownOpen] = useState(false);
+  const dropdownRef = useRef(null);
 
   useEffect(() => {
     getQuestion();
+  }, []);
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setDropdownOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
   const getQuestion = async () => {
@@ -28,7 +40,6 @@ const ExploreMoreQuestions = () => {
   };
 
   const handleQuestionClick = (question) => {
-    console.log("question", question);
     const queryParam = encodeURIComponent(question);
     window.open(`/quiz?id=${queryParam}&type=explore`, "_blank");
   };
@@ -57,36 +68,70 @@ const ExploreMoreQuestions = () => {
 
   return (
     <div className="text-center px-6 pt-10 sm:pt-16">
-      <div className="max-w-7xl mx-auto text-center flex flex-col items-center justify-center">
+      <div className="max-w-7xl mx-auto flex flex-col items-center justify-center">
         <p className="text-primary font-medium text-xl sm:text-2xl mb-10">
           Explore more questions
         </p>
 
-        {/* Select Dropdown */}
-        <select
-          value={selectedQuestion}
-          onChange={(e) => setSelectedQuestion(e.target.value)}
-          className="border-r-10 border-r-transparent  rounded-2xl p-5 bg-white outline outline-primary flex gap-3 max-w-4/5 max-auto"
-        >
-          <option value="">Select a question</option>
-          {data?.map((item, index) => (
-            <option value={item?._id} key={index}>
-              {item?.question}
-            </option>
-          ))}
-        </select>
+        {/* Custom Dropdown */}
+        <div className="relative w-full max-w-lg" ref={dropdownRef}>
+          <button
+            onClick={() => setDropdownOpen((prev) => !prev)}
+            className="w-full text-sm flex justify-between items-center px-5 py-3 text-left rounded-2xl border border-primary text-gray-700 bg-white shadow-sm hover:shadow-md transition"
+          >
+            <span>
+              {selectedQuestion
+                ? data.find((q) => q._id === selectedQuestion)?.question
+                : "Select a question"}
+            </span>
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              className={`w-5 h-5 text-gray-500 shrink-0 transform transition-transform ${
+                dropdownOpen ? "rotate-180" : ""
+              }`}
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M19 9l-7 7-7-7"
+              />
+            </svg>
+          </button>
+
+          {dropdownOpen && (
+            <ul className="absolute z-10 w-full mt-2 bg-white border border-gray-200 rounded-2xl shadow-lg max-h-60 overflow-y-auto">
+              {data.map((item, index) => (
+                <li
+                  key={index}
+                  onClick={() => {
+                    setSelectedQuestion(item._id);
+                    setDropdownOpen(false);
+                  }}
+                  className={`px-5 py-3 text-left text-sm cursor-pointer hover:bg-blue-50 ${
+                    selectedQuestion === item._id ? "bg-blue-100 font-medium" : ""
+                  }`}
+                >
+                  {item.question}
+                </li>
+              ))}
+            </ul>
+          )}
+        </div>
 
         {/* Button */}
         <div className="mt-6">
           <button
             onClick={() => handleQuestionClick(selectedQuestion)}
             disabled={!selectedQuestion}
-            className={`px-6 py-2 rounded-md font-semibold border transition
-              ${
-                selectedQuestion
-                  ? "text-primary border-primary hover:bg-green-50"
-                  : "text-gray-400 border-gray-300 cursor-not-allowed"
-              }`}
+            className={`px-6 py-2 rounded-md font-semibold border transition ${
+              selectedQuestion
+                ? "text-primary border-primary hover:bg-green-50"
+                : "text-gray-400 border-gray-300 cursor-not-allowed"
+            }`}
           >
             Ask RetireMate
           </button>
