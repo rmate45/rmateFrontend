@@ -27,10 +27,10 @@ const ExploreMoreQuestions = () => {
     }
   };
 
-  const handleQuestionClick = (questionText) => {
-    if (!questionText) return;
-    const queryParam = encodeURIComponent(questionText);
-    window.open(`/quiz?title=${queryParam}`, "_blank");
+  const handleQuestionClick = (question) => {
+    console.log("question", question);
+    const queryParam = encodeURIComponent(question);
+    window.open(`/quiz?id=${queryParam}&type=explore`, "_blank");
   };
 
   if (loading) {
@@ -70,7 +70,7 @@ const ExploreMoreQuestions = () => {
         >
           <option value="">Select a question</option>
           {data?.map((item, index) => (
-            <option value={item?.question} key={index}>
+            <option value={item?._id} key={index}>
               {item?.question}
             </option>
           ))}

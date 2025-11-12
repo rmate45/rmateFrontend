@@ -25,7 +25,7 @@ const RetirematePlanningQuestion = () => {
     };
     const handleQuestionClick = (question) => {
         const queryParam = encodeURIComponent(question._id);
-        window.open(`/quiz?id=${queryParam}`, "_blank");
+        window.open(`/quiz?id=${queryParam}&type=financial`, "_blank");
     };
     if (loading) {
         return (
