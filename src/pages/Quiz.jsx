@@ -592,7 +592,7 @@ const Quiz = () => {
     };
 
     // Initial greeting with loading delay
-    setConversation([{ type: "system", text: "Hey there, I am RetireMate" }]);
+    setConversation([{ type: "system", text: "Hey there, I'm RetireMate 👋" }]);
 
     // Second message after 1 second
     setTimeout(() => {
@@ -701,7 +701,7 @@ const Quiz = () => {
     };
 
     // Initial greeting with loading delay
-    setConversation([{ type: "system", text: "Hey there, I am RetireMate" }]);
+    setConversation([{ type: "system", text: "Hey there, I'm RetireMate 👋" }]);
 
     // Second message after 1 second
     setTimeout(() => {
@@ -709,7 +709,7 @@ const Quiz = () => {
         ...prev,
         {
           type: "system",
-          text: `As your Ai retirement assistant, I can help you check if you're preparedfor retirement and decide what to do to get more prepared.`,
+          text: `As your AI retirement assistant, I can help you check if you're prepared for retirement and decide what to do to get more prepared.`,
         },
       ]);
     }, 1000);
