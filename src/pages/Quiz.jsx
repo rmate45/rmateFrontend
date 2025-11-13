@@ -606,31 +606,31 @@ const Quiz = () => {
     }, 1000);
 
     // Third message (persona specific) after 2 seconds
- 
-     setTimeout(() => {
+
+    setTimeout(() => {
       setConversation((prev) => [
         ...prev,
         {
           type: "system",
-           text: (
-              <p className="jost">
-                Your privacy matters! Anything you share stays private and is
-                only used to improve your results. Learn more{" "}
-                <span
-                  onClick={() => setShowModal(true)}
-                  className="jost text-primary hover:!underline cursor-pointer"
-                >
-                  {" "}
-                  here.
-                </span>
-              </p>
-            ),
+          text: (
+            <p className="jost">
+              Your privacy matters! Anything you share stays private and is only
+              used to improve your results. Learn more{" "}
+              <span
+                onClick={() => setShowModal(true)}
+                className="jost text-primary hover:!underline cursor-pointer"
+              >
+                {" "}
+                here.
+              </span>
+            </p>
+          ),
         },
       ]);
       setIsScroll(true);
     }, 2000);
     // Fourth message about the plot after 3 seconds
-      setTimeout(() => {
+    setTimeout(() => {
       setConversation((prev) => [
         ...prev,
         {
@@ -638,7 +638,7 @@ const Quiz = () => {
           text: personaData?.chat_bubble,
         },
       ]);
-    },  3000);
+    }, 3000);
     // Fifth message about the plot after 4 seconds
     setTimeout(() => {
       setConversation((prev) => [
@@ -801,15 +801,18 @@ const Quiz = () => {
         // Add chart component to conversation
         addToConversation("chart", response.data?.data);
 
+        setShowStarterQuestions(true);
+        setLoading(false);
+
         // Wait a bit, then show the structured questions
-        setTimeout(() => {
-          addToConversation(
-            "system",
-            "Now, let's dive deeper into your retirement planning concerns:"
-          );
-          setShowStarterQuestions(true);
-          setLoading(false);
-        }, 2000);
+        // setTimeout(() => {
+        //   addToConversation(
+        //     "system",
+        //     "Now, let's dive deeper into your retirement planning concerns:"
+        //   );
+        //   setShowStarterQuestions(true);
+        //   setLoading(false);
+        // }, 2000);
       } else {
         addToConversation(
           "system",
@@ -1415,10 +1418,8 @@ const Quiz = () => {
             if (item.type === "chart") {
               return (
                 <div key={idx} className="mb-4 px-4 ">
-                  
-                    <PlotChart data={item} />
-                    <RetirementQa/>
-                
+                  <PlotChart data={item} />
+                  {/* <RetirementQa/> */}
                 </div>
               );
             }
@@ -1445,8 +1446,14 @@ const Quiz = () => {
             }
           />
 
-          {/* Show starter questions after quiz completion */}
           {showStarterQuestions && (
+            <div className="mx-4">
+              <RetirementQa />
+            </div>
+          )}
+
+          {/* Show starter questions after quiz completion */}
+          {/* {showStarterQuestions && (
             <div className="mx-4 mt-4">
               <div className="mb-4 jost text-sm border-2 border-green-300 px-4 py-2 text-center rounded-xl text-gray-800 font-semibold max-w-sm">
                 {STARTER_QUESTIONS.main}
@@ -1463,10 +1470,10 @@ const Quiz = () => {
                 ))}
               </div>
             </div>
-          )}
+          )} */}
 
           {/* Show follow-up questions */}
-          {showFollowUpQuestions && followUpQuestions.length > 0 && (
+          {/* {showFollowUpQuestions && followUpQuestions.length > 0 && (
             <div className="mx-4 mt-4">
               <div className="mb-4 jost text-sm border-2 border-green-300 px-4 py-2 text-center rounded-xl text-gray-800 font-semibold">
                 Choose your next question:
@@ -1483,7 +1490,7 @@ const Quiz = () => {
                 ))}
               </div>
             </div>
-          )}
+          )} */}
 
           {/* Show QuestionDisplay only if not in structured Q&A mode and there's a current question */}
           {!showStarterQuestions &&

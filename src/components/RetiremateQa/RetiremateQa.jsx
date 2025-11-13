@@ -118,11 +118,13 @@ const RetirementQa = () => {
     return (
         <div className="">
             <div className="max-w-4xl mx-auto mt-2">
-                <div className="mb-6">
+                <div className="mb-6">  
+             
                     <div
                         onClick={() => handleQuestionClick(currentQuestion.questionId)}
                         className="w-full py-2 px-3 cursor-pointer  border-1 border-green-300 rounded-lg hover:border-green-300 hover:bg-green-50 transition-all"
                     >
+                          <p className='text-xs mb-2'> ("Tap the question to see the response, or skip to the next question.")</p>
                         <h2 className="text-left jost">
                             {currentQuestion.question}
                         </h2>
