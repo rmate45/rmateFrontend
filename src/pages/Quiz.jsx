@@ -8,6 +8,7 @@ import { QuestionDisplay } from "../components/QuestionDisplay/QuestionDisplay";
 import api from "../api/api.js";
 import PlotChart from "../components/PlotChart/PlotChart.jsx";
 import PrivacyTrustModal from "../components/PrivacyTrustModal/PrivacyTrustModal.jsx";
+import RetirementQa from "../components/RetiremateQa/RetiremateQa.jsx";
 
 const chatApiUrl = import.meta.env.VITE_CHAT_API_URL;
 
@@ -1413,10 +1414,11 @@ const Quiz = () => {
             // Render chart if the message type is 'chart'
             if (item.type === "chart") {
               return (
-                <div key={idx} className="mb-4 px-4 flex justify-start">
-                  <div className="px-2 py-2 rounded-xl border-1 border-green-300 bg-white w-full max-w-full">
+                <div key={idx} className="mb-4 px-4 ">
+                  
                     <PlotChart data={item} />
-                  </div>
+                    <RetirementQa/>
+                
                 </div>
               );
             }

@@ -127,9 +127,9 @@ const ExploreMoreQuestions = () => {
           <button
             onClick={() => handleQuestionClick(selectedQuestion)}
             disabled={!selectedQuestion}
-            className={`px-6 py-2 rounded-md font-semibold border transition ${
+            className={`px-6 py-2 rounded-md text-xs font-semibold border transition ${
               selectedQuestion
-                ? "text-primary border-primary hover:bg-green-50"
+                ? "mt-5 w-full  rounded-lg px-4 py-2 bg-[#567257] text-white"
                 : "text-gray-400 border-gray-300 cursor-not-allowed"
             }`}
           >

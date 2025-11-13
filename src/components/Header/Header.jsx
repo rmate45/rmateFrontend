@@ -11,7 +11,7 @@ const Header = ({ onLoginClick }) => {
           className="border border-primary text-primary bg-[#e8fdba] !font-normal rounded-[10px] jost px-5 py-2 hover:bg-[#e8fdba]/95 hover:text-[#567257] transition"
           onClick={onLoginClick}
         >
-          Log In
+          Sign up
         </button>
       </div>
     </div>

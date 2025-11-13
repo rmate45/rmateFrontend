@@ -119,7 +119,7 @@ function IntroPage() {
 
   // Event handlers - these are now optional since navigation is handled within components
   const handleLoginClick = () => {
-    console.log("Login clicked");
+     window.open("/quiz");
     // Add your login logic here
   };
 

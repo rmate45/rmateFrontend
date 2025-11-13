@@ -66,7 +66,7 @@ const MedicareQuestions = () => {
                     {
                         data.map((item, index) => (
                             <>
-                                <div className="relative border border-primary rounded-2xl p-5 bg-white shadow-sm flex gap-4">
+                                <div className="relative rounded-2xl p-5 bg-white shadow-md flex gap-4">
                                     <div className="shrink-0 text-center w-[100px]">
                                         <img
                                             src={index === 0 ? oneImage : index === 1 ? twoImage : index === 2 ? threeImage : oneImage}
@@ -74,22 +74,22 @@ const MedicareQuestions = () => {
                                             className="w-16 h-16 rounded-full object-cover mx-auto mb-2"
                                         />
                                         <div className="grow">
-                                            <p className="text-primary font-semibold mb-1">
+                                            <p className="text-primary text-base font-semibold mb-1.5 mt-3">
                                                 {item?.name}, <span className="text-primary font-normal">{item?.age}</span>
                                             </p>
-                                            <p className="text-sm text-black  font-bold break-word max-w-[100px]">{item?.profession}</p>
+                                            <p className="text-center text-sm mt-auto  jost font-light break-word max-w-[100px]">{item?.profession}</p>
                                         </div>
                                     </div>
                                     <div className="grow flex flex-col h-[100%]">
                                         <p className="text-black text-left grow">
                                            "{item?.question}"
                                         </p>
-                                        <p className="text-black text-left grow pt-2">
+                                        <p className="text-sm jost grow font-light text-black text-left pt-2">
                                           I am {item?.age},  with total retirement savings of {item?.savings}
 
                                         </p>
                                         <div className="mt-4 flex justify-between items-center ">
-                                            <button onClick={() => handleQuestionClick(item)} className="text-primary border border-primary px-5 py-1.5 rounded-md font-semibold hover:bg-green-50 transition">
+                                            <button onClick={() => handleQuestionClick(item)} className="mt-5 w-full text-xs rounded-lg px-4 py-2 bg-[#567257] text-white">
                                                 Ask RetireMate
                                             </button>
 
