@@ -69,7 +69,7 @@ const ExploreMoreQuestions = () => {
   return (
     <div className="text-center px-6 pt-10 sm:pt-16">
       <div className="max-w-7xl mx-auto flex flex-col items-center justify-center">
-        <p className="text-primary font-medium text-xl sm:text-2xl mb-10">
+        <p className="text-introPrimary font-medium text-xl sm:text-2xl mb-10">
           Explore more questions
         </p>
 
@@ -111,7 +111,7 @@ const ExploreMoreQuestions = () => {
                     setSelectedQuestion(item._id);
                     setDropdownOpen(false);
                   }}
-                  className={`px-5 py-3 text-left text-sm cursor-pointer hover:bg-blue-50 ${
+                  className={`px-5 py-3 text-left text-sm jost grow font-medium text-[#6B7280]  cursor-pointer hover:bg-blue-50 ${
                     selectedQuestion === item._id ? "bg-blue-100 font-medium" : ""
                   }`}
                 >

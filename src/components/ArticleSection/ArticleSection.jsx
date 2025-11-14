@@ -49,16 +49,16 @@ const ArticleSection = () => {
               />
 
               <div className="p-5 flex flex-col grow">
-                <h2 className="text-lg font-medium text-primary mb-2 hover:text-[#567257] transition-colors cursor-pointer">
+                <h2 className="text-wrap font-bold text-lg md:text-[24px] text-[#567257] grow-1 text-left">
                   {article.title}
                 </h2>
-                <p className="text-sm text-gray-600 flex-1">
+                <p className="text-[14px] lg:text-[16px]  jost inline-block p-1.5 rounded text-[#6B7280] text-left">
                   {article.description}
                 </p>
 
-                <div className="flex justify-between items-center text-xs text-gray-500 mt-4 border-t border-gray-100 pt-3">
-                  <span>{article.date}</span>
-                  <span>{article.readTime}</span>
+                <div className="flex justify-between items-center text-xs text-gray-500 mt-4 border-t border-gray-300 pt-3">
+                  <span className="text-[14px] lg:text-[16px]  jost inline-block p-1.5 rounded text-[#6B7280] text-left">{article.date}</span>
+                  <span className="text-[14px] lg:text-[16px]  jost inline-block p-1.5 rounded text-[#6B7280] text-left">{article.readTime}</span>
                 </div>
               </div>
             </div>

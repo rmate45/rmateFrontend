@@ -59,41 +59,39 @@ const MedicareQuestions = () => {
     return (
         <div className="text-center px-6 pt-10 sm:pt-16">
             <div className="max-w-7xl mx-auto">
-                <p className="text-primary font-medium text-xl sm:text-2xl text-center">
+                <p className="text-introPrimary font-medium text-xl sm:text-2xl text-center">
                     Top Medicare  / Medicare Advantage / Medigap Questions
                 </p>
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 mt-10">
                     {
                         data.map((item, index) => (
                             <>
-                                <div className="relative rounded-2xl p-5 bg-white shadow-md flex gap-4">
-                                    <div className="shrink-0 text-center w-[100px]">
+                                <div className="relative  rounded-2xl p-5 bg-white flex flex-col" style={{ boxShadow: "rgba(0, 0, 0, 0.15) 0px 4px 15px" }}>
+                                    <div className="shrink-0 text-center flex gap-4">
                                         <img
                                             src={index === 0 ? oneImage : index === 1 ? twoImage : index === 2 ? threeImage : oneImage}
                                             alt="Joel"
                                             className="w-16 h-16 rounded-full object-cover mx-auto mb-2"
                                         />
-                                        <div className="grow">
-                                            <p className="text-primary text-base font-semibold mb-1.5 mt-3">
-                                                {item?.name}, <span className="text-primary font-normal">{item?.age}</span>
+                                        <div className="grow text-left">
+                                            <p className="text-introPrimary text-base font-semibold mb-1.5 mt-3">
+                                                {item?.name}, <span className="text-base whitespace-nowrap text-introPrimary font-semibold">{item?.age}</span>
                                             </p>
-                                            <p className="text-center text-sm mt-auto  jost font-light break-word max-w-[100px]">{item?.profession}</p>
+                                            <p className="text-sm mt-auto text-left jost font-medium text-[#6B7280]">{item?.profession}</p>
                                         </div>
                                     </div>
-                                    <div className="grow flex flex-col h-[100%]">
-                                        <p className="text-black text-left grow">
-                                           "{item?.question}"
+                                    <div className="grow flex flex-col mt-3 items-start">
+                                        <p className="text-wrap font-bold text-lg md:text-[20px] text-[#567257] grow-1 mb-3 text-left">
+                                            {item?.question}
                                         </p>
-                                        <p className="text-sm jost grow font-light text-black text-left pt-2">
-                                          I am {item?.age},  with total retirement savings of {item?.savings}
+                                        <p className="lg:text-[16px] text-[14px] jost grow text-[#6B7280] text-left">
+                                            I am {item?.age},  with total retirement savings of {item?.savings}
 
                                         </p>
-                                        <div className="mt-4 flex justify-between items-center ">
-                                            <button onClick={() => handleQuestionClick(item)} className="mt-5 w-full text-xs rounded-lg px-4 py-2 bg-[#567257] text-white">
-                                                Ask RetireMate
-                                            </button>
 
-                                        </div>
+                                        <button onClick={() => handleQuestionClick(item)} className="mt-5  text-xs rounded-lg px-4 py-2 bg-[#567257] text-white">
+                                            Ask RetireMate
+                                        </button>
                                     </div>
                                 </div>
 

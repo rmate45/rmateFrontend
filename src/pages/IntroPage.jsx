@@ -30,6 +30,7 @@ import RetirematePlanningQuestion from "../components/RetirematePlanningQuestion
 import RothQuestions from "../components/RothQuestions/RothQuestions";
 import ExploreMoreQuestions from "../components/ExploreMoreQuestions/ExploreMoreQuestions";
 import MedicareQuestions from "../components/MedicareQuestions/MedicareQuestions";
+import MedicareQuiz from "../components/MedicareQuiz/MedicareQuiz";
 
 function IntroPage() {
   // Data for components
@@ -168,6 +169,7 @@ function IntroPage() {
       <ExploreMoreQuestions />
       <RothQuestions />
       <ExploreMoreQuestions />
+      <MedicareQuiz/>
       <MedicareQuestions />
       <ExploreMoreQuestions />
       <SuggestedQuestions

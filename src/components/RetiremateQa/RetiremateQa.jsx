@@ -6,10 +6,10 @@ const RetirementQa = () => {
     const [questions, setQuestions] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
-    const [activeQuestion, setActiveQuestion] = useState(null);
-    const [currentIndex, setCurrentIndex] = useState(0);
+    const [qaHistory, setQaHistory] = useState([]);
+    const [currentQuestion, setCurrentQuestion] = useState(null);
     const [revealing, setRevealing] = useState(false);
-    const [pendingQuestionId, setPendingQuestionId] = useState(null);
+    const [usedQuestionIds, setUsedQuestionIds] = useState(new Set());
 
     console.log("questions", questions);
 
@@ -20,7 +20,6 @@ const RetirementQa = () => {
     const fetchQuestions = async () => {
         try {
             setLoading(true);
-            // Replace with your actual API endpoint
             const response = await api.get("/get-explore-questions");
             console.log(response.data, "response");
 
@@ -38,14 +37,21 @@ const RetirementQa = () => {
             if (isSuccessFlag || Array.isArray(payload)) {
                 if (items.length > 0) {
                     setQuestions(items);
+                    // Set initial random question
+                    const randomQ = items[Math.floor(Math.random() * items.length)];
+                    setCurrentQuestion(randomQ);
+                    setUsedQuestionIds(new Set([randomQ.questionId]));
+                  
                 } else if (Array.isArray(payload) && payload.length >= 0) {
-                    // If API returns an array directly (even empty), use it
                     setQuestions(payload);
                 } else {
                     setError('Failed to load questions');
                 }
             } else if (items.length > 0) {
                 setQuestions(items);
+                const randomQ = items[Math.floor(Math.random() * items.length)];
+                setCurrentQuestion(randomQ);
+                setUsedQuestionIds(new Set([randomQ.questionId]));
             } else {
                 setError('Failed to load questions');
             }
@@ -56,38 +62,72 @@ const RetirementQa = () => {
         }
     };
 
-    const handleQuestionClick = (questionId) => {
-        if (activeQuestion === questionId) {
-            setActiveQuestion(null);
-        } else {
-            setRevealing(true);
-            setPendingQuestionId(questionId);
-            // 1.5 second pause before revealing answer
-            setTimeout(() => {
-                setActiveQuestion(questionId);
-                setRevealing(false);
-                setPendingQuestionId(null);
-            }, 1500);
+    const getRandomQuestion = () => {
+        if (questions.length === 0) return null;
+        
+        // Get questions not yet used
+        const availableQuestions = questions.filter(q => !usedQuestionIds.has(q.questionId));
+        
+        // If no available questions, return null (all questions used)
+        if (availableQuestions.length === 0) {
+            return null;
         }
+        
+        // Select random question from available ones
+        const randomQ = availableQuestions[Math.floor(Math.random() * availableQuestions.length)];
+        
+        return randomQ;
     };
 
-    const handleNext = () => {
-        if (currentIndex < questions.length - 1) {
-            setCurrentIndex(currentIndex + 1);
-            setActiveQuestion(null);
-            setPendingQuestionId(null);
-        }
+    const handleQuestionClick = () => {
+        setRevealing(true);
+        // 1.5 second pause before revealing answer
+        setTimeout(() => {
+            // Add current Q&A to history
+            setQaHistory(prev => [...prev, currentQuestion]);
+            
+            // Load new random question
+            const newQuestion = getRandomQuestion();
+            if (newQuestion) {
+                setCurrentQuestion(newQuestion);
+                setUsedQuestionIds(prev => new Set([...prev, newQuestion.questionId]));
+              
+            } else {
+                // All questions used
+                setCurrentQuestion(null);
+            }
+            setRevealing(false);
+        }, 1500);
+        
     };
+
+    useEffect(() => {
+        if (currentQuestion) {
+            window.scrollTo({
+                top: document.documentElement.scrollHeight,
+                behavior: "smooth",
+            });
+        }
+    }, [currentQuestion])
 
     const handleSkip = () => {
-        handleNext();
+        const newQuestion = getRandomQuestion();
+        if (newQuestion) {
+            setCurrentQuestion(newQuestion);
+            setUsedQuestionIds(prev => new Set([...prev, newQuestion.questionId]));
+        } else {
+            // All questions used
+            setCurrentQuestion(null);
+        }
     };
+
     if (loading) {
         return (
             <>
             </>
-        )
+        );
     }
+
     if (error) {
         return (
             <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center">
@@ -112,61 +152,75 @@ const RetirementQa = () => {
         );
     }
 
-
-    const currentQuestion = questions[currentIndex];
-
     return (
         <div className="">
             <div className="max-w-4xl mx-auto mt-2">
-                <div className="mb-6">  
-             
-                    <div
-                        onClick={() => handleQuestionClick(currentQuestion.questionId)}
-                        className="w-full py-2 px-3 cursor-pointer  border-1 border-green-300 rounded-lg hover:border-green-300 hover:bg-green-50 transition-all"
-                    >
-                          <p className='text-xs mb-2'> ("Tap the question to see the response, or skip to the next question.")</p>
-                        <h2 className="text-left jost">
-                            {currentQuestion.question}
-                        </h2>
+                <div className="space-y-6">
+                    {/* Previous Q&A History */}
+                    {qaHistory.map((qa, index) => (
+                        <div key={`qa-${qa.questionId}-${index}`} className="space-y-3">
+                            {/* Question */}
+                              <div className='mb-3 px-4 flex justify-end'>
+                            <div className="px-4 py-2 min-h-10 text-sm max-w-xs rounded-xl flex justify-center items-center jost  rounded-br-none bg-green-300 text-left text-black">
+                                <h2 className="text-left jost">
+                                    {qa.question}
+                                </h2>
+                            </div>
+                            </div>
+                            {/* Answer */}
+                            <div className="px-4 py-2 min-h-10 text-sm max-w-xs rounded-xl flex justify-center items-center jost  rounded-tl-none border-1 border-green-300 text-black">
+                                <div className="space-y-2">
+                                    {(qa.answers || []).map((answer, idx) => (
+                                        <p key={idx} className="text-left jost">
+                                            {answer}
+                                        </p>
+                                    ))}
+                                </div>
+                            </div>
+                        </div>
+                    ))}
 
-                    </div>
-                    <div
-                        className={`overflow-hidden transition-all duration-500 ease-in-out ${activeQuestion === currentQuestion.questionId || pendingQuestionId === currentQuestion.questionId
-                                ? 'max-h-96 opacity-100'
-                                : 'max-h-0 opacity-0'
-                            }`}
-                    >
-                        <div >
+                    {/* Current Question Section - Only show if there's a current question */}
+                    {currentQuestion && (
+                        <div className="space-y-3">
+                            {/* Instruction Message */}
+                            <div className="w-full py-2 mb-2 px-3 border-1 border-green-300 rounded-lg">
+                                <p className='text-left jost'>
+                                    Tap to explore a new question, or skip to move on to the next.
+                                </p>
+                            </div>
 
-                            {revealing && pendingQuestionId === currentQuestion.questionId ? (
-                                <div className="-ml-4 mt-2"><LoadingIndicator loading={true} /></div>
-                            ) : (
-                                <div className="border-1 border-green-300 rounded-lg py-2 px-3 mt-2">
-                                    <div className={`transition-opacity duration-300 ${revealing ? 'opacity-0' : 'opacity-100'}`}>
-                                        {(currentQuestion.answers || []).map((answer, idx) => (
-                                            <p
-                                                key={idx}
-                                                className="text-left jost"
-                                                style={{
-                                                    transitionDelay: `${idx * 100}ms`,
-                                                }}
-                                            >
-                                                {answer}
-                                            </p>
-                                        ))}
-                                    </div>
+                            {/* Current Question Card */}
+                            <div className='mb-3 px-4 flex justify-end'>
+
+                            <div
+                                onClick={handleQuestionClick}
+                                className="px-4 py-2 cursor-pointer min-h-10 text-sm max-w-xs rounded-xl flex justify-center items-center jost  rounded-br-none bg-green-300 text-left text-black"
+                            >
+                                <h2 className="text-left jost">
+                                    {currentQuestion.question}
+                                </h2>
+                            </div>
+                            </div>
+
+                            {/* Loading State */}
+                            {revealing && (
+                                <div className="-ml-4 mt-2">
+                                    <LoadingIndicator loading={true} />
                                 </div>
                             )}
+
+                            {/* Skip Button */}
+                            <div className="flex justify-end px-4">
+                                <button
+                                    onClick={handleSkip}
+                                    className="px-6 py-3 text-xs bg-green-50 border-green-300 border rounded-lg font-semibold shadow-md transition-all"
+                                >
+                                    Skip
+                                </button>
+                            </div>
                         </div>
-                    </div>
-                </div>
-                <div className="flex gap-4 justify-end flex-wrap">
-                   {questions.length - 1 !== currentIndex && <button
-                        onClick={handleSkip}
-                        className="px-6 py-3 text-xs bg-green-50 border-green-300 border rounded-lg font-semibold shadow-md transition-all"
-                    >
-                        Skip
-                    </button>}
+                    )}
                 </div>
             </div>
         </div>

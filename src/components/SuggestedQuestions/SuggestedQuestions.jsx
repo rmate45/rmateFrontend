@@ -15,10 +15,10 @@ const SuggestedQuestions = ({ questions, onQuestionClick }) => {
   return (
     <div className="text-center px-6 py-10 sm:py-16">
       <div className="max-w-7xl mx-auto">
-        <p className="text-[#2A2420] font-medium text-xl sm:text-2xl text-center">
+        <p className="text-introPrimary font-medium text-xl sm:text-2xl text-center">
           Not sure where to start?
         </p>
-        <p className="text-[#2A2420] font-medium text-xl sm:text-2xl text-center">
+        <p className="text-introPrimary font-medium text-xl sm:text-2xl text-center">
           Tap a question below to begin.
         </p>
 
@@ -48,7 +48,7 @@ const SuggestedQuestions = ({ questions, onQuestionClick }) => {
                 <p className="text-wrap font-bold text-lg md:text-[24px] text-[#567257] grow-1">
                   {q.text}
                 </p>
-                <p className="text-xs inline-block p-1.5 rounded">
+                <p className="text-[14px] lg:text-[16px]  jost inline-block p-1.5 rounded text-[#6B7280]">
                   {q.description}
                 </p>
                 <div className="flex justify-end w-full">

@@ -2,7 +2,8 @@ import { useState, useEffect } from "react";
 import { QuestionOptions } from "../QuestionOptions/QuestionOptions";
 import { TextInput } from "../TextInput/TextInput";
 import { TextInputPhone } from "../TextInputPhone/TextInputPhone";
-
+import PrivacyTrustModal from "../PrivacyTrustModal/PrivacyTrustModal";
+import cuidaAlert from "../../assets/cuida_alert-outline.svg";
 export const QuestionDisplay = ({
   currentQuestion,
   loading,
@@ -14,9 +15,10 @@ export const QuestionDisplay = ({
   onValidationError,
   scrollUp,
   scrollToBottom, // Add this new prop for scrolling to bottom
+  type,
 }) => {
   const [selectedMultiOptions, setSelectedMultiOptions] = useState([]);
-
+const [showModal, setShowModal] = useState(false);
   // Scroll to bottom when submit button appears for multi-select
   useEffect(() => {
     if (selectedMultiOptions.length > 0 && scrollToBottom) {
@@ -28,7 +30,7 @@ export const QuestionDisplay = ({
 
   if (!currentQuestion || loading) return null;
 
-  const isValidateZip = currentQuestion?.questionId === "Q7"; // Question 7 asks for zip code
+  const isValidateZip = currentQuestion?.questionId === "MQ1"; // Question 7 asks for zip code
   const isPhoneInput = false;
   const isAgeInput = currentQuestion?.questionId === "Q1"; // Question 1 is for age range
 
@@ -58,8 +60,9 @@ export const QuestionDisplay = ({
 
   return (
     <div className={`mt-0`}>
-      <div className="mb-2 mx-4 jost text-sm border-2 border-green-300 px-4 py-2 text-center rounded-xl text-gray-800 font-semibold max-w-sm">
-        {currentQuestion.questionText}
+        <PrivacyTrustModal show={showModal} onClose={() => setShowModal(false)} />
+      <div className="mb-2 mx-4 jost text-sm border-2 border-green-300 px-4 py-2 text-center flex gap-2 items-center justify-center rounded-xl text-gray-800 font-semibold max-w-sm">
+        {currentQuestion.questionText} {type === "medicareQuiz" && <img src={cuidaAlert} alt="retiremate" onClick={() => setShowModal(true)} />}
       </div>
 
       <div className={currentQuestion.inputType == "free_text" ? "fixed bottom-0 pb-4 w-full px-4 max-w-3xl bg-white" : ""}>

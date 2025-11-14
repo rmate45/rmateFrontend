@@ -13,6 +13,7 @@ import RetirementQa from "../components/RetiremateQa/RetiremateQa.jsx";
 const chatApiUrl = import.meta.env.VITE_CHAT_API_URL;
 
 function buildPayload(response) {
+  console.log(response, "response");
   const parseMedian = (str) => {
     if (!str) return null;
 
@@ -142,8 +143,10 @@ const Quiz = () => {
   const [showFollowUpQuestions, setShowFollowUpQuestions] = useState(false);
   const [userName, setUserName] = useState("");
   const [showModal, setShowModal] = useState(false);
-
+  const [pendingQuestions, setPendingQuestions] = useState([]);
+  const [chartAlreadyShown, setChartAlreadyShown] = useState(false);
   // item passed from TestimonialCard via navigate('/quiz', { state: { item } })
+  console.log(pendingQuestions, "pendingQuestions");
 
   // Initialize the flow when component mounts
   useEffect(() => {
@@ -381,7 +384,7 @@ const Quiz = () => {
       const statement = statementsData[index];
       if (!statement) {
         // No more statements, fetch questions
-        setTimeout(fetchQuestions, 1000);
+        setTimeout(fetchAppropriateQuestions, 1000);
         return;
       }
 
@@ -420,11 +423,43 @@ const Quiz = () => {
       if (index < statementsData.length) {
         setTimeout(showNext, 1000);
       } else {
-        setTimeout(fetchQuestions, 1000);
+        setTimeout(fetchAppropriateQuestions, 1000);
       }
     };
 
     setTimeout(showNext, 1000);
+  };
+
+  const fetchMedicareQuestions = async () => {
+    try {
+      const questionsResponse = await api.get("/get-medi-questions");
+
+      if (
+        questionsResponse.data?.data &&
+        questionsResponse.data.data.length > 0
+      ) {
+        const sortedQuestions = questionsResponse.data.data.sort(
+          (a, b) => a.position - b.position
+        );
+
+        setAllQuestions(sortedQuestions);
+        setCurrentQuestion(sortedQuestions[0]);
+        setCurrentQuestionIndex(0);
+      } else {
+        setConversation((prev) => [
+          ...prev,
+          { type: "system", text: "No Medicare questions available." },
+        ]);
+      }
+    } catch (error) {
+      console.error("Error fetching Medicare questions:", error);
+      setConversation((prev) => [
+        ...prev,
+        { type: "system", text: "Error loading Medicare questions. Please try again." },
+      ]);
+    } finally {
+      setLoading(false);
+    }
   };
 
   const fetchQuestions = async () => {
@@ -438,8 +473,10 @@ const Quiz = () => {
         const sortedQuestions = questionsResponse.data.data.sort(
           (a, b) => a.position - b.position
         );
-        setAllQuestions(sortedQuestions);
-        setCurrentQuestion(sortedQuestions[0]);
+        const sortWithoutEmailPhone = sortedQuestions.slice(0, 6)
+        setPendingQuestions(sortedQuestions.slice(6))
+        setAllQuestions(sortWithoutEmailPhone);
+        setCurrentQuestion(sortWithoutEmailPhone[0]);
         setCurrentQuestionIndex(0);
       } else {
         setConversation((prev) => [
@@ -458,7 +495,44 @@ const Quiz = () => {
     }
   };
 
+  // Helper function to call the appropriate fetch function based on quiz type
+  const fetchAppropriateQuestions = () => {
+    if (urlData.type === "medicareQuiz") {
+      return fetchMedicareQuestions();
+    } else {
+      return fetchQuestions();
+    }
+  };
+
+  // Function to continue with pending questions after chart is loaded
+  const continueWithPendingQuestions = () => {
+    if (pendingQuestions.length > 0) {
+      // Add pending questions to the current questions list
+      setAllQuestions(prev => [...prev, ...pendingQuestions]);
+
+      // Continue from where we left off
+      const nextIndex = currentQuestionIndex + 1;
+      if (nextIndex < allQuestions.length + pendingQuestions.length) {
+        setCurrentQuestionIndex(nextIndex);
+        setCurrentQuestion(pendingQuestions[0]);
+        setLoading(false);
+        setIsChatMode(false); // Go back to question mode
+
+        // Clear pending questions since we're now using them
+        setPendingQuestions([]);
+      } else {
+        // No more questions, show starter questions
+        setShowStarterQuestions(true);
+        setLoading(false);
+      }
+    } else {
+      setShowStarterQuestions(true);
+      setLoading(false);
+    }
+  };
+
   const moveToNextQuestion = (answers) => {
+    console.log(answers, "answerss");
     if (currentQuestionIndex == 0) {
       setIsScroll(true);
     }
@@ -475,11 +549,22 @@ const Quiz = () => {
       setIsLastQuestion(true);
       setCanReload(false);
       setLoading(true);
-      // Call save API first, then start structured Q&A mode
-      startStructuredQA(answers);
-      // saveUserResponses(answers).then(() => {
-      //   startStructuredQA(answers);
-      // });
+
+      // If chart has already been shown (we're completing pending questions) OR it's a Medicare quiz, go directly to starter questions
+      console.log("chartAlreadyShown:", chartAlreadyShown, "urlData.type:", urlData.type);
+      if (chartAlreadyShown || urlData.type === "medicareQuiz") {
+        console.log("Calling saveUserResponses for Medicare quiz or after pending questions");
+        // Save data after ALL questions are completed (including pending)
+        saveUserResponses(answers).then(() => {
+          setShowStarterQuestions(true);
+          setLoading(false);
+          setIsChatMode(true);
+        });
+      } else {
+        console.log("Calling startStructuredQA for first time");
+        // First time completing questions, show chart and then continue
+        startStructuredQA(answers);
+      }
     }
   };
 
@@ -509,24 +594,25 @@ const Quiz = () => {
 
   // Function to format the payload for the save API
   const formatSavePayload = (answers) => {
-    // Extract phone number from Q2 (assuming Q2 is the phone number question)
-    const phoneNumberAnswer = answers["Q2"];
+    // Determine phone number question ID based on quiz type
+    const phoneQuestionId = urlData.type === "medicareQuiz" ? "MQ9" : "Q8";
+    const phoneNumberAnswer = answers[phoneQuestionId];
     let phoneNumber = "";
 
-    // if (phoneNumberAnswer) {
-    //   // Check if it's a phone data object with fullNumber
-    //   if (
-    //     phoneNumberAnswer.value &&
-    //     typeof phoneNumberAnswer.value === "object" &&
-    //     phoneNumberAnswer.value.fullNumber
-    //   ) {
-    //     phoneNumber = phoneNumberAnswer.value.fullNumber;
-    //   } else if (typeof phoneNumberAnswer.value === "string") {
-    //     phoneNumber = phoneNumberAnswer.value;
-    //   } else if (typeof phoneNumberAnswer.answer === "string") {
-    //     phoneNumber = phoneNumberAnswer.answer;
-    //   }
-    // }
+    if (phoneNumberAnswer) {
+      // Check if it's a phone data object with fullNumber
+      if (
+        phoneNumberAnswer.value &&
+        typeof phoneNumberAnswer.value === "object" &&
+        phoneNumberAnswer.value.fullNumber
+      ) {
+        phoneNumber = phoneNumberAnswer.value.fullNumber;
+      } else if (typeof phoneNumberAnswer.value === "string") {
+        phoneNumber = phoneNumberAnswer.value;
+      } else if (typeof phoneNumberAnswer.answer === "string") {
+        phoneNumber = phoneNumberAnswer.answer;
+      }
+    }
 
     // Format responses array
     const responses = Object.entries(answers).map(
@@ -535,7 +621,7 @@ const Quiz = () => {
 
         // Handle phone number specially - use full number for API
         if (
-          questionId === "Q2" &&
+          questionId === phoneQuestionId &&
           answerData.value &&
           typeof answerData.value === "object" &&
           answerData.value.fullNumber
@@ -584,6 +670,7 @@ const Quiz = () => {
   };
 
   const initialChartMessage = async (personaData) => {
+    console.log(personaData, "personaData");
     const chartPayload = {
       age: personaData?.age,
       householdIncome: personaData?.annual_income || 0,
@@ -672,7 +759,7 @@ const Quiz = () => {
             ]);
           }, 1000);
 
-          setTimeout(fetchQuestions, 1000);
+          setTimeout(fetchAppropriateQuestions, 1000);
         } else {
           addToConversation(
             "system",
@@ -737,7 +824,7 @@ const Quiz = () => {
           addToConversation("chart", response.data?.data);
           setLoading(false);
 
-          setTimeout(fetchQuestions, 1000);
+          setTimeout(fetchAppropriateQuestions, 1000);
         } else {
           addToConversation(
             "system",
@@ -768,7 +855,7 @@ const Quiz = () => {
           "system",
           "Thank you for completing the quiz! Let me analyze your responses and provide personalized retirement insights..."
         );
-      }, 2000);
+      }, 0);
 
       // if (!userId) {
       //   addToConversation(
@@ -780,6 +867,14 @@ const Quiz = () => {
 
       console.log("Starting structured Q&A with userId:", userId);
       console.log("User answers:", answers);
+
+      // Skip chart generation for Medicare quiz
+      if (urlData.type === "medicareQuiz") {
+        setIsChatMode(true);
+        setShowStarterQuestions(true);
+        setLoading(false);
+        return;
+      }
 
       const chartPayload = buildPayload(answers);
 
@@ -801,8 +896,18 @@ const Quiz = () => {
         // Add chart component to conversation
         addToConversation("chart", response.data?.data);
 
-        setShowStarterQuestions(true);
-        setLoading(false);
+        // Mark that chart has been shown
+        setChartAlreadyShown(true);
+
+        // Continue with pending questions after chart is loaded
+        if (pendingQuestions.length > 0) {
+          setTimeout(() => {
+            continueWithPendingQuestions();
+          }, 1000);
+        } else {
+          setShowStarterQuestions(true);
+          setLoading(false);
+        }
 
         // Wait a bit, then show the structured questions
         // setTimeout(() => {
@@ -818,8 +923,15 @@ const Quiz = () => {
           "system",
           "I couldn't generate your chart data, but let's continue with your retirement planning questions!"
         );
-        setShowStarterQuestions(true);
-        setLoading(false);
+        // Continue with pending questions even if chart fails
+        if (pendingQuestions.length > 0) {
+          setTimeout(() => {
+            continueWithPendingQuestions();
+          }, 1000);
+        } else {
+          setShowStarterQuestions(true);
+          setLoading(false);
+        }
       }
     } catch (error) {
       console.error("Error starting structured Q&A:", error);
@@ -827,8 +939,15 @@ const Quiz = () => {
         "system",
         "Something went wrong while generating your analysis, but let's continue with your retirement planning questions!"
       );
-      setShowStarterQuestions(true);
-      setLoading(false);
+      // Continue with pending questions even on error
+      if (pendingQuestions.length > 0) {
+        setTimeout(() => {
+          continueWithPendingQuestions();
+        }, 1000);
+      } else {
+        setShowStarterQuestions(true);
+        setLoading(false);
+      }
     }
   };
 
@@ -1378,6 +1497,8 @@ const Quiz = () => {
     isScroll,
   ]);
 
+  console.log(isScroll, "isScroll")
+
   useEffect(() => {
     if (!currentQuestion && isLastQuestion && overviewRef.current) {
       overviewRef.current.scrollIntoView({ behavior: "smooth" });
@@ -1401,11 +1522,10 @@ const Quiz = () => {
         pb-4 w-full max-w-3xl  flex flex-col relative"
       >
         <div
-          className={`flex flex-col flex-1 grow mt-24 ${
-            currentQuestion?.inputType == "free_text" || isChatMode
+          className={`flex flex-col flex-1 grow mt-24 ${currentQuestion?.inputType == "free_text" || isChatMode
               ? "pb-24"
               : "pb-4"
-          }`}
+            }`}
         >
           {conversation.map((item, idx) => {
             const isLastAnswer =
@@ -1497,6 +1617,7 @@ const Quiz = () => {
             !showFollowUpQuestions &&
             currentQuestion && (
               <QuestionDisplay
+                type={urlData.type}
                 onValidationError={scrollUp}
                 scrollUp={scrollToBottom}
                 scrollToBottom={scrollToBottom}
