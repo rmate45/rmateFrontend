@@ -30,9 +30,9 @@ const [showModal, setShowModal] = useState(false);
 
   if (!currentQuestion || loading) return null;
 
-  const isValidateZip = currentQuestion?.questionId === "MQ1"; // Question 7 asks for zip code
-  const isPhoneInput = false;
-  const isAgeInput = currentQuestion?.questionId === "Q1"; // Question 1 is for age range
+  const isValidateZip = currentQuestion?.questionId === "MQ1"; 
+  const isPhoneInput = currentQuestion?.questionId === "MQ9" || currentQuestion?.questionId === "Q8";
+  const isAgeInput = currentQuestion?.questionId === "Q1"; 
 
   const handleMultiSelectToggle = (option) => {
     setSelectedMultiOptions(prev => {
