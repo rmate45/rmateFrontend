@@ -4,7 +4,7 @@ import React from 'react';
 const ResourceColumn = ({ title, items = [], browseAllText, onBrowseAllClick }) => {
   return (
     <div>
-      <h3 className="text-introPrimary text-center font-medium text-xl mb-1">
+      <h3 className="text-introPrimary text-left font-medium text-xl mb-1">
         {title}
       </h3>
       <ul className="divide-y divide-[#D9D9D9]">

@@ -106,9 +106,12 @@ const Quiz = () => {
   };
 
   const initialText = location.state?.title || params.get("title") || "";
+console.log(initialText,"initialText");
 
   const [currentQuestion, setCurrentQuestion] = useState(null);
   const [conversation, setConversation] = useState([]);
+  console.log(conversation,"conversation");
+  
   const [loading, setLoading] = useState(true);
   const [textInput, setTextInput] = useState("");
   const chatRef = useRef(null);
@@ -146,6 +149,7 @@ const Quiz = () => {
   const [pendingQuestions, setPendingQuestions] = useState([]);
   const [chartAlreadyShown, setChartAlreadyShown] = useState(false);
   // item passed from TestimonialCard via navigate('/quiz', { state: { item } })
+  const [showDisclaimer, setShowDisclaimer] = useState(false)
   console.log(pendingQuestions, "pendingQuestions");
 
   // Initialize the flow when component mounts
@@ -314,6 +318,7 @@ const Quiz = () => {
           await new Promise((resolve) => setTimeout(resolve, 1000));
 
           // Check if answer is an array or a string
+          
           if (fetchedData?.answers) {
             // Join all answers with newlines and show in single box
             const combinedAnswer = fetchedData.answers.join("\n");
@@ -677,17 +682,18 @@ const Quiz = () => {
       retirementSavings: personaData?.total_savings || 0,
       otherSavings: personaData?.otherSavings || 0,
     };
-
+    const statementsResponse = await api.get("/get-statements");
+    const intialStartMessages = statementsResponse?.data?.data
     // Initial greeting with loading delay
-    setConversation([{ type: "system", text: "Hey there, I'm RetireMate 👋" }]);
-
+    setConversation([{ type: "system", text: intialStartMessages[0].question }]);
+    console.log(statementsResponse, "statementsResponse")
     // Second message after 1 second
     setTimeout(() => {
       setConversation((prev) => [
         ...prev,
         {
           type: "system",
-          text: `As your Ai retirement assistant, I can help you check if you're preparedfor retirement and decide what to do to get more prepared.`,
+          text: `${intialStartMessages[1].question}`,
         },
       ]);
     }, 1000);
@@ -746,9 +752,10 @@ const Quiz = () => {
         if (response?.data?.data) {
           setChartData(response.data.data);
           setShowChart(true);
-          addToConversation("chart", response.data?.data);
+          // Initial persona chart should NOT show the disclaimer
+          addToConversation("chart", response.data?.data, { showDisclaimer: false });
           setLoading(false);
-
+          setShowDisclaimer(false)
           setTimeout(() => {
             setConversation((prev) => [
               ...prev,
@@ -786,9 +793,10 @@ const Quiz = () => {
       retirementSavings: personaData?.savings || 0,
       otherSavings: personaData?.otherSavings || 0,
     };
-
+    const statementsResponse = await api.get("/get-statements");
+    const intialStartMessages = statementsResponse?.data?.data
     // Initial greeting with loading delay
-    setConversation([{ type: "system", text: "Hey there, I'm RetireMate 👋" }]);
+    setConversation([{ type: "system", text: intialStartMessages[0].question }]);
 
     // Second message after 1 second
     setTimeout(() => {
@@ -796,7 +804,7 @@ const Quiz = () => {
         ...prev,
         {
           type: "system",
-          text: `As your AI retirement assistant, I can help you check if you're prepared for retirement and decide what to do to get more prepared.`,
+          text: `${intialStartMessages[1].question}`,
         },
       ]);
     }, 1000);
@@ -893,9 +901,10 @@ const Quiz = () => {
           "Based on your responses, here's your personalized retirement savings projection:"
         );
 
-        // Add chart component to conversation
-        addToConversation("chart", response.data?.data);
-
+        // Add chart component to conversation and show disclaimer ONLY for this chart
+        addToConversation("chart", response.data?.data, { showDisclaimer: true });
+        setShowDisclaimer(true)
+        console.log("inside")
         // Mark that chart has been shown
         setChartAlreadyShown(true);
 
@@ -1242,54 +1251,54 @@ const Quiz = () => {
     }));
   };
 
-  const handleOptionClick = async (option) => {
-    addToConversation("question", currentQuestion.questionText);
-    addToConversation("answer", option.text);
-    setLoading(true);
+ const handleOptionClick = async (option) => {
+  addToConversation("question", currentQuestion.questionText);
+  addToConversation("answer", option.text);
+  setLoading(true);
 
-    // Store the answer
-    // storeAnswer(
-    //   currentQuestion.questionId,
-    //   currentQuestion.questionText,
-    //   option.text,
-    //   option.text
-    // );
-
-    const answer = {
-      questionText: currentQuestion.questionText,
-      answer: option.text,
-      value: option.text,
-    };
-
-    const updatedAnswers = {
-      ...userAnswers,
-      [currentQuestion.questionId]: {
-        ...answer,
-      },
-    };
-
-    setUserAnswers(updatedAnswers);
-
-    setLastAnswerOption(option);
-    setLastQuestionText(currentQuestion.questionText);
-    setLastQuestionData(currentQuestion);
-
-    // Show comment if available
-    const comment = option.comment || currentQuestion.defaultComment;
-    if (comment && comment.trim()) {
-      setTimeout(() => {
-        addToConversation("comment", comment);
-      }, 800);
-    }
-
-    setTimeout(
-      () => {
-        moveToNextQuestion(updatedAnswers);
-        setLoading(false);
-      },
-      comment && comment.trim() ? 2000 : 1000
-    );
+  const answer = {
+    questionText: currentQuestion.questionText,
+    answer: option.text,
+    value: option.text,
   };
+
+  const updatedAnswers = {
+    ...userAnswers,
+    [currentQuestion.questionId]: {
+      ...answer,
+    },
+  };
+
+  setUserAnswers(updatedAnswers);
+
+  setLastAnswerOption(option);
+  setLastQuestionText(currentQuestion.questionText);
+  setLastQuestionData(currentQuestion);
+
+  // Show comment if available
+  let comment = option.comment || currentQuestion.defaultComment;
+
+  // If comment is an array, pick one random
+  if (Array.isArray(comment)) {
+    comment = comment[Math.floor(Math.random() * comment.length)] || "";
+  }
+
+  console.log(comment, "comment");
+
+  if (comment && comment.trim()) {
+    setTimeout(() => {
+      addToConversation("comment", comment);
+    }, 800);
+  }
+
+  setTimeout(
+    () => {
+      moveToNextQuestion(updatedAnswers);
+      setLoading(false);
+    },
+    comment && comment.trim() ? 2000 : 1000
+  );
+};
 
   const handleMultiSelectSubmit = (selectedOptions) => {
     addToConversation("question", currentQuestion.questionText);
@@ -1399,11 +1408,49 @@ const Quiz = () => {
     setTextInput(""); // Clear input
     setLoading(true);
 
+    // Choose an appropriate comment
     let comment = currentQuestion.defaultComment;
-    // if (currentQuestion.questionId == "Q1") {
-    //   comment = `Nice to meet you, ${textInput}`;
-    // }
-    if (comment && comment.trim()) {
+
+    // For Q1 (age free_text), map typed age into the matching option range
+    if (currentQuestion.questionId === "Q1" && Array.isArray(currentQuestion.options)) {
+      const ageNum = parseInt(displayText, 10);
+
+      if (!isNaN(ageNum)) {
+        const match = currentQuestion.options.find((opt) => {
+          if (!opt.text) return false;
+          const label = String(opt.text).trim();
+
+          // Handle formats like "18-24" and "65+"
+          if (label.includes("-")) {
+            const [minStr, maxStr] = label.split("-");
+            const min = parseInt(minStr.replace(/\D/g, ""), 10);
+            const max = parseInt(maxStr.replace(/\D/g, ""), 10);
+            if (isNaN(min) || isNaN(max)) return false;
+            return ageNum >= min && ageNum <= max;
+          }
+
+          if (label.includes("+")) {
+            const min = parseInt(label.replace(/\D/g, ""), 10);
+            if (isNaN(min)) return false;
+            return ageNum >= min;
+          }
+
+          return false;
+        });
+
+        if (match && match.comment) {
+          if (Array.isArray(match.comment)) {
+            // Pick a random comment from the array
+            const randomIdx = Math.floor(Math.random() * match.comment.length);
+            comment = match.comment[randomIdx] || comment;
+          } else if (typeof match.comment === "string") {
+            comment = match.comment;
+          }
+        }
+      }
+    }
+
+    if (comment && typeof comment === "string" && comment.trim()) {
       setTimeout(() => {
         addToConversation("comment", comment);
       }, 1000);
@@ -1460,11 +1507,11 @@ const Quiz = () => {
     setLoading(false);
   };
 
-  const addToConversation = (type, text) => {
+  const addToConversation = (type, text, extra = {}) => {
     if (type == "chart") {
       console.log(text, type);
     }
-    setConversation((prev) => [...prev, { type, text }]);
+    setConversation((prev) => [...prev, { type, text, ...extra }]);
   };
 
   const scrollUp = () => {
@@ -1497,7 +1544,6 @@ const Quiz = () => {
     isScroll,
   ]);
 
-  console.log(isScroll, "isScroll")
 
   useEffect(() => {
     if (!currentQuestion && isLastQuestion && overviewRef.current) {
@@ -1523,8 +1569,8 @@ const Quiz = () => {
       >
         <div
           className={`flex flex-col flex-1 grow mt-24 ${currentQuestion?.inputType == "free_text" || isChatMode
-              ? "pb-24"
-              : "pb-4"
+            ? "pb-24"
+            : "pb-4"
             }`}
         >
           {conversation.map((item, idx) => {
@@ -1538,8 +1584,7 @@ const Quiz = () => {
             if (item.type === "chart") {
               return (
                 <div key={idx} className="mb-4 px-4 ">
-                  <PlotChart data={item} />
-                  {/* <RetirementQa/> */}
+                  <PlotChart data={item} showDisclaimer={item.showDisclaimer} />
                 </div>
               );
             }

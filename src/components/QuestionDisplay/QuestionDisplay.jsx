@@ -19,6 +19,8 @@ export const QuestionDisplay = ({
 }) => {
   const [selectedMultiOptions, setSelectedMultiOptions] = useState([]);
 const [showModal, setShowModal] = useState(false);
+// console.log(currentQuestion,"currentQuestion");
+
   // Scroll to bottom when submit button appears for multi-select
   useEffect(() => {
     if (selectedMultiOptions.length > 0 && scrollToBottom) {

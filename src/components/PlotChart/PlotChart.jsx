@@ -58,7 +58,8 @@ const CustomTooltip = ({ active, payload }) => {
   return null;
 };
 
-const PlotChart = ({ data }) => {
+const PlotChart = ({ data, showDisclaimer= false }) => {
+  
   const [showRecommendation, setShowRecommendation] = useState(false);
   const parsedData =
     typeof data.text === "string"
@@ -223,9 +224,9 @@ const PlotChart = ({ data }) => {
             Tap here to view the analysis
           </p>}
       </div>
-      <div className="order-green-300 bg-green-100 p-3 jost rounded-xl mt-3">
+      {showDisclaimer && (<div className="order-green-300 bg-green-100 p-3 jost rounded-xl mt-3">
         To receive a free, educational retirement analysis tailored to your age, income, and goals, please enter your contact details below.”
-      </div>
+      </div>)}
     </div>
   );
 };

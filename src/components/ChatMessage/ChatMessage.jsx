@@ -32,7 +32,7 @@ export const ChatMessage = ({
             ? "rounded-br-none bg-green-300 text-left text-black"
             : isComment
             ? "rounded-tl-none bg-blue-100 border-1 border-blue-300 text-black italic  text-left"
-            : "rounded-tl-none border-1 border-green-300 text-black"
+            : "rounded-tl-none border-1 border-green-300 text-black whitespace-pre-line"
         }`}
       >
         {chatMode && !text ? (
