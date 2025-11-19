@@ -9,11 +9,13 @@ export const ChatMessage = ({
   onReload,
   chatMode,
 }) => {
-  const { type, text } = message;
+  const { type, text, isDesktop, isMobile } = message;
 
   const isAnswer = type === "answer";
   const isComment = type === "comment";
   const isChart = type === "chart";
+
+  console.log(isDesktop, "isMobile")
 
   // Don't render chart messages here since they're handled in the main component
   if (isChart) {
@@ -21,7 +23,7 @@ export const ChatMessage = ({
   }
 
   return (
-    <div className={`mb-3 px-4 flex ${isAnswer ? "justify-end" : "justify-start"}`}>
+    <div className={`mb-3 px-4 flex ${isAnswer ? "justify-end" : "justify-start"} ${isDesktop && window.innerWidth < 786 ? "hidden" : ""} ${isMobile && window.innerWidth > 786 ? "hidden" : ""}`}>
       {isAnswer && isLastAnswer && canReload && !loading && (
         <ReloadButton onReload={onReload} />
       )}

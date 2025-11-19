@@ -9,6 +9,7 @@ import api from "../api/api.js";
 import PlotChart from "../components/PlotChart/PlotChart.jsx";
 import PrivacyTrustModal from "../components/PrivacyTrustModal/PrivacyTrustModal.jsx";
 import RetirementQa from "../components/RetiremateQa/RetiremateQa.jsx";
+import { isDesktop } from "react-device-detect";
 
 const chatApiUrl = import.meta.env.VITE_CHAT_API_URL;
 
@@ -106,12 +107,12 @@ const Quiz = () => {
   };
 
   const initialText = location.state?.title || params.get("title") || "";
-console.log(initialText,"initialText");
+  console.log(initialText, "initialText");
 
   const [currentQuestion, setCurrentQuestion] = useState(null);
   const [conversation, setConversation] = useState([]);
-  console.log(conversation,"conversation");
-  
+  console.log(conversation, "conversation");
+
   const [loading, setLoading] = useState(true);
   const [textInput, setTextInput] = useState("");
   const chatRef = useRef(null);
@@ -138,6 +139,7 @@ console.log(initialText,"initialText");
   // New state for chart data
   const [chartData, setChartData] = useState(null);
   const [showChart, setShowChart] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
 
   // New states for structured Q&A flow
   const [showStarterQuestions, setShowStarterQuestions] = useState(false);
@@ -151,11 +153,43 @@ console.log(initialText,"initialText");
   // item passed from TestimonialCard via navigate('/quiz', { state: { item } })
   const [showDisclaimer, setShowDisclaimer] = useState(false)
   console.log(pendingQuestions, "pendingQuestions");
+  const [showPendingItems, setShowPeningItems] = useState(false)
+  console.log(showPendingItems, "showPendingItems");
 
-  // Initialize the flow when component mounts
   useEffect(() => {
     initializeFlow();
   }, []);
+
+  // Track mobile / desktop based on width <= 767
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+
+    const updateIsMobile = () => {
+      setIsMobile(window.innerWidth <= 767);
+    };
+
+    updateIsMobile();
+    window.addEventListener("resize", updateIsMobile);
+
+    return () => {
+      window.removeEventListener("resize", updateIsMobile);
+    };
+  }, []);
+
+  // Show mobile-only intro message when pending items (extra questions) are activated
+  // This should only apply for persona flows, and should react to resize via isMobile
+  useEffect(() => {
+    if (!showPendingItems || !urlData.isPersona) return;
+
+    setConversation((prev) => [
+      ...prev,
+      {
+        type: "system",
+        text: "Let's get started with a few basic questions.",
+        isMobile: true
+      },
+    ]);
+  }, [showPendingItems, urlData.isPersona]);
 
   useEffect(() => {
     if (chatInputRef && chatInputRef?.current) {
@@ -318,7 +352,7 @@ console.log(initialText,"initialText");
           await new Promise((resolve) => setTimeout(resolve, 1000));
 
           // Check if answer is an array or a string
-          
+
           if (fetchedData?.answers) {
             // Join all answers with newlines and show in single box
             const combinedAnswer = fetchedData.answers.join("\n");
@@ -479,7 +513,10 @@ console.log(initialText,"initialText");
           (a, b) => a.position - b.position
         );
         const sortWithoutEmailPhone = sortedQuestions.slice(0, 6)
+        console.log(sortWithoutEmailPhone,"sortWithoutEmailPhone");
+        
         setPendingQuestions(sortedQuestions.slice(6))
+
         setAllQuestions(sortWithoutEmailPhone);
         setCurrentQuestion(sortWithoutEmailPhone[0]);
         setCurrentQuestionIndex(0);
@@ -756,15 +793,18 @@ console.log(initialText,"initialText");
           addToConversation("chart", response.data?.data, { showDisclaimer: false });
           setLoading(false);
           setShowDisclaimer(false)
-          setTimeout(() => {
+
+          // On larger screens, show the intro message here
+          if (typeof window !== "undefined" && window.innerWidth > 767) {
             setConversation((prev) => [
               ...prev,
               {
                 type: "system",
                 text: "Let's get started with a few basic questions.",
+                isDesktop: true  
               },
             ]);
-          }, 1000);
+          }
 
           setTimeout(fetchAppropriateQuestions, 1000);
         } else {
@@ -1251,54 +1291,54 @@ console.log(initialText,"initialText");
     }));
   };
 
- const handleOptionClick = async (option) => {
-  addToConversation("question", currentQuestion.questionText);
-  addToConversation("answer", option.text);
-  setLoading(true);
+  const handleOptionClick = async (option) => {
+    addToConversation("question", currentQuestion.questionText);
+    addToConversation("answer", option.text);
+    setLoading(true);
 
-  const answer = {
-    questionText: currentQuestion.questionText,
-    answer: option.text,
-    value: option.text,
+    const answer = {
+      questionText: currentQuestion.questionText,
+      answer: option.text,
+      value: option.text,
+    };
+
+    const updatedAnswers = {
+      ...userAnswers,
+      [currentQuestion.questionId]: {
+        ...answer,
+      },
+    };
+
+    setUserAnswers(updatedAnswers);
+
+    setLastAnswerOption(option);
+    setLastQuestionText(currentQuestion.questionText);
+    setLastQuestionData(currentQuestion);
+
+    // Show comment if available
+    let comment = option.comment || currentQuestion.defaultComment;
+
+    // If comment is an array, pick one random
+    if (Array.isArray(comment)) {
+      comment = comment[Math.floor(Math.random() * comment.length)] || "";
+    }
+
+    console.log(comment, "comment");
+
+    if (comment && comment.trim()) {
+      setTimeout(() => {
+        addToConversation("comment", comment);
+      }, 800);
+    }
+
+    setTimeout(
+      () => {
+        moveToNextQuestion(updatedAnswers);
+        setLoading(false);
+      },
+      comment && comment.trim() ? 2000 : 1000
+    );
   };
-
-  const updatedAnswers = {
-    ...userAnswers,
-    [currentQuestion.questionId]: {
-      ...answer,
-    },
-  };
-
-  setUserAnswers(updatedAnswers);
-
-  setLastAnswerOption(option);
-  setLastQuestionText(currentQuestion.questionText);
-  setLastQuestionData(currentQuestion);
-
-  // Show comment if available
-  let comment = option.comment || currentQuestion.defaultComment;
-
-  // If comment is an array, pick one random
-  if (Array.isArray(comment)) {
-    comment = comment[Math.floor(Math.random() * comment.length)] || "";
-  }
-
-  console.log(comment, "comment");
-
-  if (comment && comment.trim()) {
-    setTimeout(() => {
-      addToConversation("comment", comment);
-    }, 800);
-  }
-
-  setTimeout(
-    () => {
-      moveToNextQuestion(updatedAnswers);
-      setLoading(false);
-    },
-    comment && comment.trim() ? 2000 : 1000
-  );
-};
 
   const handleMultiSelectSubmit = (selectedOptions) => {
     addToConversation("question", currentQuestion.questionText);
@@ -1584,7 +1624,7 @@ console.log(initialText,"initialText");
             if (item.type === "chart") {
               return (
                 <div key={idx} className="mb-4 px-4 ">
-                  <PlotChart data={item} showDisclaimer={item.showDisclaimer} />
+                  <PlotChart data={item} showDisclaimer={item.showDisclaimer} setShowPeningItems={setShowPeningItems} />
                 </div>
               );
             }
@@ -1657,9 +1697,11 @@ console.log(initialText,"initialText");
             </div>
           )} */}
 
-          {/* Show QuestionDisplay only if not in structured Q&A mode and there's a current question */}
+          {/* Show QuestionDisplay only if not in structured Q&A mode and there's a current question.
+              On mobile (<= 767px), also require showPendingItems; on larger screens, always show. */}
           {!showStarterQuestions &&
             !showFollowUpQuestions &&
+            (!isMobile || showPendingItems) &&
             currentQuestion && (
               <QuestionDisplay
                 type={urlData.type}

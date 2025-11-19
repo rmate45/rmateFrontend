@@ -58,7 +58,7 @@ const CustomTooltip = ({ active, payload }) => {
   return null;
 };
 
-const PlotChart = ({ data, showDisclaimer= false }) => {
+const PlotChart = ({ data, showDisclaimer= false,setShowPeningItems }) => {
   
   const [showRecommendation, setShowRecommendation] = useState(false);
   const parsedData =
@@ -216,7 +216,7 @@ const PlotChart = ({ data, showDisclaimer= false }) => {
 
         </div>
       </div>
-      <div onClick={() => setShowRecommendation(true)} className="px-2 py-2 mt-3 rounded-xl border-1 border-green-300 bg-white w-full max-w-full block sm:hidden">
+      <div onClick={() => {setShowPeningItems(true); setShowRecommendation(true)}} className="px-2 py-2 mt-3 rounded-xl border-1 border-green-300 bg-white w-full max-w-full block sm:hidden">
 
         {showRecommendation ? <Recommendation data={data} /> :
           <p className=" text-sm max-w-xs rounded-xl flex justify-start items-center jost  text-black">
