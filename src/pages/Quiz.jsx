@@ -179,7 +179,10 @@ const Quiz = () => {
   // Show mobile-only intro message when pending items (extra questions) are activated
   // This should only apply for persona flows, and should react to resize via isMobile
   useEffect(() => {
-    if (!showPendingItems || !urlData.isPersona) return;
+    if (!showPendingItems || !urlData.isPersona){
+      setShowPeningItems(true)  
+      return;
+    }
 
     setConversation((prev) => [
       ...prev,
@@ -348,6 +351,7 @@ const Quiz = () => {
           fetchedData = await fetchQuestionFinancialById(urlData.id);
         } else if (type === "medicare") {
           fetchedData = await fetchQuestionMedicareById(urlData.id);
+          
         }
 
         if (fetchedData) {
