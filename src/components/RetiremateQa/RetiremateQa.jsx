@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { LoadingIndicator } from '../LoadingIndicator/LoadingIndicator';
 import api from '../../api/api';
-
+import logo from '../../assets/retiremate-logo-favicon.svg';
 const RetirementQa = () => {
     const [questions, setQuestions] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -168,6 +168,8 @@ const RetirementQa = () => {
                             </div>
                             </div>
                             {/* Answer */}
+                           <div className='flex items-start gap-1'>
+                             <img src={logo} alt="logo" className='pt-1' />
                             <div className="px-4 py-2 min-h-10 text-sm max-w-xs rounded-xl flex justify-center items-center jost  rounded-tl-none border-1 border-green-300 text-black">
                                 <div className="space-y-2">
                                     {(qa.answers || []).map((answer, idx) => (
@@ -177,6 +179,7 @@ const RetirementQa = () => {
                                     ))}
                                 </div>
                             </div>
+                           </div>
                         </div>
                     ))}
 

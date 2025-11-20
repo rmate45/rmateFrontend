@@ -1,5 +1,5 @@
 import TypingDots from "../TypingDots/TypingDots";
-import gif from "../../assets/icons8-sand-clock.gif"
+import gif from "../../assets/RetireMate-beating-icon.gif"
 export const LoadingIndicator = ({ loading }) => {
   if (!loading) return null;
 
