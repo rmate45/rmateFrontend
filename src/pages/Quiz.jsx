@@ -246,6 +246,7 @@ const Quiz = () => {
       const res = await api.get(`/get-persona/${id}`);
       if (res.data?.type === "success" && res.data?.data) {
         setPersonaData(res.data.data);
+        // setShowPeningItems(true)
         return res.data.data;
       }
       return null;
@@ -260,6 +261,7 @@ const Quiz = () => {
     try {
       const res = await api.get(`/get-demographic/${id}`);
       if (res.data?.type === "success" && res.data?.data) {
+        setShowPeningItems(true)
         setPersonaData(res.data.data);
         return res.data.data;
       }
@@ -275,6 +277,7 @@ const Quiz = () => {
       const res = await api.get(`/get-financial-planning/${id}`);
       console.log(res, "testtt");
       if (res.data?.type === "success" && res.data?.data) {
+        setShowPeningItems(true)
         return res.data.data;
       }
       return null;
@@ -289,6 +292,7 @@ const Quiz = () => {
     try {
       const res = await api.get(`/get-explore-question/${id}`);
       if (res.data?.type === "success" && res.data?.data) {
+        setShowPeningItems(true)
         return res.data.data;
       }
       return null;
@@ -303,6 +307,7 @@ const Quiz = () => {
     try {
       const res = await api.get(`/get-roth-question/${id}`);
       if (res.data?.type === "success" && res.data?.data) {
+        setShowPeningItems(true)
         return res.data.data;
       }
       return null;
@@ -316,6 +321,7 @@ const Quiz = () => {
     try {
       const res = await api.get(`/get-medicare-question/${id}`);
       if (res.data?.type === "success" && res.data?.data) {
+        setShowPeningItems(true)
         return res.data.data;
       }
       return null;

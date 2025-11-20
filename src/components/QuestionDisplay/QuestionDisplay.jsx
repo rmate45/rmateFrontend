@@ -71,7 +71,7 @@ const [showModal, setShowModal] = useState(false);
         {currentQuestion.questionText} {type === "medicareQuiz" && <img src={cuidaAlert} alt="retiremate" onClick={() => setShowModal(true)} />}
       </div>
 
-      <div className={currentQuestion.inputType == "free_text" ? "fixed bottom-0 pb-4 w-full px-4 max-w-3xl bg-white" : ""}>
+      <div className={currentQuestion.inputType == "free_text" ? "fixed bottom-0 left-[50%] z-30 pb-4 w-full px-4 max-w-3xl bg-white" : ""}>
         {/* Phone Number Input */}
         {currentQuestion.inputType === "free_text" && isPhoneInput && (
           <TextInputPhone
