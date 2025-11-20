@@ -57,7 +57,7 @@ const AskAnything = ({ onSearch }) => {
             type="submit"
             // ✅ Enable only when there *is* text
             disabled={searchQuery.length === 0}
-            className={`mt-5 px-6 py-2 rounded-md text-xs font-semibold border transition ${searchQuery.length > 0
+            className={`mt-5 px-6 py-2 rounded-md text-base font-semibold border transition ${searchQuery.length > 0
                 ? "rounded-lg px-4 py-2 bg-[#567257] text-white"
                 : "text-gray-400 border-gray-300 cursor-not-allowed"
               }`}

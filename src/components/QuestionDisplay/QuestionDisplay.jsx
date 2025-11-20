@@ -4,6 +4,7 @@ import { TextInput } from "../TextInput/TextInput";
 import { TextInputPhone } from "../TextInputPhone/TextInputPhone";
 import PrivacyTrustModal from "../PrivacyTrustModal/PrivacyTrustModal";
 import cuidaAlert from "../../assets/cuida_alert-outline.svg";
+import RetirmateLogo from "../../assets/retiremate-logo-favicon.svg";
 export const QuestionDisplay = ({
   currentQuestion,
   loading,
@@ -61,9 +62,12 @@ const [showModal, setShowModal] = useState(false);
   };
 
   return (
-    <div className={`mt-0`}>
+    <div className={`mt-0 px-4`}>
         <PrivacyTrustModal show={showModal} onClose={() => setShowModal(false)} />
-      <div className="mb-2 mx-4 jost text-sm border-2 border-green-300 px-4 py-2 text-center flex gap-2 items-center justify-center rounded-xl text-gray-800 font-semibold max-w-sm">
+     <div className="flex gap-1 items-start">
+      <img src={RetirmateLogo} alt="retiremate" className="pt-1" />
+      <div className="grow">
+       <div className="mb-2 jost text-sm border-2 border-green-300 px-4 py-2 text-center flex gap-2 items-center justify-center rounded-xl text-gray-800 font-semibold max-w-sm">
         {currentQuestion.questionText} {type === "medicareQuiz" && <img src={cuidaAlert} alt="retiremate" onClick={() => setShowModal(true)} />}
       </div>
 
@@ -136,6 +140,8 @@ const [showModal, setShowModal] = useState(false);
           )}
         </div>
       )}
+     </div>
+     </div>
     </div>
   );
 };

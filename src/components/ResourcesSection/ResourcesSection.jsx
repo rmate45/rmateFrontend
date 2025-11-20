@@ -9,7 +9,7 @@ const ResourceColumn = ({ title, items = [], browseAllText, onBrowseAllClick }) 
       </h3>
       <ul className="divide-y divide-[#D9D9D9]">
         {items.map((item, index) => (
-          <li key={index} className="py-4 lg:text-[16px] text-[14px] jost grow text-[#6B7280] text-left">
+          <li key={index} className="py-4 text-base jost grow text-[#6B7280] text-left">
             {item}
           </li>
         ))}

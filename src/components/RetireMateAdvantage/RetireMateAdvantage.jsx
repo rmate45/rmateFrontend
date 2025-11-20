@@ -32,7 +32,7 @@ const RetireMateAdvantage = () => {
               <h3 className="text-wrap font-bold text-lg md:text-[24px] text-[#567257] grow-1 text-left">
                 {card.title}
               </h3>
-              <p className="text-[14px] lg:text-[16px]  jost inline-block p-1.5 rounded text-[#6B7280] text-left">{card.text}</p>
+              <p className="text-base  jost inline-block p-1.5 rounded text-[#6B7280] text-left">{card.text}</p>
             </div>
           ))}
         </div>

@@ -77,15 +77,15 @@ const RetirematePlanningQuestion = () => {
                                             <p className="text-introPrimary text-base font-semibold mb-1.5 mt-3">
                                                 {item?.name}, <span className="text-base whitespace-nowrap text-introPrimary font-semibold">{item?.age}</span>
                                             </p>
-                                            <p className="text-sm mt-auto text-left jost font-medium text-[#6B7280]">{item?.profession}</p>
+                                            <p className="text-base mt-auto text-left jost font-medium text-[#6B7280]">{item?.profession}</p>
                                         </div>
                                     </div>
                                     <div className="grow flex flex-col mt-3 items-start">
-                                       <p className="lg:text-[16px] text-[14px] jost grow  text-[#6B7280] text-left">
+                                       <p className="text-base jost grow  text-[#6B7280] text-left">
                                             {item?.question}
                                         </p>
                                       
-                                            <button onClick={() => handleQuestionClick(item)} className="mt-5  text-xs rounded-lg px-4 py-2 bg-[#567257] text-white">
+                                            <button onClick={() => handleQuestionClick(item)} className="mt-5  text-base rounded-lg px-4 py-2 bg-[#567257] text-white">
                                                 Ask RetireMate
                                             </button>
                                     </div>

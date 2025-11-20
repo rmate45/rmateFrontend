@@ -52,13 +52,13 @@ const ArticleSection = () => {
                 <h2 className="text-wrap font-bold text-lg md:text-[24px] text-[#567257] grow-1 text-left">
                   {article.title}
                 </h2>
-                <p className="text-[14px] lg:text-[16px]  jost inline-block p-1.5 rounded text-[#6B7280] text-left">
+                <p className="text-base  jost inline-block p-1.5 rounded text-[#6B7280] text-left">
                   {article.description}
                 </p>
 
                 <div className="flex justify-between items-center text-xs text-gray-500 mt-4 border-t border-gray-300 pt-3">
-                  <span className="text-[14px] lg:text-[16px]  jost inline-block p-1.5 rounded text-[#6B7280] text-left">{article.date}</span>
-                  <span className="text-[14px] lg:text-[16px]  jost inline-block p-1.5 rounded text-[#6B7280] text-left">{article.readTime}</span>
+                  <span className="text-base  jost inline-block p-1.5 rounded text-[#6B7280] text-left">{article.date}</span>
+                  <span className="text-base  jost inline-block p-1.5 rounded text-[#6B7280] text-left">{article.readTime}</span>
                 </div>
               </div>
             </div>

@@ -19,7 +19,7 @@ const TestimonialCard = ({ item }) => {
   };
 
   return (
-    <div className="flex flex-col p-5 rounded-xl gap-4 bg-white text-black h-full" style={{boxShadow:"rgba(0, 0, 0, 0.15) 0px 4px 15px"}}>
+    <div  onClick={handleClick} className="cursor-pointer flex flex-col p-5 rounded-xl gap-4 bg-white text-black h-full" style={{boxShadow:"rgba(0, 0, 0, 0.15) 0px 4px 15px"}}>
       <div className="flex gap-3 items-center">
         <img
           src={item.img}
@@ -28,10 +28,10 @@ const TestimonialCard = ({ item }) => {
         />
         <div className="grow text-left">
 
-          <h2 className="text-base whitespace-nowrap text-[#567257] font-semibold">
+          <h2 className="text-lg whitespace-nowrap text-[#567257] font-semibold">
             {item.name}, {item.age}
           </h2>
-          <span className="text-sm mt-auto text-left jost font-medium text-[#6B7280]">
+          <span className="text-base mt-auto text-left jost font-medium text-[#6B7280]">
             {" "}
             {item.title}
           </span>
@@ -42,13 +42,13 @@ const TestimonialCard = ({ item }) => {
 
         <div className="flex flex-col justify-between h-full text-left items-start">
           <div className="h-full grow">
-            <p className="text-wrap font-bold text-lg md:text-[18px] text-[#567257] grow-1 mb-3">{item.persona_question}</p>
-            <p className="text-[14px] lg:text-[16px]  jost inline-block p-1.5 rounded text-[#6B7280]">
+            <p className="text-wrap font-bold text-lg text-[#567257] grow-1 mb-3">{item.persona_question}</p>
+            <p className="text-base  jost inline-block p-1.5 rounded text-[#6B7280]">
               {item.text}
             </p>
           </div>
           <button
-            className="mt-5 text-xs rounded-lg px-4 py-2 bg-[#567257] text-white"
+            className="mt-5 text-base rounded-lg px-4 py-2 bg-[#567257] text-white"
             onClick={handleClick}
           >
             Explore this retirement

@@ -34,7 +34,7 @@ const LinkSection = () => {
                 to="https://retiremate.com"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="lg:text-[16px] text-[14px] jost grow  text-[#6B7280] text-left  hover:text-primary/90 hover:!underline text-sm transition-colors"
+                className="text-base jost grow  text-[#6B7280] text-left  hover:text-primary/90 hover:!underline  transition-colors"
               >
                 {item}
               </Link>

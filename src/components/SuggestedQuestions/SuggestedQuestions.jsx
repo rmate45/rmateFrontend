@@ -45,14 +45,14 @@ const SuggestedQuestions = ({ questions, onQuestionClick }) => {
                 }}
                 onClick={() => handleQuestionClick(q)}
               >
-                <p className="text-wrap font-bold text-lg md:text-[24px] text-[#567257] grow-1">
+                <p className="text-wrap font-bold text-lg  text-[#567257] ">
                   {q.text}
                 </p>
-                <p className="text-[14px] lg:text-[16px]  jost inline-block p-1.5 rounded text-[#6B7280]">
+                <p className="text-base  jost inline-block p-1.5 rounded text-[#6B7280] grow-1">
                   {q.description}
                 </p>
                 <div className="flex justify-end w-full">
-                  <button className="text-xs font-semibold border-2  placeholder-primary px-4 py-2 rounded-full">
+                  <button className="text-base font-semibold border-2  placeholder-primary px-4 py-2 rounded-full">
                     Ask RetireMate
                   </button>
                 </div>

@@ -119,7 +119,7 @@ const QuestionsToAction = ({
         <div className="flex flex-col xl:flex-row justify-between gap-10 items-center">
           {/* Left side: Questions heading and filters */}
           <div className="w-full max-w-[400px] text-left">
-            <p className="font-medium text-lg sm:text-2xl mb-6 text-center">
+            <p className="font-medium text-lg sm:text-2xl mb-6 text-left">
               What questions should you be asking?
             </p>
 
@@ -179,12 +179,12 @@ const QuestionsToAction = ({
                         duration-200
                       "
                     >
-                      <p className="text-wrap text-lg grow-1 text-left">
+                      <p className="text-wrap text-base grow-1 text-left">
                         {q.text}
                       </p>
 
                       <div className="flex justify-end w-full">
-                        <button className="text-xs font-semibold border-2  placeholder-primary px-4 py-2 rounded-full">
+                        <button className="text-base font-semibold border-2  placeholder-primary px-4 py-2 rounded-full">
                           Ask RetireMate
                         </button>
                       </div>

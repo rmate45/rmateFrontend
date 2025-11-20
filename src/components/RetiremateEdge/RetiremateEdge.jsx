@@ -16,8 +16,8 @@ const RetiremateEdge = () => {
           <div className="flex gap-5 items-start">
             <img src={Qa} alt="QA" width={50} height={50} className="w-11 h-11" />
             <div className="flex flex-col gap-2 text-left">
-              <p className="text-wrap font-bold text-lg md:text-[18px] text-[#567257]">Answers you can trust</p>
-              <p className="text-[14px] lg:text-[16px]  jost inline-block p-1.5 rounded text-[#6B7280]">
+              <p className="text-wrap font-bold text-lg  text-[#567257]">Answers you can trust</p>
+              <p className="text-base  jost inline-block p-1.5 rounded text-[#6B7280]">
                 Instant, personalized guidance you can rely on - built on tried and true
                 principles used by leading retirement planners.
               </p>
@@ -29,7 +29,7 @@ const RetiremateEdge = () => {
             <img src={checklist} alt="Checklist" width={50} height={50} className="w-11 h-11" />
             <div className="flex flex-col gap-2 text-left">
               <p className="text-wrap font-bold text-lg md:text-[18px] text-[#567257] grow-1 mb-2">Checklists guide you forward</p>
-              <p className="text-[14px] lg:text-[16px]  jost inline-block p-1.5 rounded text-[#6B7280]">
+              <p className="text-base  jost inline-block p-1.5 rounded text-[#6B7280]">
                 Retirement can feel overwhelming. Our checklists cut through the noise, showing
                 you exactly what matters right now.
               </p>
@@ -41,7 +41,7 @@ const RetiremateEdge = () => {
             <img src={roadmap} alt="Roadmap" width={50} height={50} className="w-11 h-11" />
             <div className="flex flex-col gap-2 text-left">
               <p className="text-wrap font-bold text-lg md:text-[18px] text-[#567257] grow-1 mb-2">A Roadmap built for you</p>
-              <p className="text-[14px] lg:text-[16px]  jost inline-block p-1.5 rounded text-[#6B7280]">
+              <p className="text-base  jost inline-block p-1.5 rounded text-[#6B7280]">
                 RetireMate tailors a plan to your goals and coaches you to achieve it, always
                 with you, every step of the way.
               </p>

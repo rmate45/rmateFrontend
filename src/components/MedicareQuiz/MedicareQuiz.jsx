@@ -13,10 +13,10 @@ const MedicareQuiz = () => {
 
                         <div className='px-4 py-5'>
                             <h4 className="text-wrap font-bold text-lg md:text-[20px] text-[#567257] grow-1 mb-3 text-left">Deciding Medicare Options ?</h4>
-                            <p className="lg:text-[16px] text-[14px] jost grow text-[#6B7280] text-left">Ask RetireMate and learn about your Medicare,
+                            <p className="text-base jost grow text-[#6B7280] text-left">Ask RetireMate and learn about your Medicare,
                                 Medicare Advantage, Medigap & Part D
                             </p>
-                            <button onClick={handleQuestionClick} className="mt-5  text-xs rounded-lg px-4 py-2 bg-[#567257] text-white">Ask RetireMate</button>
+                            <button onClick={handleQuestionClick} className="mt-5  text-base rounded-lg px-4 py-2 bg-[#567257] text-white">Ask RetireMate</button>
                         </div>
                     </div>
                 </div>
