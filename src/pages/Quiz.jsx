@@ -99,6 +99,8 @@ const STARTER_QUESTIONS = {
 const Quiz = () => {
   const location = useLocation();
   const params = new URLSearchParams(location.search);
+  console.log(params,"params");
+  
   const urlData = {
     id: params.get("id") || "",
     isPersona: params.get("isPersona") === "true" || false,

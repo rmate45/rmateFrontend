@@ -5,6 +5,7 @@ import api from "../../api/api";
 import oneImage from "../../assets/testimonial-2.jpeg"
 import twoImage from "../../assets/imageTwo.jpg"
 import threeImage from "../../assets/testimonial-2.jpeg"
+import { slugify } from "../../utils/slugify";
 const RothQuestions = () => {
     const [loading, setLoading] = useState(true);
     const [data, setData] = useState([]);
@@ -26,8 +27,13 @@ const RothQuestions = () => {
         }
     };
     const handleQuestionClick = (question) => {
-        const queryParam = encodeURIComponent(question._id);
-        window.open(`/quiz?id=${queryParam}&type=roth`, "_blank");
+    
+        const titleSlug = slugify(
+            `${question.name}-${question.age}-${question.profession}-${question.question}` );     
+        const idParam = encodeURIComponent(question._id);       
+        const url = `/Top-Roth-Conversion-Retirement-Questions/${titleSlug}?id=${idParam}&type=roth`;
+
+        window.open(url, "_blank");
     };
     if (loading) {
         return (
@@ -84,7 +90,7 @@ const RothQuestions = () => {
                                         </div>
                                     </div>
                                     <div className="grow flex flex-col mt-3 items-start">
-                                         <p className="text-base jost grow text-[#6B7280] text-left">
+                                        <p className="text-base jost grow text-[#6B7280] text-left">
                                             {item?.question}
                                         </p>
 
