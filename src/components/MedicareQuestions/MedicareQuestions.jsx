@@ -3,6 +3,8 @@ import api from "../../api/api";
 import oneImage from "../../assets/testimonial-2.jpeg"
 import twoImage from "../../assets/imageTwo.jpg"
 import threeImage from "../../assets/testimonial-2.jpeg"
+import { slugify } from "../../utils/slugify";
+import shareImage from '../../assets/mdi_share-outline.svg'
 const MedicareQuestions = () => {
     const [loading, setLoading] = useState(true);
     const [data, setData] = useState([]);
@@ -24,9 +26,24 @@ const MedicareQuestions = () => {
         }
     };
     const handleQuestionClick = (question) => {
-        const queryParam = encodeURIComponent(question._id);
-        window.open(`/quiz?id=${queryParam}&type=medicare`, "_blank");
-    };
+        const titleSlug = slugify(
+            `${question.name}-${question.age}-${question.profession}-${question.question}`);
+        const idParam = encodeURIComponent(question._id);
+        const url = `/Top-Medicare-Questions/${titleSlug}?id=${idParam}&type=medicare`;
+        window.open(url, "_blank");
+
+    }
+    const handleQuestionWhatsappClick = (question) => {
+        const titleSlug = slugify(
+            `${question.name}-${question.age}-${question.profession}-${question.question}`);
+        const idParam = encodeURIComponent(question._id);
+        const url = `Top-Medicare-Questions/${titleSlug}?id=${idParam}&type=medicare`;
+        const shareURL = window.location.href;
+
+        const text = encodeURIComponent(`${shareURL}${url}`);
+        window.open(`https://wa.me/?text=${text}`, "_blank");
+    }
+
     if (loading) {
         return (
             <div className="text-center px-6 max-w-7xl mx-auto py-10 sm:py-16">
@@ -89,9 +106,14 @@ const MedicareQuestions = () => {
 
                                         </p>
 
-                                        <button onClick={() => handleQuestionClick(item)} className="mt-5  text-base rounded-lg px-4 py-2 bg-[#567257] text-white">
-                                            Ask RetireMate
-                                        </button>
+                                        <div className="flex mt-5 justify-between items-center w-full">
+                                            <button onClick={() => handleQuestionClick(item)} className="text-base rounded-lg px-4 py-2 bg-[#567257] text-white">
+                                                Ask RetireMate
+                                            </button>
+                                            <button onClick={() => handleQuestionWhatsappClick(item)}>
+                                                <img src={shareImage} alt="Share" />
+                                            </button>
+                                        </div>
                                     </div>
                                 </div>
 

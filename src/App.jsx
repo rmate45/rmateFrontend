@@ -6,6 +6,10 @@ import Quiz from "./pages/Quiz.jsx";
 import IntroPage from "./pages/IntroPage.jsx";
 import PlanPage from "./pages/PlanPage.jsx";
 import RothPage from "./pages/RothPage.jsx";
+import PersonaPage from "./pages/PersonaPage.jsx";
+import FinancialPage from "./pages/FinancialPage.jsx";
+import MedicarePage from "./pages/MedicarePage.jsx";
+import ExploreQuestionsPage from "./pages/ExploreQuestionsPage.jsx";
 
 function App() {
   return (
@@ -18,6 +22,22 @@ function App() {
         <Route
           path="/Top-Roth-Conversion-Retirement-Questions/:slug"
           element={<RothPage />}
+        />
+        <Route
+          path="/Persona/:slug"
+          element={<PersonaPage />}
+        />
+        <Route
+          path="/Top-Financial-Planning-Questions/:slug"
+          element={<FinancialPage />}
+        />
+        <Route
+          path="/Top-Medicare-Questions/:slug"
+          element={<MedicarePage />}
+        />
+        <Route
+          path="/Top-Explore-Questions/:slug"
+          element={<ExploreQuestionsPage />}
         />
       </Routes>
     </>

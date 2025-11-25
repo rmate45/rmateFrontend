@@ -3,6 +3,8 @@ import api from "../../api/api";
 import oneImage from "../../assets/testimonial-2.jpeg"
 import twoImage from "../../assets/imageTwo.jpg"
 import threeImage from "../../assets/testimonial-2.jpeg"
+import { slugify } from "../../utils/slugify";
+import shareImage from '../../assets/mdi_share-outline.svg'
 const RetirematePlanningQuestion = () => {
     const [loading, setLoading] = useState(true);
     const [data, setData] = useState([]);
@@ -24,9 +26,24 @@ const RetirematePlanningQuestion = () => {
         }
     };
     const handleQuestionClick = (question) => {
-        const queryParam = encodeURIComponent(question._id);
-        window.open(`/quiz?id=${queryParam}&type=financial`, "_blank");
-    };
+
+        const titleSlug = slugify(
+            `${question.name}-${question.age}-${question.profession}-${question.question}`);
+        const idParam = encodeURIComponent(question._id);
+        const url = `/Top-Financial-Planning-Questions/${titleSlug}?id=${idParam}&type=financial`;
+        window.open(url, "_blank");
+
+    }
+    const handleQuestionWhatsappClick = (question) => {
+        const titleSlug = slugify(
+            `${question.name}-${question.age}-${question.profession}-${question.question}`);
+        const idParam = encodeURIComponent(question._id);
+        const url = `Top-Financial-Planning-Questions/${titleSlug}?id=${idParam}&type=financial`;
+        const shareURL = window.location.href;
+
+        const text = encodeURIComponent(`${shareURL}${url}`);
+        window.open(`https://wa.me/?text=${text}`, "_blank");
+    }
     if (loading) {
         return (
             <div className="text-center px-6 max-w-7xl mx-auto py-10 sm:py-16">
@@ -62,18 +79,18 @@ const RetirematePlanningQuestion = () => {
                 <p className="text-introPrimary font-medium text-xl sm:text-2xl text-center">
                     Top Finanical Planning  questions
                 </p>
-               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 mt-10">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 mt-10">
                     {
                         data.map((item, index) => (
                             <>
-                                <div className="relative  rounded-2xl p-5 bg-white flex flex-col" style={{boxShadow:"rgba(0, 0, 0, 0.15) 0px 4px 15px"}}>
+                                <div className="relative  rounded-2xl p-5 bg-white flex flex-col" style={{ boxShadow: "rgba(0, 0, 0, 0.15) 0px 4px 15px" }}>
                                     <div className="shrink-0 text-center flex gap-4">
                                         <img
                                             src={index === 0 ? oneImage : index === 1 ? twoImage : index === 2 ? threeImage : oneImage}
                                             alt="Joel"
                                             className="w-16 h-16 rounded-full object-cover mx-auto mb-2"
                                         />
-                                       <div className="grow text-left">
+                                        <div className="grow text-left">
                                             <p className="text-introPrimary text-base font-semibold mb-1.5 mt-3">
                                                 {item?.name}, <span className="text-base whitespace-nowrap text-introPrimary font-semibold">{item?.age}</span>
                                             </p>
@@ -81,13 +98,18 @@ const RetirematePlanningQuestion = () => {
                                         </div>
                                     </div>
                                     <div className="grow flex flex-col mt-3 items-start">
-                                       <p className="text-base jost grow  text-[#6B7280] text-left">
+                                        <p className="text-base jost grow  text-[#6B7280] text-left">
                                             {item?.question}
                                         </p>
-                                      
-                                            <button onClick={() => handleQuestionClick(item)} className="mt-5  text-base rounded-lg px-4 py-2 bg-[#567257] text-white">
+                                        <div className="flex mt-5 justify-between items-center w-full">
+
+                                            <button onClick={() => handleQuestionClick(item)} className="  text-base rounded-lg px-4 py-2 bg-[#567257] text-white">
                                                 Ask RetireMate
                                             </button>
+                                            <button onClick={() => handleQuestionWhatsappClick(item)}>
+                                                <img src={shareImage} alt="Share" />
+                                            </button>
+                                        </div>
                                     </div>
                                 </div>
 

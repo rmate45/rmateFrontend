@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useRef } from "react";
 import api from "../../api/api";
-
+import { slugify } from "../../utils/slugify";
 const ExploreMoreQuestions = () => {
   const [loading, setLoading] = useState(true);
   const [data, setData] = useState([]);
@@ -8,7 +8,7 @@ const ExploreMoreQuestions = () => {
   const [selectedQuestion, setSelectedQuestion] = useState("");
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const dropdownRef = useRef(null);
-
+const[active,setActive]=useState("")
   useEffect(() => {
     getQuestion();
   }, []);
@@ -39,10 +39,16 @@ const ExploreMoreQuestions = () => {
     }
   };
 
+
   const handleQuestionClick = (question) => {
-    const queryParam = encodeURIComponent(question);
-    window.open(`/quiz?id=${queryParam}&type=explore`, "_blank");
-  };
+    console.log(question, "inside");
+    const titleSlug = slugify(
+      `${question.question}`);
+    const idParam = encodeURIComponent(question._id);
+    const url = `/Top-Explore-Questions/${titleSlug}?id=${idParam}&type=explore`;
+    window.open(url, "_blank");
+
+  }
 
   if (loading) {
     return (
@@ -80,15 +86,14 @@ const ExploreMoreQuestions = () => {
             className="w-full text-sm flex justify-between items-center px-5 py-3 text-left rounded-2xl border border-primary text-gray-700 bg-white shadow-sm hover:shadow-md transition"
           >
             <span>
-              {selectedQuestion
-                ? data.find((q) => q._id === selectedQuestion)?.question
+              {active
+                ? data.find((q) => q._id === active)?.question
                 : "Select a question"}
             </span>
             <svg
               xmlns="http://www.w3.org/2000/svg"
-              className={`w-5 h-5 text-gray-500 shrink-0 transform transition-transform ${
-                dropdownOpen ? "rotate-180" : ""
-              }`}
+              className={`w-5 h-5 text-gray-500 shrink-0 transform transition-transform ${dropdownOpen ? "rotate-180" : ""
+                }`}
               fill="none"
               viewBox="0 0 24 24"
               stroke="currentColor"
@@ -108,12 +113,12 @@ const ExploreMoreQuestions = () => {
                 <li
                   key={index}
                   onClick={() => {
-                    setSelectedQuestion(item._id);
+                    setSelectedQuestion(item);
+                    setActive(item._id);
                     setDropdownOpen(false);
                   }}
-                  className={`px-5 py-3 text-left text-sm jost grow font-medium text-[#6B7280]  cursor-pointer hover:bg-blue-50 ${
-                    selectedQuestion === item._id ? "bg-blue-100 font-medium" : ""
-                  }`}
+                  className={`px-5 py-3 text-left text-sm jost grow font-medium text-[#6B7280]  cursor-pointer hover:bg-blue-50 ${active === item._id ? "bg-blue-100 font-medium" : ""
+                    }`}
                 >
                   {item.question}
                 </li>
@@ -126,12 +131,11 @@ const ExploreMoreQuestions = () => {
         <div className="mt-6">
           <button
             onClick={() => handleQuestionClick(selectedQuestion)}
-            disabled={!selectedQuestion}
-            className={`px-6 py-2 rounded-md text-base font-semibold border transition ${
-              selectedQuestion
+            disabled={!active}
+            className={`px-6 py-2 rounded-md text-base font-semibold border transition ${active
                 ? "mt-5 w-full  rounded-lg px-4 py-2 bg-[#567257] text-white"
                 : "text-gray-400 border-gray-300 cursor-not-allowed"
-            }`}
+              }`}
           >
             Ask RetireMate
           </button>

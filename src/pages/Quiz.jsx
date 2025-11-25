@@ -10,6 +10,7 @@ import PlotChart from "../components/PlotChart/PlotChart.jsx";
 import PrivacyTrustModal from "../components/PrivacyTrustModal/PrivacyTrustModal.jsx";
 import RetirementQa from "../components/RetiremateQa/RetiremateQa.jsx";
 import { isDesktop } from "react-device-detect";
+import UserCard from "../components/UserCard/UserCard.jsx";
 
 const chatApiUrl = import.meta.env.VITE_CHAT_API_URL;
 
@@ -99,8 +100,8 @@ const STARTER_QUESTIONS = {
 const Quiz = () => {
   const location = useLocation();
   const params = new URLSearchParams(location.search);
-  console.log(params,"params");
-  
+  console.log(params, "params");
+
   const urlData = {
     id: params.get("id") || "",
     isPersona: params.get("isPersona") === "true" || false,
@@ -154,11 +155,12 @@ const Quiz = () => {
   const [chartAlreadyShown, setChartAlreadyShown] = useState(false);
   // item passed from TestimonialCard via navigate('/quiz', { state: { item } })
   const [showDisclaimer, setShowDisclaimer] = useState(false)
-  console.log(pendingQuestions, "pendingQuestions");
+  // console.log(pendingQuestions, "pendingQuestions");
   const [showPendingItems, setShowPeningItems] = useState(false)
-  console.log(showPendingItems, "showPendingItems");
-
+  // console.log(showPendingItems, "showPendingItems");
+  const [item, setItem] = useState(null)
   useEffect(() => {
+
     initializeFlow();
   }, []);
 
@@ -181,8 +183,8 @@ const Quiz = () => {
   // Show mobile-only intro message when pending items (extra questions) are activated
   // This should only apply for persona flows, and should react to resize via isMobile
   useEffect(() => {
-    if (!showPendingItems && !urlData.isPersona){
-      setShowPeningItems(true)  
+    if (!showPendingItems && !urlData.isPersona) {
+      setShowPeningItems(true)
       return;
     }
 
@@ -251,6 +253,7 @@ const Quiz = () => {
       const res = await api.get(`/get-persona/${id}`);
       if (res.data?.type === "success" && res.data?.data) {
         setPersonaData(res.data.data);
+        setItem(res.data.data);
         return res.data.data;
       }
       return null;
@@ -278,8 +281,8 @@ const Quiz = () => {
     if (!id) return null;
     try {
       const res = await api.get(`/get-financial-planning/${id}`);
-      console.log(res, "testtt");
       if (res.data?.type === "success" && res.data?.data) {
+        setItem(res.data.data);
         return res.data.data;
       }
       return null;
@@ -294,6 +297,7 @@ const Quiz = () => {
     try {
       const res = await api.get(`/get-explore-question/${id}`);
       if (res.data?.type === "success" && res.data?.data) {
+        setItem(res.data.data);
         return res.data.data;
       }
       return null;
@@ -308,6 +312,7 @@ const Quiz = () => {
     try {
       const res = await api.get(`/get-roth-question/${id}`);
       if (res.data?.type === "success" && res.data?.data) {
+        setItem(res.data.data);
         return res.data.data;
       }
       return null;
@@ -321,6 +326,7 @@ const Quiz = () => {
     try {
       const res = await api.get(`/get-medicare-question/${id}`);
       if (res.data?.type === "success" && res.data?.data) {
+        setItem(res.data.data);
         return res.data.data;
       }
       return null;
@@ -347,15 +353,16 @@ const Quiz = () => {
           fetchedData = await fetchQuestionFinancialById(urlData.id);
         } else if (type === "medicare") {
           fetchedData = await fetchQuestionMedicareById(urlData.id);
-          
+
         }
 
         if (fetchedData) {
           // First message - question
-          setConversation([{ type: "answer", text: fetchedData?.question }]);
-
+          setTimeout(() => {
+            setConversation([{ type: "answer", text: fetchedData?.question }]);
+          }, 1000);
           // Wait 1 second before showing answer(s)
-          await new Promise((resolve) => setTimeout(resolve, 1000));
+          await new Promise((resolve) => setTimeout(resolve, 2000));
 
           // Check if answer is an array or a string
 
@@ -519,8 +526,8 @@ const Quiz = () => {
           (a, b) => a.position - b.position
         );
         const sortWithoutEmailPhone = sortedQuestions.slice(0, 6)
-        console.log(sortWithoutEmailPhone,"sortWithoutEmailPhone");
-        
+        console.log(sortWithoutEmailPhone, "sortWithoutEmailPhone");
+
         setPendingQuestions(sortedQuestions.slice(6))
 
         setAllQuestions(sortWithoutEmailPhone);
@@ -807,7 +814,7 @@ const Quiz = () => {
               {
                 type: "system",
                 text: "Let's get started with a few basic questions.",
-                isDesktop: true  
+                isDesktop: true
               },
             ]);
           }
@@ -1619,6 +1626,8 @@ const Quiz = () => {
             : "pb-4"
             }`}
         >
+          {/* {userdatacard} */}
+          {item && <UserCard item={item} />}
           {conversation.map((item, idx) => {
             const isLastAnswer =
               item.type === "answer" &&
@@ -1636,15 +1645,17 @@ const Quiz = () => {
             }
 
             return (
-              <ChatMessage
-                key={idx}
-                message={item}
-                isLastAnswer={isLastAnswer}
-                canReload={canReload && !isChatMode}
-                loading={loading}
-                onReload={handleReloadAnswer}
-                chatMode={isChatMode}
-              />
+              <>
+                {item && <ChatMessage
+                  key={idx}
+                  message={item}
+                  isLastAnswer={isLastAnswer}
+                  canReload={canReload && !isChatMode}
+                  loading={loading}
+                  onReload={handleReloadAnswer}
+                  chatMode={isChatMode}
+                />}
+              </>
             );
           })}
 

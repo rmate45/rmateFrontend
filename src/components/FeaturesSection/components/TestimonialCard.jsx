@@ -1,25 +1,43 @@
 import React from "react";
-
+import { slugify } from "../../../utils/slugify";
+import shareImage from '../../../assets/mdi_share-outline.svg'
 const TestimonialCard = ({ item }) => {
 
-  console.log(item, "item")
+  console.log(item, "item-->")
 
-  const handleClick = () => {
+  const handleClick = (e) => {
+    e.stopPropagation();
+    const slug = slugify(
+      `${item.name || ""} ${item.age || ""} ${item.profession || ""} ${item.title || ""}`
+    );
+
     const params = new URLSearchParams({
-      // age: item.age || "",
-      // householdIncome: item.annualIncome || "0",
-      // retirementSavings: item.totalSavings || "0",
-      // otherSavings: item.otherSavings || "0",
-      // chatBubble: item.chatBubble || "",
+      isPersona: "true",
+      id: item.id || "",
+    });
+    window.open(`/Persona/${slug}?${params.toString()}`, "_blank");
+  };
+  const handleClickWhatsApp = (e) => {
+    e.stopPropagation();
+
+    const slug = slugify(
+      `${item.name || ""} ${item.age || ""} ${item.profession || ""} ${item.title || ""}`
+    );
+
+    const params = new URLSearchParams({
       isPersona: "true",
       id: item.id || "",
     });
 
-    window.open(`/quiz?${params.toString()}`, "_blank");
-  };
+    const finalURL = `${window.location.origin}/Persona/${slug}?${params.toString()}`;
 
+    const text = encodeURIComponent(`${item.title || item.name}\n${finalURL}`);
+    console.log(text, "text");
+
+    window.open(`https://wa.me/?text=${text}`, "_blank");
+  };
   return (
-    <div  onClick={handleClick} className="cursor-pointer flex flex-col p-5 rounded-xl gap-4 bg-white text-black h-full" style={{boxShadow:"rgba(0, 0, 0, 0.15) 0px 4px 15px"}}>
+    <div onClick={handleClick} className="cursor-pointer flex flex-col p-5 rounded-xl gap-4 bg-white text-black h-full" style={{ boxShadow: "rgba(0, 0, 0, 0.15) 0px 4px 15px" }}>
       <div className="flex gap-3 items-center">
         <img
           src={item.img}
@@ -47,12 +65,16 @@ const TestimonialCard = ({ item }) => {
               {item.text}
             </p>
           </div>
-          <button
-            className="mt-5 text-base rounded-lg px-4 py-2 bg-[#567257] text-white"
-            onClick={handleClick}
-          >
-            Explore this retirement
-          </button>
+          <div className="flex justify-between gap-2 w-full items-center mt-5 ">
+            <button
+              className="text-base rounded-lg px-4 py-2 bg-[#567257] text-white"
+            >
+              Explore this retirement
+            </button>
+            <button onClick={handleClickWhatsApp}>
+              <img src={shareImage} alt="Share" />
+            </button>
+          </div>
         </div>
       </div>
     </div>
