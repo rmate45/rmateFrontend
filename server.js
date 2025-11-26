@@ -38,7 +38,7 @@ async function getPageMetadata(url, queryParams) {
     title: "RetireMate",
     description: "Expert-curated retirement and Medicare insights.",
     image: "https://retiremate.com/assets/logo-D1t2XXia.png",
-    url: `https://retiremate.com${url}`
+    url: `https://dev.retiremate.com${url}`
   };
 
   try {
