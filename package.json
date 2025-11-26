@@ -3,6 +3,7 @@
   "private": true,
   "version": "0.0.0",
   "type": "module",
+<<<<<<< HEAD
  "scripts": {
 <<<<<<< HEAD
     "dev": "vite",
@@ -26,6 +27,17 @@
   "lint": "eslint ."
 },
 >>>>>>> parent of 48b5d2c (build added)
+=======
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "lint": "eslint .",
+    "generate:routes": "node scripts/generate-routes.js",
+    "prerender": "node scripts/prerender.js",
+    "build:prerender": "npm run build && npm run generate:routes && BASE_URL=https://retiremate.com npm run prerender"
+  },
+>>>>>>> parent of 6104336 (build updated)
   "dependencies": {
     "@emotion/react": "^11.14.0",
     "@emotion/styled": "^11.14.1",
