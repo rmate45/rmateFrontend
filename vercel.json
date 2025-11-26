@@ -1,5 +1,27 @@
 {
+  "buildCommand": "npm run build",
+  "outputDirectory": "dist",
   "rewrites": [
+    {
+      "source": "/Top-Explore-Questions/:slug",
+      "destination": "/api/prerender?path=/Top-Explore-Questions/:slug"
+    },
+    {
+      "source": "/Top-Roth-Conversion-Retirement-Questions/:slug",
+      "destination": "/api/prerender?path=/Top-Roth-Conversion-Retirement-Questions/:slug"
+    },
+    {
+      "source": "/Top-Financial-Planning-Questions/:slug",
+      "destination": "/api/prerender?path=/Top-Financial-Planning-Questions/:slug"
+    },
+    {
+      "source": "/Top-Medicare-Questions/:slug",
+      "destination": "/api/prerender?path=/Top-Medicare-Questions/:slug"
+    },
+    {
+      "source": "/Persona/:slug",
+      "destination": "/api/prerender?path=/Persona/:slug"
+    },
     { "source": "/(.*)", "destination": "/" }
   ]
 }
