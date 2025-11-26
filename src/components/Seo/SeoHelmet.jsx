@@ -10,6 +10,7 @@ const SeoHelmet = ({
   noIndex = false,
   structuredData = null,
 }) => {
+  console.log(image,"image")
   return (
     <Helmet>
       {/* Basic SEO */}
@@ -22,7 +23,7 @@ const SeoHelmet = ({
       {/* Open Graph / Social */}
       <meta property="og:title" content={title} />
       <meta property="og:description" content={description} />
-      {image && <meta property="og:image" content={image} />}
+      {image && <meta property="og:image" content={"http://localhost:5173/src/assets/retiremate-logo.svg"} />}
       {url && <meta property="og:url" content={url} />}
       <meta property="og:type" content="article" />
 
