@@ -12,7 +12,7 @@
     "vercel-build": "npm run build:prerender",
     "preview": "vite preview",
     "lint": "eslint .",
-    "postinstall": "npx playwright install --with-deps chromium"
+   "postinstall": "npx playwright install chromium"
   },
   "dependencies": {
     "@emotion/react": "^11.14.0",
