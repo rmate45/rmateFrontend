@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+
 import React from "react";
 import { Helmet } from "react-helmet-async";
 
@@ -10,18 +10,6 @@ const SeoHelmet = ({
   noIndex = false,
   structuredData = null,
 }) => {
-  console.log(noIndex,"noIndex");
-  useEffect(() => {
-  console.log("TITLE:", document.title);
-
-  const ogTitle = document.querySelector('meta[property="og:title"]');
-  const ogDesc = document.querySelector('meta[property="og:description"]');
-  const ogImg = document.querySelector('meta[property="og:image"]');
-
-  console.log("OG Title:", ogTitle?.content);
-  console.log("OG Desc:", ogDesc?.content);
-  console.log("OG Image:", ogImg?.content);
-}, []);
   return (
     <Helmet>
       {/* Basic SEO */}
