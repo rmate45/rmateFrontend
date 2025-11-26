@@ -126,7 +126,7 @@ const HowLongCard = () => {
           </p>
 
           <button
-            className="mt-4 rounded-lg px-4 py-2 bg-[#567257] text-white"
+            className="mt-4 rounded-lg px-4 py-2 bg-[#567257] text-white text-base"
             onClick={() => {
                 window.open(`/quiz`, "_blank");
             }}

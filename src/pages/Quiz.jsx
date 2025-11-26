@@ -7,10 +7,15 @@ import { LoadingIndicator } from "../components/LoadingIndicator/LoadingIndicato
 import { QuestionDisplay } from "../components/QuestionDisplay/QuestionDisplay";
 import api from "../api/api.js";
 import PlotChart from "../components/PlotChart/PlotChart.jsx";
+import PrivacyTrustModal from "../components/PrivacyTrustModal/PrivacyTrustModal.jsx";
+import RetirementQa from "../components/RetiremateQa/RetiremateQa.jsx";
+import { isDesktop } from "react-device-detect";
+import UserCard from "../components/UserCard/UserCard.jsx";
 
 const chatApiUrl = import.meta.env.VITE_CHAT_API_URL;
 
 function buildPayload(response) {
+  console.log(response, "response");
   const parseMedian = (str) => {
     if (!str) return null;
 
@@ -95,16 +100,22 @@ const STARTER_QUESTIONS = {
 const Quiz = () => {
   const location = useLocation();
   const params = new URLSearchParams(location.search);
+  console.log(params, "params");
+
   const urlData = {
     id: params.get("id") || "",
     isPersona: params.get("isPersona") === "true" || false,
     isCustomPersona: params.get("isCustomPersona") === "true" || false,
+    type: params.get("type") || "",
   };
 
   const initialText = location.state?.title || params.get("title") || "";
+  console.log(initialText, "initialText");
 
   const [currentQuestion, setCurrentQuestion] = useState(null);
   const [conversation, setConversation] = useState([]);
+  console.log(conversation, "conversation");
+
   const [loading, setLoading] = useState(true);
   const [textInput, setTextInput] = useState("");
   const chatRef = useRef(null);
@@ -131,6 +142,7 @@ const Quiz = () => {
   // New state for chart data
   const [chartData, setChartData] = useState(null);
   const [showChart, setShowChart] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
 
   // New states for structured Q&A flow
   const [showStarterQuestions, setShowStarterQuestions] = useState(false);
@@ -138,13 +150,53 @@ const Quiz = () => {
   const [followUpQuestions, setFollowUpQuestions] = useState([]);
   const [showFollowUpQuestions, setShowFollowUpQuestions] = useState(false);
   const [userName, setUserName] = useState("");
-
+  const [showModal, setShowModal] = useState(false);
+  const [pendingQuestions, setPendingQuestions] = useState([]);
+  const [chartAlreadyShown, setChartAlreadyShown] = useState(false);
   // item passed from TestimonialCard via navigate('/quiz', { state: { item } })
-
-  // Initialize the flow when component mounts
+  const [showDisclaimer, setShowDisclaimer] = useState(false)
+  // console.log(pendingQuestions, "pendingQuestions");
+  const [showPendingItems, setShowPeningItems] = useState(false)
+  // console.log(showPendingItems, "showPendingItems");
+  const [item, setItem] = useState(null)
   useEffect(() => {
+
     initializeFlow();
   }, []);
+
+  // Track mobile / desktop based on width <= 767
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+
+    const updateIsMobile = () => {
+      setIsMobile(window.innerWidth <= 767);
+    };
+
+    updateIsMobile();
+    window.addEventListener("resize", updateIsMobile);
+
+    return () => {
+      window.removeEventListener("resize", updateIsMobile);
+    };
+  }, []);
+
+  // Show mobile-only intro message when pending items (extra questions) are activated
+  // This should only apply for persona flows, and should react to resize via isMobile
+  useEffect(() => {
+    if (!showPendingItems && !urlData.isPersona) {
+      setShowPeningItems(true)
+      return;
+    }
+
+    setConversation((prev) => [
+      ...prev,
+      {
+        type: "system",
+        text: "Let's get started with a few basic questions.",
+        isMobile: true
+      },
+    ]);
+  }, [showPendingItems, urlData.isPersona]);
 
   useEffect(() => {
     if (chatInputRef && chatInputRef?.current) {
@@ -201,6 +253,7 @@ const Quiz = () => {
       const res = await api.get(`/get-persona/${id}`);
       if (res.data?.type === "success" && res.data?.data) {
         setPersonaData(res.data.data);
+        setItem(res.data.data);
         return res.data.data;
       }
       return null;
@@ -224,10 +277,122 @@ const Quiz = () => {
       return null;
     }
   };
+  const fetchQuestionFinancialById = async (id) => {
+    if (!id) return null;
+    try {
+      const res = await api.get(`/get-financial-planning/${id}`);
+      if (res.data?.type === "success" && res.data?.data) {
+        setItem(res.data.data);
+        return res.data.data;
+      }
+      return null;
+    } catch (err) {
+      console.error("Error fetching persona:", err);
+      return null;
+    }
+  };
+
+  const fetchQuestionExploreById = async (id) => {
+    if (!id) return null;
+    try {
+      const res = await api.get(`/get-explore-question/${id}`);
+      if (res.data?.type === "success" && res.data?.data) {
+        setItem(res.data.data);
+        return res.data.data;
+      }
+      return null;
+    } catch (err) {
+      console.error("Error fetching persona:", err);
+      return null;
+    }
+  };
+
+  const fetchQuestionRothById = async (id) => {
+    if (!id) return null;
+    try {
+      const res = await api.get(`/get-roth-question/${id}`);
+      if (res.data?.type === "success" && res.data?.data) {
+        setItem(res.data.data);
+        return res.data.data;
+      }
+      return null;
+    } catch (err) {
+      console.error("Error fetching persona:", err);
+      return null;
+    }
+  };
+  const fetchQuestionMedicareById = async (id) => {
+    if (!id) return null;
+    try {
+      const res = await api.get(`/get-medicare-question/${id}`);
+      if (res.data?.type === "success" && res.data?.data) {
+        setItem(res.data.data);
+        return res.data.data;
+      }
+      return null;
+    } catch (err) {
+      console.error("Error fetching persona:", err);
+      return null;
+    }
+  };
 
   const initializeFlow = async () => {
     try {
       setLoading(true);
+
+      // Handle different question types based on URL parameters
+      if (!urlData?.isPersona && urlData.id) {
+        const type = urlData.type;
+        let fetchedData = null;
+
+        if (type === "roth") {
+          fetchedData = await fetchQuestionRothById(urlData.id);
+        } else if (type === "explore") {
+          fetchedData = await fetchQuestionExploreById(urlData.id);
+        } else if (type === "financial") {
+          fetchedData = await fetchQuestionFinancialById(urlData.id);
+        } else if (type === "medicare") {
+          fetchedData = await fetchQuestionMedicareById(urlData.id);
+
+        }
+
+        if (fetchedData) {
+          // First message - question
+          setTimeout(() => {
+            setConversation([{ type: "answer", text: fetchedData?.question }]);
+          }, 1000);
+          // Wait 1 second before showing answer(s)
+          await new Promise((resolve) => setTimeout(resolve, 2000));
+
+          // Check if answer is an array or a string
+
+          if (fetchedData?.answers) {
+            // Join all answers with newlines and show in single box
+            const combinedAnswer = fetchedData.answers.join("\n");
+            setConversation((prev) => [
+              ...prev,
+              { type: "system", text: combinedAnswer },
+            ]);
+            setIsScroll(true);
+          } else {
+            // Single answer - show it directly
+            setConversation((prev) => [
+              ...prev,
+              {
+                type: "system",
+                text: fetchedData?.answer
+                  ?.replace(/<br\s*\/?>/gi, "\n") // replace <br> or <br/> with line breaks
+                  ?.trim(),
+              },
+            ]);
+
+            setIsScroll(true);
+          }
+
+          // Wait another second before continuing
+          await new Promise((resolve) => setTimeout(resolve, 1000));
+        }
+      }
 
       if (urlData?.isPersona && urlData.id) {
         const fetched = await fetchPersonaById(urlData.id);
@@ -271,25 +436,82 @@ const Quiz = () => {
       const statement = statementsData[index];
       if (!statement) {
         // No more statements, fetch questions
-        setTimeout(fetchQuestions, 1000);
+        setTimeout(fetchAppropriateQuestions, 1000);
         return;
       }
 
-      setConversation((prev) => [
-        ...prev,
-        { type: "system", text: statement.question },
-      ]);
+      if (
+        statement?.question ==
+        "Your privacy matters! Anything you share stays private and is only used to improve your results. Learn more here."
+      ) {
+        setConversation((prev) => [
+          ...prev,
+          {
+            type: "system",
+            text: (
+              <p className="jost">
+                Your privacy matters! Anything you share stays private and is
+                only used to improve your results. Learn more{" "}
+                <span
+                  onClick={() => setShowModal(true)}
+                  className="jost text-primary hover:!underline cursor-pointer"
+                >
+                  {" "}
+                  here.
+                </span>
+              </p>
+            ),
+          },
+        ]);
+      } else {
+        setConversation((prev) => [
+          ...prev,
+          { type: "system", text: statement.question },
+        ]);
+      }
 
       index++;
 
       if (index < statementsData.length) {
         setTimeout(showNext, 1000);
       } else {
-        setTimeout(fetchQuestions, 1000);
+        setTimeout(fetchAppropriateQuestions, 1000);
       }
     };
 
     setTimeout(showNext, 1000);
+  };
+
+  const fetchMedicareQuestions = async () => {
+    try {
+      const questionsResponse = await api.get("/get-medi-questions");
+
+      if (
+        questionsResponse.data?.data &&
+        questionsResponse.data.data.length > 0
+      ) {
+        const sortedQuestions = questionsResponse.data.data.sort(
+          (a, b) => a.position - b.position
+        );
+
+        setAllQuestions(sortedQuestions);
+        setCurrentQuestion(sortedQuestions[0]);
+        setCurrentQuestionIndex(0);
+      } else {
+        setConversation((prev) => [
+          ...prev,
+          { type: "system", text: "No Medicare questions available." },
+        ]);
+      }
+    } catch (error) {
+      console.error("Error fetching Medicare questions:", error);
+      setConversation((prev) => [
+        ...prev,
+        { type: "system", text: "Error loading Medicare questions. Please try again." },
+      ]);
+    } finally {
+      setLoading(false);
+    }
   };
 
   const fetchQuestions = async () => {
@@ -303,8 +525,13 @@ const Quiz = () => {
         const sortedQuestions = questionsResponse.data.data.sort(
           (a, b) => a.position - b.position
         );
-        setAllQuestions(sortedQuestions);
-        setCurrentQuestion(sortedQuestions[0]);
+        const sortWithoutEmailPhone = sortedQuestions.slice(0, 6)
+        console.log(sortWithoutEmailPhone, "sortWithoutEmailPhone");
+
+        setPendingQuestions(sortedQuestions.slice(6))
+
+        setAllQuestions(sortWithoutEmailPhone);
+        setCurrentQuestion(sortWithoutEmailPhone[0]);
         setCurrentQuestionIndex(0);
       } else {
         setConversation((prev) => [
@@ -323,7 +550,44 @@ const Quiz = () => {
     }
   };
 
+  // Helper function to call the appropriate fetch function based on quiz type
+  const fetchAppropriateQuestions = () => {
+    if (urlData.type === "medicareQuiz") {
+      return fetchMedicareQuestions();
+    } else {
+      return fetchQuestions();
+    }
+  };
+
+  // Function to continue with pending questions after chart is loaded
+  const continueWithPendingQuestions = () => {
+    if (pendingQuestions.length > 0) {
+      // Add pending questions to the current questions list
+      setAllQuestions(prev => [...prev, ...pendingQuestions]);
+
+      // Continue from where we left off
+      const nextIndex = currentQuestionIndex + 1;
+      if (nextIndex < allQuestions.length + pendingQuestions.length) {
+        setCurrentQuestionIndex(nextIndex);
+        setCurrentQuestion(pendingQuestions[0]);
+        setLoading(false);
+        setIsChatMode(false); // Go back to question mode
+
+        // Clear pending questions since we're now using them
+        setPendingQuestions([]);
+      } else {
+        // No more questions, show starter questions
+        setShowStarterQuestions(true);
+        setLoading(false);
+      }
+    } else {
+      setShowStarterQuestions(true);
+      setLoading(false);
+    }
+  };
+
   const moveToNextQuestion = (answers) => {
+    console.log(answers, "answerss");
     if (currentQuestionIndex == 0) {
       setIsScroll(true);
     }
@@ -340,11 +604,22 @@ const Quiz = () => {
       setIsLastQuestion(true);
       setCanReload(false);
       setLoading(true);
-      // Call save API first, then start structured Q&A mode
-      startStructuredQA(answers);
-      // saveUserResponses(answers).then(() => {
-      //   startStructuredQA(answers);
-      // });
+
+      // If chart has already been shown (we're completing pending questions) OR it's a Medicare quiz, go directly to starter questions
+      console.log("chartAlreadyShown:", chartAlreadyShown, "urlData.type:", urlData.type);
+      if (chartAlreadyShown || urlData.type === "medicareQuiz") {
+        console.log("Calling saveUserResponses for Medicare quiz or after pending questions");
+        // Save data after ALL questions are completed (including pending)
+        saveUserResponses(answers).then(() => {
+          setShowStarterQuestions(true);
+          setLoading(false);
+          setIsChatMode(true);
+        });
+      } else {
+        console.log("Calling startStructuredQA for first time");
+        // First time completing questions, show chart and then continue
+        startStructuredQA(answers);
+      }
     }
   };
 
@@ -374,24 +649,25 @@ const Quiz = () => {
 
   // Function to format the payload for the save API
   const formatSavePayload = (answers) => {
-    // Extract phone number from Q2 (assuming Q2 is the phone number question)
-    const phoneNumberAnswer = answers["Q2"];
+    // Determine phone number question ID based on quiz type
+    const phoneQuestionId = urlData.type === "medicareQuiz" ? "MQ9" : "Q8";
+    const phoneNumberAnswer = answers[phoneQuestionId];
     let phoneNumber = "";
 
-    // if (phoneNumberAnswer) {
-    //   // Check if it's a phone data object with fullNumber
-    //   if (
-    //     phoneNumberAnswer.value &&
-    //     typeof phoneNumberAnswer.value === "object" &&
-    //     phoneNumberAnswer.value.fullNumber
-    //   ) {
-    //     phoneNumber = phoneNumberAnswer.value.fullNumber;
-    //   } else if (typeof phoneNumberAnswer.value === "string") {
-    //     phoneNumber = phoneNumberAnswer.value;
-    //   } else if (typeof phoneNumberAnswer.answer === "string") {
-    //     phoneNumber = phoneNumberAnswer.answer;
-    //   }
-    // }
+    if (phoneNumberAnswer) {
+      // Check if it's a phone data object with fullNumber
+      if (
+        phoneNumberAnswer.value &&
+        typeof phoneNumberAnswer.value === "object" &&
+        phoneNumberAnswer.value.fullNumber
+      ) {
+        phoneNumber = phoneNumberAnswer.value.fullNumber;
+      } else if (typeof phoneNumberAnswer.value === "string") {
+        phoneNumber = phoneNumberAnswer.value;
+      } else if (typeof phoneNumberAnswer.answer === "string") {
+        phoneNumber = phoneNumberAnswer.answer;
+      }
+    }
 
     // Format responses array
     const responses = Object.entries(answers).map(
@@ -400,7 +676,7 @@ const Quiz = () => {
 
         // Handle phone number specially - use full number for API
         if (
-          questionId === "Q2" &&
+          questionId === phoneQuestionId &&
           answerData.value &&
           typeof answerData.value === "object" &&
           answerData.value.fullNumber
@@ -449,28 +725,54 @@ const Quiz = () => {
   };
 
   const initialChartMessage = async (personaData) => {
+    console.log(personaData, "personaData");
     const chartPayload = {
       age: personaData?.age,
       householdIncome: personaData?.annual_income || 0,
       retirementSavings: personaData?.total_savings || 0,
       otherSavings: personaData?.otherSavings || 0,
     };
-
+    const statementsResponse = await api.get("/get-statements");
+    const intialStartMessages = statementsResponse?.data?.data
     // Initial greeting with loading delay
-    setConversation([{ type: "system", text: "Hey there, I am RetireMate" }]);
-
+    setConversation([{ type: "system", text: intialStartMessages[0].question }]);
+    console.log(statementsResponse, "statementsResponse")
     // Second message after 1 second
     setTimeout(() => {
       setConversation((prev) => [
         ...prev,
         {
           type: "system",
-          text: `I'm your AI retirement assistant to provide you with answers to all your retirement questions in minutes, instead of months.`,
+          text: `${intialStartMessages[1].question}`,
         },
       ]);
     }, 1000);
 
     // Third message (persona specific) after 2 seconds
+
+    setTimeout(() => {
+      setConversation((prev) => [
+        ...prev,
+        {
+          type: "system",
+          text: (
+            <p className="jost">
+              Your privacy matters! Anything you share stays private and is only
+              used to improve your results. Learn more{" "}
+              <span
+                onClick={() => setShowModal(true)}
+                className="jost text-primary hover:!underline cursor-pointer"
+              >
+                {" "}
+                here.
+              </span>
+            </p>
+          ),
+        },
+      ]);
+      setIsScroll(true);
+    }, 2000);
+    // Fourth message about the plot after 3 seconds
     setTimeout(() => {
       setConversation((prev) => [
         ...prev,
@@ -479,9 +781,8 @@ const Quiz = () => {
           text: personaData?.chat_bubble,
         },
       ]);
-    }, 2000);
-
-    // Fourth message about the plot after 3 seconds
+    }, 3000);
+    // Fifth message about the plot after 4 seconds
     setTimeout(() => {
       setConversation((prev) => [
         ...prev,
@@ -491,7 +792,7 @@ const Quiz = () => {
         },
       ]);
       setIsScroll(true);
-    }, 3000);
+    }, 4000);
 
     try {
       setLoading(true);
@@ -501,20 +802,24 @@ const Quiz = () => {
         if (response?.data?.data) {
           setChartData(response.data.data);
           setShowChart(true);
-          addToConversation("chart", response.data?.data);
+          // Initial persona chart should NOT show the disclaimer
+          addToConversation("chart", response.data?.data, { showDisclaimer: false });
           setLoading(false);
+          setShowDisclaimer(false)
 
-          setTimeout(() => {
+          // On larger screens, show the intro message here
+          if (typeof window !== "undefined" && window.innerWidth > 767) {
             setConversation((prev) => [
               ...prev,
               {
                 type: "system",
-                text: "Let's go ahead with your assessment",
+                text: "Let's get started with a few basic questions.",
+                isDesktop: true
               },
             ]);
-          }, 1000);
+          }
 
-          setTimeout(fetchQuestions, 1000);
+          setTimeout(fetchAppropriateQuestions, 1000);
         } else {
           addToConversation(
             "system",
@@ -522,7 +827,7 @@ const Quiz = () => {
           );
           setLoading(false);
         }
-      }, 4000);
+      }, 5000);
     } catch (error) {
       console.error("Error starting structured Q&A:", error);
       addToConversation(
@@ -541,9 +846,10 @@ const Quiz = () => {
       retirementSavings: personaData?.savings || 0,
       otherSavings: personaData?.otherSavings || 0,
     };
-
+    const statementsResponse = await api.get("/get-statements");
+    const intialStartMessages = statementsResponse?.data?.data
     // Initial greeting with loading delay
-    setConversation([{ type: "system", text: "Hey there, I am RetireMate" }]);
+    setConversation([{ type: "system", text: intialStartMessages[0].question }]);
 
     // Second message after 1 second
     setTimeout(() => {
@@ -551,7 +857,7 @@ const Quiz = () => {
         ...prev,
         {
           type: "system",
-          text: `I'm your AI retirement assistant to provide you with answers to all your retirement questions in minutes, instead of months.`,
+          text: `${intialStartMessages[1].question}`,
         },
       ]);
     }, 1000);
@@ -579,7 +885,7 @@ const Quiz = () => {
           addToConversation("chart", response.data?.data);
           setLoading(false);
 
-          setTimeout(fetchQuestions, 1000);
+          setTimeout(fetchAppropriateQuestions, 1000);
         } else {
           addToConversation(
             "system",
@@ -610,7 +916,7 @@ const Quiz = () => {
           "system",
           "Thank you for completing the quiz! Let me analyze your responses and provide personalized retirement insights..."
         );
-      }, 2000);
+      }, 0);
 
       // if (!userId) {
       //   addToConversation(
@@ -622,6 +928,14 @@ const Quiz = () => {
 
       console.log("Starting structured Q&A with userId:", userId);
       console.log("User answers:", answers);
+
+      // Skip chart generation for Medicare quiz
+      if (urlData.type === "medicareQuiz") {
+        setIsChatMode(true);
+        setShowStarterQuestions(true);
+        setLoading(false);
+        return;
+      }
 
       const chartPayload = buildPayload(answers);
 
@@ -640,25 +954,46 @@ const Quiz = () => {
           "Based on your responses, here's your personalized retirement savings projection:"
         );
 
-        // Add chart component to conversation
-        addToConversation("chart", response.data?.data);
+        // Add chart component to conversation and show disclaimer ONLY for this chart
+        addToConversation("chart", response.data?.data, { showDisclaimer: true });
+        setShowDisclaimer(true)
+        console.log("inside")
+        // Mark that chart has been shown
+        setChartAlreadyShown(true);
 
-        // Wait a bit, then show the structured questions
-        setTimeout(() => {
-          addToConversation(
-            "system",
-            "Now, let's dive deeper into your retirement planning concerns:"
-          );
+        // Continue with pending questions after chart is loaded
+        if (pendingQuestions.length > 0) {
+          setTimeout(() => {
+            continueWithPendingQuestions();
+          }, 1000);
+        } else {
           setShowStarterQuestions(true);
           setLoading(false);
-        }, 2000);
+        }
+
+        // Wait a bit, then show the structured questions
+        // setTimeout(() => {
+        //   addToConversation(
+        //     "system",
+        //     "Now, let's dive deeper into your retirement planning concerns:"
+        //   );
+        //   setShowStarterQuestions(true);
+        //   setLoading(false);
+        // }, 2000);
       } else {
         addToConversation(
           "system",
           "I couldn't generate your chart data, but let's continue with your retirement planning questions!"
         );
-        setShowStarterQuestions(true);
-        setLoading(false);
+        // Continue with pending questions even if chart fails
+        if (pendingQuestions.length > 0) {
+          setTimeout(() => {
+            continueWithPendingQuestions();
+          }, 1000);
+        } else {
+          setShowStarterQuestions(true);
+          setLoading(false);
+        }
       }
     } catch (error) {
       console.error("Error starting structured Q&A:", error);
@@ -666,8 +1001,15 @@ const Quiz = () => {
         "system",
         "Something went wrong while generating your analysis, but let's continue with your retirement planning questions!"
       );
-      setShowStarterQuestions(true);
-      setLoading(false);
+      // Continue with pending questions even on error
+      if (pendingQuestions.length > 0) {
+        setTimeout(() => {
+          continueWithPendingQuestions();
+        }, 1000);
+      } else {
+        setShowStarterQuestions(true);
+        setLoading(false);
+      }
     }
   };
 
@@ -749,8 +1091,6 @@ const Quiz = () => {
         },
         body: JSON.stringify({ userId, message }),
       });
-
-      console.log("API Response status:", response.status); // Debug log
 
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
@@ -969,14 +1309,6 @@ const Quiz = () => {
     addToConversation("answer", option.text);
     setLoading(true);
 
-    // Store the answer
-    // storeAnswer(
-    //   currentQuestion.questionId,
-    //   currentQuestion.questionText,
-    //   option.text,
-    //   option.text
-    // );
-
     const answer = {
       questionText: currentQuestion.questionText,
       answer: option.text,
@@ -997,7 +1329,15 @@ const Quiz = () => {
     setLastQuestionData(currentQuestion);
 
     // Show comment if available
-    const comment = option.comment || currentQuestion.defaultComment;
+    let comment = option.comment || currentQuestion.defaultComment;
+
+    // If comment is an array, pick one random
+    if (Array.isArray(comment)) {
+      comment = comment[Math.floor(Math.random() * comment.length)] || "";
+    }
+
+    console.log(comment, "comment");
+
     if (comment && comment.trim()) {
       setTimeout(() => {
         addToConversation("comment", comment);
@@ -1121,11 +1461,49 @@ const Quiz = () => {
     setTextInput(""); // Clear input
     setLoading(true);
 
+    // Choose an appropriate comment
     let comment = currentQuestion.defaultComment;
-    // if (currentQuestion.questionId == "Q1") {
-    //   comment = `Nice to meet you, ${textInput}`;
-    // }
-    if (comment && comment.trim()) {
+
+    // For Q1 (age free_text), map typed age into the matching option range
+    if (currentQuestion.questionId === "Q1" && Array.isArray(currentQuestion.options)) {
+      const ageNum = parseInt(displayText, 10);
+
+      if (!isNaN(ageNum)) {
+        const match = currentQuestion.options.find((opt) => {
+          if (!opt.text) return false;
+          const label = String(opt.text).trim();
+
+          // Handle formats like "18-24" and "65+"
+          if (label.includes("-")) {
+            const [minStr, maxStr] = label.split("-");
+            const min = parseInt(minStr.replace(/\D/g, ""), 10);
+            const max = parseInt(maxStr.replace(/\D/g, ""), 10);
+            if (isNaN(min) || isNaN(max)) return false;
+            return ageNum >= min && ageNum <= max;
+          }
+
+          if (label.includes("+")) {
+            const min = parseInt(label.replace(/\D/g, ""), 10);
+            if (isNaN(min)) return false;
+            return ageNum >= min;
+          }
+
+          return false;
+        });
+
+        if (match && match.comment) {
+          if (Array.isArray(match.comment)) {
+            // Pick a random comment from the array
+            const randomIdx = Math.floor(Math.random() * match.comment.length);
+            comment = match.comment[randomIdx] || comment;
+          } else if (typeof match.comment === "string") {
+            comment = match.comment;
+          }
+        }
+      }
+    }
+
+    if (comment && typeof comment === "string" && comment.trim()) {
       setTimeout(() => {
         addToConversation("comment", comment);
       }, 1000);
@@ -1182,11 +1560,11 @@ const Quiz = () => {
     setLoading(false);
   };
 
-  const addToConversation = (type, text) => {
+  const addToConversation = (type, text, extra = {}) => {
     if (type == "chart") {
       console.log(text, type);
     }
-    setConversation((prev) => [...prev, { type, text }]);
+    setConversation((prev) => [...prev, { type, text, ...extra }]);
   };
 
   const scrollUp = () => {
@@ -1219,6 +1597,7 @@ const Quiz = () => {
     isScroll,
   ]);
 
+
   useEffect(() => {
     if (!currentQuestion && isLastQuestion && overviewRef.current) {
       overviewRef.current.scrollIntoView({ behavior: "smooth" });
@@ -1242,12 +1621,13 @@ const Quiz = () => {
         pb-4 w-full max-w-3xl  flex flex-col relative"
       >
         <div
-          className={`flex flex-col flex-1 grow mt-24 ${
-            currentQuestion?.inputType == "free_text" || isChatMode
-              ? "pb-24"
-              : "pb-4"
-          }`}
+          className={`flex flex-col flex-1 grow mt-24 ${currentQuestion?.inputType == "free_text" || isChatMode
+            ? "pb-24"
+            : "pb-4"
+            }`}
         >
+          {/* {userdatacard} */}
+          {item && <UserCard item={item} />}
           {conversation.map((item, idx) => {
             const isLastAnswer =
               item.type === "answer" &&
@@ -1258,24 +1638,24 @@ const Quiz = () => {
             // Render chart if the message type is 'chart'
             if (item.type === "chart") {
               return (
-                <div key={idx} className="mb-4 px-4 flex justify-start">
-                  <div className="px-2 py-2 rounded-xl border-1 border-green-300 bg-white w-full max-w-full">
-                    <PlotChart data={item} />
-                  </div>
+                <div key={idx} className="mb-4 px-4 ">
+                  <PlotChart data={item} showDisclaimer={item.showDisclaimer} setShowPeningItems={setShowPeningItems} />
                 </div>
               );
             }
 
             return (
-              <ChatMessage
-                key={idx}
-                message={item}
-                isLastAnswer={isLastAnswer}
-                canReload={canReload && !isChatMode}
-                loading={loading}
-                onReload={handleReloadAnswer}
-                chatMode={isChatMode}
-              />
+              <>
+                {item && <ChatMessage
+                  key={idx}
+                  message={item}
+                  isLastAnswer={isLastAnswer}
+                  canReload={canReload && !isChatMode}
+                  loading={loading}
+                  onReload={handleReloadAnswer}
+                  chatMode={isChatMode}
+                />}
+              </>
             );
           })}
 
@@ -1288,8 +1668,14 @@ const Quiz = () => {
             }
           />
 
-          {/* Show starter questions after quiz completion */}
           {showStarterQuestions && (
+            <div className="mx-4">
+              <RetirementQa />
+            </div>
+          )}
+
+          {/* Show starter questions after quiz completion */}
+          {/* {showStarterQuestions && (
             <div className="mx-4 mt-4">
               <div className="mb-4 jost text-sm border-2 border-green-300 px-4 py-2 text-center rounded-xl text-gray-800 font-semibold max-w-sm">
                 {STARTER_QUESTIONS.main}
@@ -1306,10 +1692,10 @@ const Quiz = () => {
                 ))}
               </div>
             </div>
-          )}
+          )} */}
 
           {/* Show follow-up questions */}
-          {showFollowUpQuestions && followUpQuestions.length > 0 && (
+          {/* {showFollowUpQuestions && followUpQuestions.length > 0 && (
             <div className="mx-4 mt-4">
               <div className="mb-4 jost text-sm border-2 border-green-300 px-4 py-2 text-center rounded-xl text-gray-800 font-semibold">
                 Choose your next question:
@@ -1326,13 +1712,16 @@ const Quiz = () => {
                 ))}
               </div>
             </div>
-          )}
+          )} */}
 
-          {/* Show QuestionDisplay only if not in structured Q&A mode and there's a current question */}
+          {/* Show QuestionDisplay only if not in structured Q&A mode and there's a current question.
+              On mobile (<= 767px), also require showPendingItems; on larger screens, always show. */}
           {!showStarterQuestions &&
             !showFollowUpQuestions &&
+            (!isMobile || showPendingItems) &&
             currentQuestion && (
               <QuestionDisplay
+                type={urlData.type}
                 onValidationError={scrollUp}
                 scrollUp={scrollToBottom}
                 scrollToBottom={scrollToBottom}
@@ -1349,6 +1738,7 @@ const Quiz = () => {
           <div id="overview" ref={overviewRef} className="scroll-mt-20"></div>
         </div>
       </div>
+      <PrivacyTrustModal show={showModal} onClose={() => setShowModal(false)} />
     </div>
   );
 };
