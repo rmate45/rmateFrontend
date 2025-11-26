@@ -3,38 +3,16 @@
   "private": true,
   "version": "0.0.0",
   "type": "module",
-<<<<<<< HEAD
- "scripts": {
-<<<<<<< HEAD
-    "dev": "vite",
-    "build": "vite build",
-    "generate:routes": "node scripts/generate-routes.js",
-    "prerender": "node scripts/prerender.js",
-    "build:prerender": "npm run build && npm run generate:routes && npm run prerender",
-    "vercel-build": "npm run build:prerender",
-    "preview": "vite preview",
-    "lint": "eslint .",
-   "postinstall": "npx playwright install chromium"
-  },
-=======
-  "dev": "vite",
-  "build": "vite build",
-  "generate:routes": "node scripts/generate-routes.js",
-  "prerender": "node scripts/prerender.js",
-  "build:prerender": "npm run build && npm run generate:routes && BASE_URL=https://dev-api.retiremate.com/api/v1 npm run prerender",
-  "vercel-build": "npm run build:prerender",   
-  "preview": "vite preview",
-  "lint": "eslint ."
-},
->>>>>>> parent of 48b5d2c (build added)
-=======
+
+ 
+
   "scripts": {
     "dev": "vite",
     "build": "vite build",
     "lint": "eslint .",
     "preview": "vite preview"
   },
->>>>>>> parent of 6104336 (build updated)
+
   "dependencies": {
     "@emotion/react": "^11.14.0",
     "@emotion/styled": "^11.14.1",
