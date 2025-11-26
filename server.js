@@ -63,6 +63,24 @@ async function getPageMetadata(url, queryParams) {
       return meta;
     }
 
+    // Roth Questions
+    if (url.includes('/Top-Roth-Conversion-Retirement-Questions/')) {
+      let data = null;
+      if (id) {
+        const res = await axios.get(`${API_BASE_URL}/get-roth-question/${id}`);
+        data = res.data.data || res.data;
+      } else {
+        const res = await axios.get(`${API_BASE_URL}/get-roth-questions`);
+        const items = res.data.data || [];
+        data = items.find(it => slugify(it.question || it.title || it.name) === decodeURIComponent(slug));
+      }
+      if (data) {
+        meta.title = data.question || data.title || "Roth Conversion Retirement Question";
+        meta.description = (data.answer || "").replace(/<[^>]*>/g, '').slice(0, 160);
+      }
+      return meta;
+    }
+
     // Financial Planning
     if (url.includes('/Top-Financial-Planning-Questions/')) {
       let data = null;
@@ -155,6 +173,6 @@ app.use(async (req, res, next) => {
 });
 
 // Start server
-app.listen(PORT, () => {
-  console.log(`Prerender server listening on port ${PORT} — API_BASE_URL=${API_BASE_URL}`);
-});
+// app.listen(PORT, () => {
+//   console.log(`Prerender server listening on port ${PORT} — API_BASE_URL=${API_BASE_URL}`);
+// });
