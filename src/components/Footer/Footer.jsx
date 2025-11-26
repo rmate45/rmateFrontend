@@ -4,7 +4,7 @@ import React from 'react';
 const FooterLink = ({ href, children, onClick }) => {
   return (
     <a
-      className="hover:underline text-white jost font-medium py-4 text-base"
+      className="hover:underline text-white jost font-medium py-4"
       href={href}
       onClick={onClick}
     >
@@ -35,12 +35,12 @@ const Footer = ({
     <footer className="bg-[#2A2420]  px-6 py-6 md:py-16 text-white">
       <div className="max-w-7xl mx-auto flex justify-between items-start flex-wrap">
         <div>
-          <p className="text-base jost font-medium leading-6 opacity-90 max-w-[705px]">
+          <p className="text-sm jost font-medium leading-6 opacity-90 max-w-[705px]">
             {disclaimerText || defaultDisclaimerText}
           </p>
 
           <div className=" mt-4 md:mt-8 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
-            <p className="text-base jost font-medium opacity-90">
+            <p className="text-sm jost font-medium opacity-90">
               {copyrightText || defaultCopyrightText}
             </p>
           </div>

@@ -2,9 +2,7 @@ import { useState, useEffect } from "react";
 import { QuestionOptions } from "../QuestionOptions/QuestionOptions";
 import { TextInput } from "../TextInput/TextInput";
 import { TextInputPhone } from "../TextInputPhone/TextInputPhone";
-import PrivacyTrustModal from "../PrivacyTrustModal/PrivacyTrustModal";
-import cuidaAlert from "../../assets/cuida_alert-outline.svg";
-import RetirmateLogo from "../../assets/retiremate-logo-favicon.svg";
+
 export const QuestionDisplay = ({
   currentQuestion,
   loading,
@@ -16,11 +14,8 @@ export const QuestionDisplay = ({
   onValidationError,
   scrollUp,
   scrollToBottom, // Add this new prop for scrolling to bottom
-  type,
 }) => {
   const [selectedMultiOptions, setSelectedMultiOptions] = useState([]);
-const [showModal, setShowModal] = useState(false);
-// console.log(currentQuestion,"currentQuestion");
 
   // Scroll to bottom when submit button appears for multi-select
   useEffect(() => {
@@ -33,9 +28,9 @@ const [showModal, setShowModal] = useState(false);
 
   if (!currentQuestion || loading) return null;
 
-  const isValidateZip = currentQuestion?.questionId === "MQ1"; 
-  const isPhoneInput = currentQuestion?.questionId === "MQ9" || currentQuestion?.questionId === "Q8";
-  const isAgeInput = currentQuestion?.questionId === "Q1"; 
+  const isValidateZip = currentQuestion?.questionId === "Q7"; // Question 7 asks for zip code
+  const isPhoneInput = false;
+  const isAgeInput = currentQuestion?.questionId === "Q1"; // Question 1 is for age range
 
   const handleMultiSelectToggle = (option) => {
     setSelectedMultiOptions(prev => {
@@ -62,16 +57,12 @@ const [showModal, setShowModal] = useState(false);
   };
 
   return (
-    <div className={`mt-0 px-4`}>
-        <PrivacyTrustModal show={showModal} onClose={() => setShowModal(false)} />
-     <div className="flex gap-1 items-start">
-      <img src={RetirmateLogo} alt="retiremate" className="pt-1" />
-      <div className="grow">
-       <div className="mb-2 jost text-sm border-2 border-green-300 px-4 py-2 text-center flex gap-2 items-center justify-center rounded-xl text-gray-800 font-semibold max-w-sm">
-        {currentQuestion.questionText} {type === "medicareQuiz" && <img src={cuidaAlert} alt="retiremate" onClick={() => setShowModal(true)} />}
+    <div className={`mt-0`}>
+      <div className="mb-2 mx-4 jost text-sm border-2 border-green-300 px-4 py-2 text-center rounded-xl text-gray-800 font-semibold max-w-sm">
+        {currentQuestion.questionText}
       </div>
 
-      <div className={currentQuestion.inputType == "free_text" ? "fixed bottom-0 left-[50%] z-30 -translate-x-[50%] pb-4 w-full px-4 max-w-3xl bg-white" : ""}>
+      <div className={currentQuestion.inputType == "free_text" ? "fixed bottom-0 pb-4 w-full px-4 max-w-3xl bg-white" : ""}>
         {/* Phone Number Input */}
         {currentQuestion.inputType === "free_text" && isPhoneInput && (
           <TextInputPhone
@@ -140,8 +131,6 @@ const [showModal, setShowModal] = useState(false);
           )}
         </div>
       )}
-     </div>
-     </div>
     </div>
   );
 };
