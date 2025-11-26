@@ -12,7 +12,8 @@ export default defineConfig({
     createHtmlPlugin({ minify: true }),
     Sitemap({ hostname: "https://dev.retiremate.com" }),
   ],
-   server: {
-    host: false,}
+     server: {
+    historyApiFallback: true
+  }
    
 })

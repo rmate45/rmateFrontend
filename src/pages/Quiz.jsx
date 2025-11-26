@@ -297,7 +297,6 @@ const Quiz = () => {
     try {
       const res = await api.get(`/get-explore-question/${id}`);
       if (res.data?.type === "success" && res.data?.data) {
-        setItem(res.data.data);
         return res.data.data;
       }
       return null;
@@ -362,7 +361,7 @@ const Quiz = () => {
             setConversation([{ type: "answer", text: fetchedData?.question }]);
           }, 1000);
           // Wait 1 second before showing answer(s)
-          await new Promise((resolve) => setTimeout(resolve, 2000));
+          await new Promise((resolve) => setTimeout(resolve, 2500));
 
           // Check if answer is an array or a string
 

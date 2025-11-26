@@ -1,0 +1,8 @@
+User-agent: *
+Allow: /
+
+# Disallow internal utility paths (optional)
+Disallow: /intro
+
+# Sitemap location
+Sitemap: https://retiremate.com/sitemap.xml
