@@ -31,7 +31,7 @@ import RothQuestions from "../components/RothQuestions/RothQuestions";
 import ExploreMoreQuestions from "../components/ExploreMoreQuestions/ExploreMoreQuestions";
 import MedicareQuestions from "../components/MedicareQuestions/MedicareQuestions";
 import MedicareQuiz from "../components/MedicareQuiz/MedicareQuiz";
-import SeoHelmet from "../components/Seo/SeoHelmet";
+
 function IntroPage() {
   // Data for components
   const suggestedQuestions = [
@@ -151,10 +151,6 @@ function IntroPage() {
 
   return (
     <>
-       <SeoHelmet 
-       title="RetireMate" 
-       description="Expert-curated retirement and Medicare insights." 
-       url={"https://dev.retiremate.com"} />
       <Header logo={logo} onLoginClick={handleLoginClick} />
 
       <HeroSection
