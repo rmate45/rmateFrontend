@@ -3,15 +3,16 @@
   "private": true,
   "version": "0.0.0",
   "type": "module",
-  "scripts": {
-    "dev": "vite",
-    "build": "vite build",
-    "preview": "vite preview",
-    "lint": "eslint .",
-    "generate:routes": "node scripts/generate-routes.js",
-    "prerender": "node scripts/prerender.js",
-    "build:prerender": "npm run build && npm run generate:routes && BASE_URL=https://retiremate.com npm run prerender"
-  },
+ "scripts": {
+  "dev": "vite",
+  "build": "vite build",
+  "generate:routes": "node scripts/generate-routes.js",
+  "prerender": "node scripts/prerender.js",
+  "build:prerender": "npm run build && npm run generate:routes && BASE_URL=https://dev-api.retiremate.com/api/v1 npm run prerender",
+  "vercel-build": "npm run build:prerender",   
+  "preview": "vite preview",
+  "lint": "eslint ."
+},
   "dependencies": {
     "@emotion/react": "^11.14.0",
     "@emotion/styled": "^11.14.1",
