@@ -1,91 +1,44 @@
-// scripts/prerender.js
 import fs from "fs/promises";
 import path from "path";
 import { chromium } from "playwright";
 
 const DIST = path.resolve("dist");
 const ROUTES_FILE = path.resolve("prerender-routes.json");
+<<<<<<< HEAD
 const BASE = process.env.BASE_URL || "https://dev.retiremate.com";
 const TIMEOUT = 15000; // timeout per page
+=======
+const BASE_URL = process.env.BASE_URL || "https://dev.retiremate.com"; // <-- set prod later
+>>>>>>> parent of 10f5567 (build issue resolved)
 
-function routeToOutPath(route) {
-  const url = new URL(route, BASE);
-  const pathname = url.pathname === "/" ? "/index.html" : path.join(url.pathname, "index.html");
-  return path.join(DIST, pathname);
-}
-
-async function ensureDirFor(filePath) {
-  await fs.mkdir(path.dirname(filePath), { recursive: true });
-}
-
-function urlJoin(base, route) {
-  return new URL(route, base).toString();
-}
-
-async function saveHtml(outPath, html) {
-  await ensureDirFor(outPath);
-  await fs.writeFile(outPath, html, "utf8");
+function outputPath(route) {
+  const clean = route.split("?")[0]; // strip query
+  if (clean === "/") return path.join(DIST, "index.html");
+  return path.join(DIST, clean, "index.html");
 }
 
 async function main() {
-  console.log("Prerender start. BASE =", BASE);
-  const raw = await fs.readFile(ROUTES_FILE, "utf8");
-  const { routes } = JSON.parse(raw);
-  console.log("Routes to prerender:", routes.length);
-
-  // Launch chromium headless
-  const browser = await chromium.launch({ args: ["--no-sandbox", "--disable-setuid-sandbox"] });
-
-  const context = await browser.newContext({
-    userAgent:
-      "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120 Safari/537.36",
-  });
-
-  const page = await context.newPage();
+  const { routes } = JSON.parse(await fs.readFile(ROUTES_FILE, "utf8"));
+  const browser = await chromium.launch();
+  const page = await browser.newPage();
 
   for (const route of routes) {
-    const full = urlJoin(BASE, route);
-    console.log("-> Rendering:", full);
+    const url = BASE_URL + route;
+    console.log("Rendering:", url);
 
-    try {
-      // navigate
-      const resp = await page.goto(full, { waitUntil: "networkidle", timeout: TIMEOUT });
-      if (!resp) console.warn("   no response object for", full);
+    await page.goto(url, { waitUntil: "networkidle" });
+    await page.waitForTimeout(500); // allow Helmet to inject meta
 
-      // Wait for OG title (SeoHelmet injects it). If not present, fall back to small timeout.
-      try {
-        await page.waitForSelector('meta[property="og:title"]', { timeout: 7000 });
-        console.log("   og:title present");
-      } catch (err) {
-        console.warn("   og:title not detected within timeout; falling back to short wait");
-        await page.waitForTimeout(700);
-      }
+    const html = await page.content();
+    const file = outputPath(route);
 
-      // extra safety: wait for a window flag if your pages set it
-      try {
-        await page.waitForFunction('window.__PRERENDER_READY === true', { timeout: 2000 }).catch(() => {});
-      } catch (e) {
-        // ignore
-      }
+    await fs.mkdir(path.dirname(file), { recursive: true });
+    await fs.writeFile(file, html);
 
-      // small pause to let Helmet finalize changes
-      await page.waitForTimeout(300);
-
-      const html = await page.content();
-      const outPath = routeToOutPath(route);
-      await saveHtml(outPath, html);
-      console.log("   Saved:", outPath);
-    } catch (err) {
-      console.error("   Failed rendering", full, ":", err && err.message ? err.message : err);
-      // continue with next route (do not abort whole build)
-    }
+    console.log("Saved:", file);
   }
 
   await browser.close();
-  console.log("Prerender complete.");
 }
 
-main().catch((err) => {
-  console.error("Prerender crashed:", err);
-  process.exit(1);
-});
+main();
