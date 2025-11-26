@@ -97,7 +97,14 @@ const STARTER_QUESTIONS = {
   ],
 };
 
-const Quiz = () => {
+const Quiz = (initialCard) => {
+  useEffect(() => {
+  if (initialCard) {
+    // let prerender know page is ready
+    window.__PRERENDER_READY = true;
+    console.log("PRERENDER READY for", window.location.pathname);
+  }
+}, [initialCard]);
   const location = useLocation();
   const params = new URLSearchParams(location.search);
   console.log(params, "params");
