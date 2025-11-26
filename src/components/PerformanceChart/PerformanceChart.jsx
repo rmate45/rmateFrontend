@@ -248,7 +248,7 @@ const PerformanceChart = ({ data }) => {
             },
             useHTML: true,
             text: `
-              <div style="background: #ffffff; border: 1px solid #d1d5db; border-radius: 4px; padding: 4px 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); text-align: center; font-weight: 600; color: #374151; font-size: 16px;">
+              <div style="background: #ffffff; border: 1px solid #d1d5db; border-radius: 4px; padding: 4px 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); text-align: center; font-weight: 600; color: #374151; font-size: 14px;">
                 Age ${retirementPoint.age}
               </div>
             `,

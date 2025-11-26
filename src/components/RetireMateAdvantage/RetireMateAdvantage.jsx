@@ -27,12 +27,12 @@ const RetireMateAdvantage = () => {
           {cards.map((card, index) => (
             <div
               key={index}
-              className="bg-gray-50 p-5 rounded-2xl shadow-md hover:shadow-lg transition"
+              className="bg-gray-50 p-8 rounded-2xl shadow-md hover:shadow-lg transition"
             >
-              <h3 className="text-wrap font-bold text-lg md:text-[24px] text-[#567257] grow-1 text-left">
+              <h3 className="text-xl font-semibold text-introPrimary mb-4">
                 {card.title}
               </h3>
-              <p className="text-base  jost inline-block p-1.5 rounded text-[#6B7280] text-left">{card.text}</p>
+              <p className="text-gray-600 leading-relaxed">{card.text}</p>
             </div>
           ))}
         </div>

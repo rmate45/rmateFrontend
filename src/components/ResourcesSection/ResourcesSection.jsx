@@ -4,12 +4,12 @@ import React from 'react';
 const ResourceColumn = ({ title, items = [], browseAllText, onBrowseAllClick }) => {
   return (
     <div>
-      <h3 className="text-introPrimary text-left font-medium text-xl mb-1">
+      <h3 className="text-[#2A2420] text-lg text-center font-medium mb-1">
         {title}
       </h3>
       <ul className="divide-y divide-[#D9D9D9]">
         {items.map((item, index) => (
-          <li key={index} className="py-4 text-base jost grow text-[#6B7280] text-left">
+          <li key={index} className="py-4 text-sm text-[#2A2420] jost">
             {item}
           </li>
         ))}

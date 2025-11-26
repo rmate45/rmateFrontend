@@ -26,11 +26,6 @@ import AskAnything from "../components/AskAnything/AskAnything";
 import LinkSection from "../components/LinkSection/LinkSection";
 import ArticleSection from "../components/ArticleSection/ArticleSection";
 import CustomStory from "../components/CustomStory/CustomStory";
-import RetirematePlanningQuestion from "../components/RetirematePlanningQuestion/RetirematePlanningQuestion";
-import RothQuestions from "../components/RothQuestions/RothQuestions";
-import ExploreMoreQuestions from "../components/ExploreMoreQuestions/ExploreMoreQuestions";
-import MedicareQuestions from "../components/MedicareQuestions/MedicareQuestions";
-import MedicareQuiz from "../components/MedicareQuiz/MedicareQuiz";
 
 function IntroPage() {
   // Data for components
@@ -120,7 +115,7 @@ function IntroPage() {
 
   // Event handlers - these are now optional since navigation is handled within components
   const handleLoginClick = () => {
-     window.open("/quiz");
+    console.log("Login clicked");
     // Add your login logic here
   };
 
@@ -165,13 +160,7 @@ function IntroPage() {
       {/* <CustomStory /> */}
 
       <RetiremateEdge />
-      <RetirematePlanningQuestion />
-      <ExploreMoreQuestions />
-      <RothQuestions />
-      <ExploreMoreQuestions />
-      <MedicareQuiz/>
-      <MedicareQuestions />
-      <ExploreMoreQuestions />
+
       <SuggestedQuestions
         questions={suggestedQuestions}
         onQuestionClick={handleQuestionClick}
@@ -189,7 +178,7 @@ function IntroPage() {
         onQuestionClick={handleQuestionClick}
         onBrowseAllClick={handleBrowseAllClick}
       />
-
+      
       <ArticleSection />
 
       <LinkSection />
