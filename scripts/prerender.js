@@ -5,7 +5,7 @@ import { chromium } from "playwright";
 
 const DIST = path.resolve("dist");
 const ROUTES_FILE = path.resolve("prerender-routes.json");
-const BASE = process.env.VITE_API_BASE_URL || "https://dev-api.retiremate.com/api/v1";
+const BASE = process.env.BASE_URL || "https://dev.retiremate.com";
 const TIMEOUT = 15000; // timeout per page
 
 function routeToOutPath(route) {
