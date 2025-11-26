@@ -21,7 +21,7 @@
   "generate:routes": "node scripts/generate-routes.js",
   "prerender": "node scripts/prerender.js",
   "build:prerender": "npm run build && npm run generate:routes && BASE_URL=https://dev-api.retiremate.com/api/v1 npm run prerender",
- 
+  "vercel-build": "npm run build:prerender",   
   "preview": "vite preview",
   "lint": "eslint ."
 },
