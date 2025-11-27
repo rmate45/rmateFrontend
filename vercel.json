@@ -1,5 +1,5 @@
 {
-  "buildCommand": "npm run build",
+ "buildCommand": "npm run build && rm -f dist/index.html",
   "outputDirectory": "dist",
   "headers": [
     {
