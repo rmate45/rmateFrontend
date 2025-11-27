@@ -5,6 +5,7 @@ import twoImage from "../../assets/imageTwo.jpg"
 import threeImage from "../../assets/testimonial-2.jpeg"
 import { slugify } from "../../utils/slugify";
 import shareImage from '../../assets/mdi_share-outline.svg'
+import { shareViaSms } from "../../utils/shareViaSms";
 const MedicareQuestions = () => {
     const [loading, setLoading] = useState(true);
     const [data, setData] = useState([]);
@@ -38,10 +39,11 @@ const MedicareQuestions = () => {
             `${question.name}-${question.age}-${question.profession}-${question.question}`);
         const idParam = encodeURIComponent(question._id);
         const url = `Top-Medicare-Questions/${titleSlug}?id=${idParam}&type=medicare`;
-        const shareURL = window.location.href;
-
-        const text = encodeURIComponent(`${shareURL}${url}`);
-        window.open(`https://wa.me/?text=${text}`, "_blank");
+        const fullUrl = `${window.location.origin}${url}`;
+        shareViaSms({
+            text: "click here to ask RetireMate",
+            url: fullUrl,          // NOT encoded
+        });
     }
 
     if (loading) {

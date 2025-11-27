@@ -1,6 +1,7 @@
 import React from "react";
 import { slugify } from "../../../utils/slugify";
 import shareImage from '../../../assets/mdi_share-outline.svg'
+import { shareViaSms } from "../../../utils/shareViaSms";
 const TestimonialCard = ({ item }) => {
 
   console.log(item, "item-->")
@@ -29,12 +30,12 @@ const TestimonialCard = ({ item }) => {
       id: item.id || "",
     });
 
-    const finalURL = `${window.location.origin}/Persona/${slug}?${params.toString()}`;
+    const fullUrl = `${window.location.origin}/Persona/${slug}?${params.toString()}`;
 
-    const text = encodeURIComponent(`${item.title || item.name}\n${finalURL}`);
-    console.log(text, "text");
-
-    window.open(`https://wa.me/?text=${text}`, "_blank");
+    shareViaSms({
+      text: "click here to ask RetireMate",
+      url: fullUrl,          // NOT encoded
+    });
   };
   return (
     <div onClick={handleClick} className="cursor-pointer flex flex-col p-5 rounded-xl gap-4 bg-white text-black h-full" style={{ boxShadow: "rgba(0, 0, 0, 0.15) 0px 4px 15px" }}>

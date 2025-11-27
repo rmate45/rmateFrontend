@@ -50,7 +50,7 @@ const RothQuestions = () => {
         const fullUrl = `${window.location.origin}${path}`;
 
         shareViaSms({
-            text: "Check this out",
+            text: "click here to ask RetireMate",
             url: fullUrl,          // NOT encoded
         });
     }
