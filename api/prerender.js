@@ -142,11 +142,10 @@ export default async function handler(req, res) {
 
     res.setHeader("Content-Type", "text/html; charset=utf-8");
 
-    // ⭐ PRODUCTION CACHING (24 hours, revalidate always)
-    // res.setHeader(
-    //   "Cache-Control",
-    //   "public, max-age=0, s-maxage=86400, stale-while-revalidate=86400"
-    // );
+   res.setHeader("X-Prerender", "true");
+res.setHeader("Cache-Control", "no-cache, no-store, must-revalidate");
+
+res.status(200).send(finalHtml);
 
     res.status(200).send(finalHtml);
   } catch (err) {
