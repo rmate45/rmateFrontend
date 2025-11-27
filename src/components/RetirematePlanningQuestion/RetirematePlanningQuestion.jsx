@@ -39,9 +39,11 @@ const RetirematePlanningQuestion = () => {
         const titleSlug = slugify(
             `${question.name}-${question.age}-${question.profession}-${question.question}`);
         const idParam = encodeURIComponent(question._id);
-        const url = `Top-Financial-Planning-Questions/${titleSlug}?id=${idParam}&type=financial`;
+        const url = `/Top-Financial-Planning-Questions/${titleSlug}?id=${idParam}&type=financial`;
 
         const fullUrl = `${window.location.origin}${url}`;
+        console.log(fullUrl,"fullUrl");
+        
         shareViaSms({
             text: "click here to ask RetireMate",
             url: fullUrl,          // NOT encoded
