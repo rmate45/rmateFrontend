@@ -3,7 +3,7 @@
   "outputDirectory": "dist",
   "rewrites": [
     {
-      "source": "/",
+      "source": "^/$",
       "destination": "/api/prerender?path=/"
     },
     {
@@ -30,7 +30,6 @@
       "source": "/Persona/:slug",
       "destination": "/api/prerender?path=/Persona/:slug"
     },
-
     {
       "source": "/(.*)",
       "destination": "/api/prerender?path=/$1"

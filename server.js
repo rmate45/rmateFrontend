@@ -1,173 +1,136 @@
-// server.js
-import express from 'express';
-import path from 'path';
-import fs from 'fs';
-import axios from 'axios';
-import { fileURLToPath } from 'url';
-import { dirname } from 'path';
+// api/prerender.js
+import fs from "fs";
+import path from "path";
+import axios from "axios";
 
-const app = express();
-
-// Listening port (use PORT env or fallback)
-const PORT = process.env.PORT || 3000;
-
-// __dirname for ES modules
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
-const indexPath = path.resolve(__dirname, 'dist', 'index.html');
-
-// API base (set via env for different environments)
-const API_BASE_URL = process.env.VITE_PRERENDER_API_BASE || "https://dev-api.retiremate.com/api/v1";
-
-// Serve static assets from dist but don't auto-serve index.html
-app.use(express.static(path.resolve(__dirname, 'dist'), { index: false }));
+const API_BASE_URL =
+  process.env.VITE_PRERENDER_API_BASE ||
+  "https://dev-api.retiremate.com/api/v1";
 
 function slugify(text) {
-  if (!text) return "";
-  return text
+  return (text || "")
     .toString()
     .toLowerCase()
     .trim()
-    .replace(/\s+/g, '-')
-    .replace(/[^\w\-]+/g, '')
-    .replace(/\-\-+/g, '-');
+    .replace(/\s+/g, "-")
+    .replace(/[^\w\-]+/g, "")
+    .replace(/\-\-+/g, "-");
 }
 
 async function getPageMetadata(url, queryParams) {
-  let meta = {
+  const defaultMeta = {
     title: "RetireMate",
     description: "Expert-curated retirement and Medicare insights.",
     image: "https://dev.retiremate.com/assets/meta-image-DYDKTIzA.png",
-    url: `https://dev.retiremate.com${url}`
+    url: `https://dev.retiremate.com${url === "/" ? "" : url}`,
   };
 
   try {
-    // Handle root path ('/') and section root paths (e.g., '/Persona/')
-    if (url === "/") {
-      return {
-        title: defaultMeta.title,
-        description: defaultMeta.description,
-        image: defaultMeta.image,
-        url: "https://dev.retiremate.com",
-      };
-    }
+    if (url === "/") return defaultMeta;
 
-    const slug = url.split('/').pop();
+    const slug = url.split("/").pop();
     const id = queryParams?.id;
 
-    // Top-Explore-Questions
-    if (url.includes('/Top-Explore-Questions/')) {
-      let data = null;
-      if (id) {
-        const res = await axios.get(`${API_BASE_URL}/get-explore-question/${id}`);
-        data = res.data.data || res.data;
-      } else {
-        const res = await axios.get(`${API_BASE_URL}/get-explore-questions`);
-        const items = res.data.data || [];
-        data = items.find(it => slugify(it.question || it.title || it.name) === decodeURIComponent(slug));
-      }
-      if (data) {
-        meta.title = data.question || data.title || "Explore Question";
-        meta.description = (data.answer || "").replace(/<[^>]*>/g, '').slice(0, 160);
-      }
-      return meta;
+    async function fetchList(endpoint, matchField) {
+      const listRes = await axios.get(`${API_BASE_URL}/${endpoint}`);
+      const items = listRes.data.data || [];
+      return items.find(
+        (it) =>
+          slugify(it[matchField] || it.title || it.name) ===
+          decodeURIComponent(slug)
+      );
     }
 
-    // Roth Questions
-    if (url.includes('/Top-Roth-Conversion-Retirement-Questions/')) {
-      let data = null;
-      if (id) {
-        const res = await axios.get(`${API_BASE_URL}/get-roth-question/${id}`);
-        data = res.data.data || res.data;
-      } else {
-        const res = await axios.get(`${API_BASE_URL}/get-roth-questions`);
-        const items = res.data.data || [];
-        data = items.find(it => slugify(it.question || it.title || it.name) === decodeURIComponent(slug));
-      }
-      if (data) {
-        meta.title = data.question || data.title || "Roth Conversion Retirement Question";
-        meta.description = (data.answer || "").replace(/<[^>]*>/g, '').slice(0, 160);
-      }
-      return meta;
+    async function fetchItem(endpoint, id) {
+      const res = await axios.get(`${API_BASE_URL}/${endpoint}/${id}`);
+      return res.data.data || res.data;
     }
 
-    // Financial Planning
-    if (url.includes('/Top-Financial-Planning-Questions/')) {
-      let data = null;
-      if (id) {
-        const res = await axios.get(`${API_BASE_URL}/get-financial-planning/${id}`);
-        data = res.data.data || res.data;
-      } else {
-        const res = await axios.get(`${API_BASE_URL}/get-financial-planning`);
-        const items = res.data.data || [];
-        data = items.find(it => slugify(it.question || it.title || it.name) === decodeURIComponent(slug));
-      }
-      if (data) {
-        meta.title = data.question || data.title || "Financial Planning";
-        meta.description = (data.answer || "").replace(/<[^>]*>/g, '').slice(0, 160);
-      }
-      return meta;
+    if (url.includes("/Top-Explore-Questions/")) {
+      const data = id
+        ? await fetchItem("get-explore-question", id)
+        : await fetchList("get-explore-questions", "question");
+      if (data)
+        return {
+          title: data.question,
+          description: (data.answer || "").replace(/<[^>]*>/g, "").slice(0, 160),
+          image: defaultMeta.image,
+          url: defaultMeta.url,
+        };
+      return defaultMeta;
     }
 
-    // Medicare
-    if (url.includes('/Top-Medicare-Questions/')) {
-      let data = null;
-      if (id) {
-        const res = await axios.get(`${API_BASE_URL}/get-medicare-question/${id}`);
-        data = res.data.data || res.data;
-      } else {
-        const res = await axios.get(`${API_BASE_URL}/get-medicare-question`);
-        const items = res.data.data || [];
-        data = items.find(it => slugify(it.question || it.title || it.name) === decodeURIComponent(slug));
-      }
-      if (data) {
-        meta.title = data.question || data.title || "Medicare Question";
-        meta.description = (data.answer || "").replace(/<[^>]*>/g, '').slice(0, 160);
-      }
-      return meta;
+    if (url.includes("/Top-Roth-Conversion-Retirement-Questions/")) {
+      const data = id
+        ? await fetchItem("get-roth-question", id)
+        : await fetchList("get-roth-questions", "question");
+      if (data)
+        return {
+          title: data.question,
+          description: (data.answer || "").replace(/<[^>]*>/g, "").slice(0, 160),
+          image: defaultMeta.image,
+          url: defaultMeta.url,
+        };
+      return defaultMeta;
     }
 
-    // Persona
-    if (url.includes('/Persona/')) {
-      let data = null;
-      if (id) {
-        const res = await axios.get(`${API_BASE_URL}/get-persona/${id}`);
-        data = res.data.data || res.data;
-      } else {
-        const res = await axios.get(`${API_BASE_URL}/get-personas`);
-        const items = res.data.data || [];
-        data = items.find(it => slugify(it.question || it.title || it.name) === decodeURIComponent(slug));
-      }
-      if (data) {
-        meta.title = data.persona_question || data.title || "Retirement Persona";
-        meta.description = (data.persona_description || "").replace(/<[^>]*>/g, '').slice(0, 160);
-      }
-      return meta;
+    if (url.includes("/Top-Financial-Planning-Questions/")) {
+      const data = id
+        ? await fetchItem("get-financial-planning", id)
+        : await fetchList("get-financial-planning", "question");
+      if (data)
+        return {
+          title: data.question,
+          description: (data.answer || "").slice(0, 160),
+          image: defaultMeta.image,
+          url: defaultMeta.url,
+        };
+      return defaultMeta;
     }
+
+    if (url.includes("/Top-Medicare-Questions/")) {
+      const data = id
+        ? await fetchItem("get-medicare-question", id)
+        : await fetchList("get-medicare-question", "question");
+      if (data)
+        return {
+          title: data.question,
+          description: (data.answer || "").slice(0, 160),
+          image: defaultMeta.image,
+          url: defaultMeta.url,
+        };
+      return defaultMeta;
+    }
+
+    if (url.includes("/Persona/")) {
+      const data = id
+        ? await fetchItem("get-persona", id)
+        : await fetchList("get-personas", "persona_question");
+      if (data)
+        return {
+          title: data.persona_question,
+          description: (data.persona_description || "").slice(0, 160),
+          image: defaultMeta.image,
+          url: defaultMeta.url,
+        };
+      return defaultMeta;
+    }
+
+    return defaultMeta;
   } catch (err) {
-    console.error('getPageMetadata error:', err?.message || err);
+    return defaultMeta;
   }
-
-  return meta;
 }
 
-// CATCH-ALL using app.use -> avoids path-to-regexp parsing of route strings
-app.use(async (req, res, next) => {
-  // Only handle GET requests for pages (static assets already served above)
-  if (req.method !== 'GET') return next();
-
-  // Ensure index exists
-  if (!fs.existsSync(indexPath)) {
-    console.error('dist/index.html not found at', indexPath);
-    return res.status(500).send('Build not found. Run your build step first.');
-  }
-
+export default async function handler(req, res) {
   try {
-    const htmlData = await fs.promises.readFile(indexPath, 'utf8');
-    const meta = await getPageMetadata(req.path, req.query || {});
+    const pathParam = req.query.path || req.url || "/";
+    const indexPath = path.resolve(process.cwd(), "dist", "index.html");
 
-    // Replace tokens if present. If you don't have tokens in index.html, consider injecting into <head> instead.
-    const finalHtml = htmlData
+    const htmlData = await fs.promises.readFile(indexPath, "utf8");
+    const meta = await getPageMetadata(pathParam, req.query || {});
+
+    let finalHtml = htmlData
       .replace(/__META_TITLE__/g, meta.title)
       .replace(/__META_DESCRIPTION__/g, meta.description)
       .replace(/__META_OG_TITLE__/g, meta.title)
@@ -175,14 +138,18 @@ app.use(async (req, res, next) => {
       .replace(/__META_OG_IMAGE__/g, meta.image)
       .replace(/__META_OG_URL__/g, meta.url);
 
-    res.send(finalHtml);
-  } catch (err) {
-    console.error('Error handling request:', err);
-    res.status(500).send('Server error');
-  }
-});
+    finalHtml = finalHtml.replace(/__META_[A-Z0-9_]+__/g, "");
 
-// Start server
-// app.listen(PORT, () => {
-//   console.log(`Prerender server listening on port ${PORT} — API_BASE_URL=${API_BASE_URL}`);
-// });
+    res.setHeader("Content-Type", "text/html; charset=utf-8");
+
+    // ⭐ PRODUCTION CACHING (24 hours, revalidate always)
+    res.setHeader(
+      "Cache-Control",
+      "public, max-age=0, s-maxage=86400, stale-while-revalidate=86400"
+    );
+
+    res.status(200).send(finalHtml);
+  } catch (err) {
+    res.status(500).send("Server error");
+  }
+}
