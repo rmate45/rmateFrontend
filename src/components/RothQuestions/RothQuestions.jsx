@@ -48,7 +48,7 @@ const RothQuestions = () => {
         shareViaSms(
             {
                 text: "Check this out",
-                url: `https://wa.me/?text=${text}`,
+                url: `${text}`,
             }
         )
     }
