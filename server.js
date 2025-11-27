@@ -42,6 +42,11 @@ async function getPageMetadata(url, queryParams) {
   };
 
   try {
+    // Handle root path ('/') and section root paths (e.g., '/Persona/')
+    if (url === '/' || (url.endsWith('/') && url.length > 1)) {
+      return meta;
+    }
+
     const slug = url.split('/').pop();
     const id = queryParams?.id;
 
