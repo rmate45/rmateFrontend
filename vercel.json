@@ -1,26 +1,7 @@
 {
-  "buildCommand": "npm run build",
+  "buildCommand": "npm run build && mv dist/index.html dist/main.html",
   "outputDirectory": "dist",
-  "headers": [
-    {
-      "source": "/index.html",
-      "headers": [
-        {
-          "key": "Cache-Control",
-          "value": "no-cache, no-store, must-revalidate, max-age=0"
-        }
-      ]
-    },
-    {
-      "source": "/",
-      "headers": [
-        {
-          "key": "Cache-Control",
-          "value": "no-cache, no-store, must-revalidate, max-age=0"
-        }
-      ]
-    }
-  ],
+ 
   
   "rewrites": [
     { "source": "^/$", "destination": "/api/prerender?path=/" },
