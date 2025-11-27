@@ -24,9 +24,14 @@ async function getPageMetadata(url, queryParams) {
   };
 
   try {
-     // Handle root path ('/') and section root paths (e.g., '/Persona/')
-    if (url === '/' || (url.endsWith('/') && url.length > 1)) {
-      return meta;
+    // Handle root path ('/') and section root paths (e.g., '/Persona/')
+    if (url === "/") {
+      return {
+        title: "RetireMate",
+        description: "Expert-curated retirement and Medicare insights.",
+        image: "https://dev.retiremate.com/assets/meta-image-DYDKTIzA.png",
+        url: "https://dev.retiremate.com",
+      };
     }
     const slug = url.split('/').pop();
     const id = queryParams?.id;
