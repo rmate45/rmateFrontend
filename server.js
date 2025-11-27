@@ -43,8 +43,13 @@ async function getPageMetadata(url, queryParams) {
 
   try {
     // Handle root path ('/') and section root paths (e.g., '/Persona/')
-    if (url === '/' || (url.endsWith('/') && url.length > 1)) {
-      return meta;
+    if (url === "/") {
+      return {
+        title: defaultMeta.title,
+        description: defaultMeta.description,
+        image: defaultMeta.image,
+        url: "https://dev.retiremate.com",
+      };
     }
 
     const slug = url.split('/').pop();
