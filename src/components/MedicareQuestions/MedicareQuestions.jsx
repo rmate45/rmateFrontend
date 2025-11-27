@@ -38,7 +38,7 @@ const MedicareQuestions = () => {
         const titleSlug = slugify(
             `${question.name}-${question.age}-${question.profession}-${question.question}`);
         const idParam = encodeURIComponent(question._id);
-        const url = `Top-Medicare-Questions/${titleSlug}?id=${idParam}&type=medicare`;
+        const url = `/Top-Medicare-Questions/${titleSlug}?id=${idParam}&type=medicare`;
         const fullUrl = `${window.location.origin}${url}`;
         shareViaSms({
             text: "click here to ask RetireMate",
