@@ -18,17 +18,24 @@ function slugify(text) {
 }
 
 async function getPageMetadata(url, queryParams) {
+  // Normalize the url so "/", "", and "/index.html" are all treated as the home route.
+  const normalizedUrl =
+    !url || url === "/" || url === "/index.html" ? "/" : url;
+
   const defaultMeta = {
     title: "RetireMate",
     description: "Expert-curated retirement and Medicare insights.",
     image: "https://dev.retiremate.com/assets/meta-image-DYDKTIzA.png",
-    url: `https://dev.retiremate.com${url === "/" ? "" : url}`,
+    url: `https://dev.retiremate.com${
+      normalizedUrl === "/" ? "" : normalizedUrl
+    }`,
   };
 
   try {
-    if (url === "/") return defaultMeta;
+    // For the home route just return the default meta (used for "/").
+    if (normalizedUrl === "/") return defaultMeta;
 
-    const slug = url.split("/").pop();
+    const slug = normalizedUrl.split("/").pop();
     const id = queryParams?.id;
 
     async function fetchList(endpoint, matchField) {
@@ -46,7 +53,7 @@ async function getPageMetadata(url, queryParams) {
       return res.data.data || res.data;
     }
 
-    if (url.includes("/Top-Explore-Questions/")) {
+    if (normalizedUrl.includes("/Top-Explore-Questions/")) {
       const data = id
         ? await fetchItem("get-explore-question", id)
         : await fetchList("get-explore-questions", "question");
@@ -60,7 +67,7 @@ async function getPageMetadata(url, queryParams) {
       return defaultMeta;
     }
 
-    if (url.includes("/Top-Roth-Conversion-Retirement-Questions/")) {
+    if (normalizedUrl.includes("/Top-Roth-Conversion-Retirement-Questions/")) {
       const data = id
         ? await fetchItem("get-roth-question", id)
         : await fetchList("get-roth-questions", "question");
@@ -74,7 +81,7 @@ async function getPageMetadata(url, queryParams) {
       return defaultMeta;
     }
 
-    if (url.includes("/Top-Financial-Planning-Questions/")) {
+    if (normalizedUrl.includes("/Top-Financial-Planning-Questions/")) {
       const data = id
         ? await fetchItem("get-financial-planning", id)
         : await fetchList("get-financial-planning", "question");
@@ -88,7 +95,7 @@ async function getPageMetadata(url, queryParams) {
       return defaultMeta;
     }
 
-    if (url.includes("/Top-Medicare-Questions/")) {
+    if (normalizedUrl.includes("/Top-Medicare-Questions/")) {
       const data = id
         ? await fetchItem("get-medicare-question", id)
         : await fetchList("get-medicare-question", "question");
@@ -102,7 +109,7 @@ async function getPageMetadata(url, queryParams) {
       return defaultMeta;
     }
 
-    if (url.includes("/Persona/")) {
+    if (normalizedUrl.includes("/Persona/")) {
       const data = id
         ? await fetchItem("get-persona", id)
         : await fetchList("get-personas", "persona_question");
@@ -124,7 +131,11 @@ async function getPageMetadata(url, queryParams) {
 
 export default async function handler(req, res) {
   try {
-    const pathParam = req.query.path || req.url || "/";
+    const rawPath = (req.query && req.query.path) || req.url || "/";
+    const decodedPath = decodeURIComponent(rawPath);
+    const pathParam = decodedPath.startsWith("/")
+      ? decodedPath
+      : `/${decodedPath}`;
     const indexPath = path.resolve(process.cwd(), "dist", "index.html");
 
     const htmlData = await fs.promises.readFile(indexPath, "utf8");
@@ -141,11 +152,8 @@ export default async function handler(req, res) {
     finalHtml = finalHtml.replace(/__META_[A-Z0-9_]+__/g, "");
 
     res.setHeader("Content-Type", "text/html; charset=utf-8");
-
-   res.setHeader("X-Prerender", "true");
-res.setHeader("Cache-Control", "no-cache, no-store, must-revalidate");
-
-res.status(200).send(finalHtml);
+    res.setHeader("X-Prerender", "true");
+    res.setHeader("Cache-Control", "no-cache, no-store, must-revalidate");
 
     res.status(200).send(finalHtml);
   } catch (err) {
