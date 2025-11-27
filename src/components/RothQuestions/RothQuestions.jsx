@@ -39,18 +39,20 @@ const RothQuestions = () => {
     };
     const handleQuestionWhatsappClick = (question) => {
         const titleSlug = slugify(
-            `${question.name}-${question.age}-${question.profession}-${question.question}`);
-        const idParam = encodeURIComponent(question._id);
-        const url = `Top-Roth-Conversion-Retirement-Questions/${titleSlug}?id=${idParam}&type=roth`;
-        const shareURL = window.location.href;
+            `${question.name}-${question.age}-${question.profession}-${question.question}`,
+            { lower: true, strict: true }
+        );
 
-        const text = encodeURIComponent(`${shareURL}${url}`);
-        shareViaSms(
-            {
-                text: "Check this out",
-                url: `${text}`,
-            }
-        )
+        const idParam = encodeURIComponent(question._id);
+
+        // IMPORTANT: start with "/" and use origin, not href
+        const path = `/Top-Roth-Conversion-Retirement-Questions/${titleSlug}?id=${idParam}&type=roth`;
+        const fullUrl = `${window.location.origin}${path}`;
+
+        shareViaSms({
+            text: "Check this out",
+            url: fullUrl,          // NOT encoded
+        });
     }
     if (loading) {
         return (
