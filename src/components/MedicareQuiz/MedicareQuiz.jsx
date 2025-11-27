@@ -6,7 +6,7 @@ const MedicareQuiz = () => {
     return (
         <div className="text-center px-6 pt-10 sm:pt-16">
             <div className="max-w-7xl mx-auto pb-5">
-                <div className="grid grid-cols-3">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
 
                     <div className="text-left rounded-2xl" style={{ boxShadow: "0px 0px 15px rgba(0,0,0,10%)" }}>
                         <img src={image} alt="medicare" className='rounded-t-2xl' />
