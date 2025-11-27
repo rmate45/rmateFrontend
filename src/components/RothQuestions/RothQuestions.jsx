@@ -7,6 +7,7 @@ import twoImage from "../../assets/imageTwo.jpg"
 import threeImage from "../../assets/testimonial-2.jpeg"
 import { slugify } from "../../utils/slugify";
 import shareImage from '../../assets/mdi_share-outline.svg'
+import { shareViaSms } from "../../utils/shareViaSms";
 const RothQuestions = () => {
     const [loading, setLoading] = useState(true);
     const [data, setData] = useState([]);
@@ -28,23 +29,28 @@ const RothQuestions = () => {
         }
     };
     const handleQuestionClick = (question) => {
-    
+
         const titleSlug = slugify(
-            `${question.name}-${question.age}-${question.profession}-${question.question}` );     
-        const idParam = encodeURIComponent(question._id);       
+            `${question.name}-${question.age}-${question.profession}-${question.question}`);
+        const idParam = encodeURIComponent(question._id);
         const url = `/Top-Roth-Conversion-Retirement-Questions/${titleSlug}?id=${idParam}&type=roth`;
 
         window.open(url, "_blank");
     };
     const handleQuestionWhatsappClick = (question) => {
         const titleSlug = slugify(
-            `${question.name}-${question.age}-${question.profession}-${question.question}` );     
-        const idParam = encodeURIComponent(question._id);       
+            `${question.name}-${question.age}-${question.profession}-${question.question}`);
+        const idParam = encodeURIComponent(question._id);
         const url = `Top-Roth-Conversion-Retirement-Questions/${titleSlug}?id=${idParam}&type=roth`;
         const shareURL = window.location.href;
 
         const text = encodeURIComponent(`${shareURL}${url}`);
-        window.open(`https://wa.me/?text=${text}`, "_blank");
+        shareViaSms(
+            {
+                text: "Check this out",
+                url: `https://wa.me/?text=${text}`,
+            }
+        )
     }
     if (loading) {
         return (
@@ -104,14 +110,14 @@ const RothQuestions = () => {
                                         <p className="text-base jost grow text-[#6B7280] text-left">
                                             {item?.question}
                                         </p>
-                                <div className="flex mt-5 justify-between items-center w-full">
-                                    <button onClick={() => handleQuestionClick(item)} className=" text-base rounded-lg px-4 py-2 bg-[#567257] text-white">
-                                            Ask RetireMate
-                                        </button>
-                                        <button onClick={() => handleQuestionWhatsappClick(item)}>
-                                            <img src={shareImage} alt="Share" />
-                                        </button>
-                                </div>
+                                        <div className="flex mt-5 justify-between items-center w-full">
+                                            <button onClick={() => handleQuestionClick(item)} className=" text-base rounded-lg px-4 py-2 bg-[#567257] text-white">
+                                                Ask RetireMate
+                                            </button>
+                                            <button onClick={() => handleQuestionWhatsappClick(item)}>
+                                                <img src={shareImage} alt="Share" />
+                                            </button>
+                                        </div>
                                     </div>
                                 </div>
                                 {/* <p className="text-center text-xs text-gray-500 mt-3">

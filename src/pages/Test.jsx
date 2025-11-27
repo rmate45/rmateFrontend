@@ -4,7 +4,7 @@ import imageTest from '../assets/meta-image.png'
 const Test = () => {
   return (
     <div>
-        <img src={imageTest} alt="meta-image" />
+        <img onClick={()=> navigator.share() } src={imageTest} alt="meta-image" />
     </div>
   )
 }
