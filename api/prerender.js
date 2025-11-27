@@ -19,7 +19,7 @@ async function getPageMetadata(url, queryParams) {
   let meta = {
     title: "RetireMate",
     description: "Expert-curated retirement and Medicare insights.",
-    image: "https://dev.retiremate.com/assets/retiremate-logo-CBVMmg9S.svg",
+    image: "https://dev.retiremate.com/assets/meta-image-DYDKTIzA.png",
     url: `https://dev.retiremate.com${url}`,
   };
 
