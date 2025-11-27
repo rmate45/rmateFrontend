@@ -23,7 +23,7 @@
   ],
   
   "rewrites": [
-    { "source": "^/$", "destination": "/api/prerender?path=/" },
+    { "source": "/", "destination": "/api/prerender?path=/" },
     { "source": "/index.html", "destination": "/api/prerender?path=/" },
     { "source": "/intro", "destination": "/api/prerender?path=/intro" },
     { "source": "/Top-Explore-Questions/:slug", "destination": "/api/prerender?path=/Top-Explore-Questions/:slug" },
