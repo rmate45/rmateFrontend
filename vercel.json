@@ -1,5 +1,5 @@
 {
-  "buildCommand": "npm run build && mv dist/index.html dist/main.html",
+ "buildCommand": "npm run build",
   "outputDirectory": "dist",
  
   
