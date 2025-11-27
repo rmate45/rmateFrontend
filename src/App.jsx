@@ -10,6 +10,7 @@ import PersonaPage from "./pages/PersonaPage.jsx";
 import FinancialPage from "./pages/FinancialPage.jsx";
 import MedicarePage from "./pages/MedicarePage.jsx";
 import ExploreQuestionsPage from "./pages/ExploreQuestionsPage.jsx";
+import Test from "./pages/Test.jsx";
 
 function App() {
   return (
@@ -38,6 +39,10 @@ function App() {
         <Route
           path="/Top-Explore-Questions/:slug"
           element={<ExploreQuestionsPage />}
+        />
+        <Route
+          path="/test"
+          element={<Test />}
         />
       </Routes>
     </>
