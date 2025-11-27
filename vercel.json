@@ -30,6 +30,10 @@
       "source": "/Persona/:slug",
       "destination": "/api/prerender?path=/Persona/:slug"
     },
-    { "source": "/(.*)", "destination": "/" }
+
+    {
+      "source": "/(.*)",
+      "destination": "/api/prerender?path=/$1"
+    }
   ]
 }
