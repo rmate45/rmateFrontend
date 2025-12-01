@@ -224,10 +224,121 @@ const Quiz = () => {
       return null;
     }
   };
+  const fetchQuestionFinancialById = async (id) => {
+    if (!id) return null;
+    try {
+      const res = await api.get(`/get-financial-planning/${id}`);
+      if (res.data?.type === "success" && res.data?.data) {
+        setItem(res.data.data);
+        return res.data.data;
+      }
+      return null;
+    } catch (err) {
+      console.error("Error fetching persona:", err);
+      return null;
+    }
+  };
+
+  const fetchQuestionExploreById = async (id) => {
+    if (!id) return null;
+    try {
+      const res = await api.get(`/get-explore-question/${id}`);
+      if (res.data?.type === "success" && res.data?.data) {
+        return res.data.data;
+      }
+      return null;
+    } catch (err) {
+      console.error("Error fetching persona:", err);
+      return null;
+    }
+  };
+
+  const fetchQuestionRothById = async (id) => {
+    if (!id) return null;
+    try {
+      const res = await api.get(`/get-roth-question/${id}`);
+      if (res.data?.type === "success" && res.data?.data) {
+        setItem(res.data.data);
+        return res.data.data;
+      }
+      return null;
+    } catch (err) {
+      console.error("Error fetching persona:", err);
+      return null;
+    }
+  };
+  const fetchQuestionMedicareById = async (id) => {
+    if (!id) return null;
+    try {
+      const res = await api.get(`/get-medicare-question/${id}`);
+      if (res.data?.type === "success" && res.data?.data) {
+        setItem(res.data.data);
+        return res.data.data;
+      }
+      return null;
+    } catch (err) {
+      console.error("Error fetching persona:", err);
+      return null;
+    }
+  };
 
   const initializeFlow = async () => {
     try {
       setLoading(true);
+
+      // Handle different question types based on URL parameters
+      if (!urlData?.isPersona && urlData.id) {
+        const type = urlData.type;
+        let fetchedData = null;
+
+        if (type === "roth") {
+          fetchedData = await fetchQuestionRothById(urlData.id);
+        } else if (type === "explore") {
+          fetchedData = await fetchQuestionExploreById(urlData.id);
+        } else if (type === "financial") {
+          fetchedData = await fetchQuestionFinancialById(urlData.id);
+        } else if (type === "medicare") {
+          fetchedData = await fetchQuestionMedicareById(urlData.id);
+
+        }
+
+        if (fetchedData) {
+          // First message - question
+          setTimeout(() => {
+            setConversation([{ type: "answer", text: fetchedData?.question }]);
+          }, 1000);
+          // Wait 1 second before showing answer(s)
+          await new Promise((resolve) => setTimeout(resolve, 2500));
+
+          // Check if answer is an array or a string
+
+          if (fetchedData?.answers) {
+            // Join all answers with newlines and show in single box
+            const combinedAnswer = fetchedData.answers.join("\n");
+            setConversation((prev) => [
+              ...prev,
+              { type: "system", text: combinedAnswer },
+            ]);
+            setIsScroll(true);
+          } else {
+            // Single answer - show it directly
+            setConversation((prev) => [
+              ...prev,
+              {
+                type: "system",
+                text: fetchedData?.answer
+                  ?.replace(/<br\s*\/?>/gi, "\n") // replace <br> or <br/> with line breaks
+                  ?.trim(),
+              },
+            ]);
+
+            setIsScroll(true);
+          }
+
+          // Wait another second before continuing
+          await new Promise((resolve) => setTimeout(resolve, 1000));
+        }
+      }
 
       if (urlData?.isPersona && urlData.id) {
         const fetched = await fetchPersonaById(urlData.id);

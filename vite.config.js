@@ -4,5 +4,14 @@ import tailwindcss from '@tailwindcss/vite'
 
 // https://vite.dev/config/
 export default defineConfig({
-  plugins: [react(),  tailwindcss()],
+  plugins: [
+    react(),
+    tailwindcss(),
+    createHtmlPlugin({ minify: true }),
+    Sitemap({ hostname: "https://dev.retiremate.com" }),
+  ],
+     server: {
+    historyApiFallback: true
+  }
+   
 })

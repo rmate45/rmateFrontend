@@ -1,5 +1,7 @@
 import React from "react";
-
+import { slugify } from "../../../utils/slugify";
+import shareImage from '../../../assets/mdi_share-outline.svg'
+import { shareViaSms } from "../../../utils/shareViaSms";
 const TestimonialCard = ({ item }) => {
 
   console.log(item, "item")
@@ -15,7 +17,12 @@ const TestimonialCard = ({ item }) => {
       id: item.id || "",
     });
 
-    window.open(`/quiz?${params.toString()}`, "_blank");
+    const fullUrl = `${window.location.origin}/Persona/${slug}?${params.toString()}`;
+
+    shareViaSms({
+      text: "click here to ask RetireMate",
+      url: fullUrl,          // NOT encoded
+    });
   };
 
   return (
