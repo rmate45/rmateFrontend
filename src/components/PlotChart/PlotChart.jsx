@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   LineChart,
   Line,
@@ -11,6 +11,7 @@ import {
   Label,
   ReferenceLine,
 } from "recharts";
+import Recommendation from "./Recommendation";
 
 const dollarFormatter = (value) => {
   if (value >= 1_000_000) {
@@ -26,6 +27,7 @@ const dollarFormatter = (value) => {
 };
 
 const CustomTooltip = ({ active, payload }) => {
+
   if (active && payload && payload.length) {
     const data = payload[0].payload;
     const showHouseholdIncome = data.age < 67;
@@ -56,8 +58,9 @@ const CustomTooltip = ({ active, payload }) => {
   return null;
 };
 
-const PlotChart = ({ data }) => {
-
+const PlotChart = ({ data, showDisclaimer= false,setShowPeningItems }) => {
+  
+  const [showRecommendation, setShowRecommendation] = useState(false);
   const parsedData =
     typeof data.text === "string"
       ? JSON.parse(data.text?.data)
@@ -96,71 +99,73 @@ const PlotChart = ({ data }) => {
 
   return (
     <div className="w-full">
-      <h1 className="jost text-gray-700 mb-2 mt-2 leading-relaxed text-center">
-        How Long Will My Savings Last?
-      </h1>
+      <div className="px-2 py-2 rounded-xl border-1 border-green-300 bg-white w-full max-w-full">
 
-      <div className="h-96">
-        <ResponsiveContainer>
-          <LineChart
-            data={filteredData}
-            margin={{ top: 10, right: 10, bottom: 20, left: 0 }}
-          >
-            <CartesianGrid strokeDasharray="3 3" stroke="#ddd" />
-            <XAxis
-              dataKey="age"
-              label={{
-                value: "Age",
-                position: "insideBottom",
-                offset: -5,
-                style: { fontSize: 10 },
-              }}
-              tick={{ fontSize: 10 }}
-            />
-            <YAxis
-              tickFormatter={dollarFormatter}
-              label={{
-                value: "Savings",
-                angle: -90,
-                position: "insideLeft",
-                style: { fontSize: 10 },
-              }}
-              tick={{ fontSize: 10 }}
-            />
-            <Tooltip content={<CustomTooltip />} />
+        <h1 className="jost text-gray-700 mb-2 mt-2 leading-relaxed text-center">
+          How Long Will My Savings Last?
+        </h1>
 
-            {retirementPoint && (
-              <ReferenceLine
-                x={retirementPoint.age}
-                stroke="green"
-                strokeDasharray="3 3"
-                strokeWidth={1}
+        <div className="h-96">
+          <ResponsiveContainer>
+            <LineChart
+              data={filteredData}
+              margin={{ top: 10, right: 10, bottom: 20, left: 0 }}
+            >
+              <CartesianGrid strokeDasharray="3 3" stroke="#ddd" />
+              <XAxis
+                dataKey="age"
+                label={{
+                  value: "Age",
+                  position: "insideBottom",
+                  offset: -5,
+                  style: { fontSize: 10 },
+                }}
+                tick={{ fontSize: 10 }}
               />
-            )}
+              <YAxis
+                tickFormatter={dollarFormatter}
+                label={{
+                  value: "Savings",
+                  angle: -90,
+                  position: "insideLeft",
+                  style: { fontSize: 10 },
+                }}
+                tick={{ fontSize: 10 }}
+              />
+              <Tooltip content={<CustomTooltip />} />
 
-            {/* Main savings line */}
-            <Line
-              type="monotone"
-              dataKey="savings"
-              stroke="#567257"
-              strokeWidth={2}
-              dot={{ r: 3, fill: "#567257" }}
-              activeDot={{ r: 5, fill: "#567257" }}
-            />
+              {retirementPoint && (
+                <ReferenceLine
+                  x={retirementPoint.age}
+                  stroke="green"
+                  strokeDasharray="3 3"
+                  strokeWidth={1}
+                />
+              )}
 
-            {/* === Marker for Full Retirement Age (67) === */}
-            {retirementPoint && (
-              <>
-                {/* Marker pointer at age 67 */}
-                <ReferenceDot
-                  x={67}
-                  y={retirementPoint.savings}
-                  r={8}
-                  fill="#0e6634"
-                  stroke="#fff"
-                  strokeWidth={2}
-                >
-                  {/* <Label
+              {/* Main savings line */}
+              <Line
+                type="monotone"
+                dataKey="savings"
+                stroke="#567257"
+                strokeWidth={2}
+                dot={{ r: 3, fill: "#567257" }}
+                activeDot={{ r: 5, fill: "#567257" }}
+              />
+
+              {/* === Marker for Full Retirement Age (67) === */}
+              {retirementPoint && (
+                <>
+                  {/* Marker pointer at age 67 */}
+                  <ReferenceDot
+                    x={67}
+                    y={retirementPoint.savings}
+                    r={8}
+                    fill="#0e6634"
+                    stroke="#fff"
+                    strokeWidth={2}
+                  >
+                    {/* <Label
                     value="Full Retirement Age"
                     position="top"
                     fill="#0e6634"
@@ -168,163 +173,60 @@ const PlotChart = ({ data }) => {
                     fontWeight={600}
                     offset={15}
                   /> */}
-                  <Label
-                    value={`${dollarFormatter(retirementPoint.savings)}`}
-                    position="top"
-                    fill="#0e6634"
-                    fontSize={11}
-                    fontWeight={600}
-                    offset={15}
-                    className="custom-saving"
-                  />
-                </ReferenceDot>
-              </>
-            )}
-
-            {/* === "You are here" marker at the start age === */}
-            {startPoint && (
-              <>
-                <ReferenceDot
-                  x={startPoint.age}
-                  y={startPoint.savings}
-                  r={5}
-                  fill="#567257"
-                >
-                  <Label
-                    value="You are here"
-                    position="right"
-                    fill="#567257"
-                    fontSize={11}
-                    className="label-set"
-                    offset={10}
-                  />
-                </ReferenceDot>
-              </>
-            )}
-          </LineChart>
-        </ResponsiveContainer>
-      </div>
-
-      <div className=" text-sm  mt-4 sm:px-4">
-        <p className="jost text-lg text-gray-700 leading-relaxed ">
-          Recommendations from RetireMate:
-        </p>
-        <ul className="max-w-xl mt-2 pl-4 sm:pl-6">
-          {(() => {
-            const recommendations = data?.text?.recommendations;
-            const scenario = recommendations?.scenario;
-            const depletionAge = recommendations?.savingsDepletionAge;
-            const alternativeScenarios = recommendations?.alternativeScenarios;
-            const recTexts = recommendations?.recommendations || [];
-
-            // Check if we need custom rendering for scenario 3 with depletion age < 90
-            if (scenario === 3 && depletionAge < 90) {
-              const increasedContributions =
-                alternativeScenarios?.increasedContributions || [];
-              const alternativeGrowth =
-                alternativeScenarios?.alternativeGrowth || [];
-
-              return (
-                <>
-                  {/* 1. Projected Longevity of Savings */}
-                  <li className="jost text-left text-gray-700 leading-relaxed mb-2">
-                    <span className="  font-semibold mr-1">1.</span>
-                    <strong>Projected Longevity of Savings:</strong>
-                    <ul className=" mt-1">
-                      <li className="text-gray-700 jost">
-                        <span className="mr-1">•</span>
-                        {recTexts[0] ||
-                          `Your total savings are projected to last until approximately age ${
-                            depletionAge - 3
-                          } to ${depletionAge + 2}.`}
-                      </li>
-                    </ul>
-                  </li>
-
-                  {/* 2. Impact of Monthly Contributions */}
-                  <li className="jost text-left text-gray-700 leading-relaxed mb-2">
-                    <span className=" font-semibold mr-1">2.</span>
-                    <strong>Impact of Monthly Contributions:</strong>
-                    <ul className=" mt-1">
-                      <li className="text-gray-700 mb-1 jost">
-                        <span className="mr-1">•</span>
-                        {recTexts[1] ||
-                          "Current model assumes a 10% contribution from household income."}
-                      </li>
-                      <li className="text-gray-700 mb-1 jost">
-                        <span className="mr-1">•</span>
-                        {recTexts[2] ||
-                          "Increasing contributions can significantly extend your savings horizon:"}
-                      </li>
-                      {increasedContributions.map((contrib, idx) => (
-                        <li key={idx} className="text-gray-700 ml-4 text-sm jost">
-                          <span className="mr-1">○</span>
-                          At {contrib.contributionRate}% contribution ($
-                          {contrib.monthlyContribution?.toLocaleString()}/month)
-                          → lasts until age {contrib.projectedAgeRange.min} to{" "}
-                          {contrib.projectedAgeRange.max}
-                        </li>
-                      ))}
-                    </ul>
-                  </li>
-
-                  {/* 3. Impact of Market Conditions */}
-                  <li className="jost text-left text-gray-700 leading-relaxed mb-2">
-                    <span className=" font-semibold mr-1">3.</span>
-                    <strong>Impact of Market Conditions:</strong>
-                    <ul className=" mt-1">
-                      <li className="text-gray-700 mb-1 jost">
-                        <span className="mr-1">•</span>
-                        Current model assumes a 6% nominal annual growth rate
-                        (moderate growth).
-                      </li>
-                      <li className="text-gray-700 mb-1 jost">
-                        <span className="mr-1">•</span>
-                        Under alternative growth assumptions:
-                      </li>
-                      {alternativeGrowth.map((growth, idx) => (
-                        <li key={idx} className="text-gray-700 ml-4 text-sm jost">
-                          <span className="mr-1">○</span>
-                          {growth.growthRate}% ({growth.riskLevel}) → lasts
-                          until age {growth.projectedAgeRange.min} to{" "}
-                          {growth.projectedAgeRange.max}
-                        </li>
-                      ))}
-                    </ul>
-                  </li>
-
-                  {/* 4. Monthly Savings Recommendation */}
-                  <li className="jost text-left text-gray-700 leading-relaxed mb-2">
-                    <span className=" font-semibold mr-1">4.</span>
-                    <strong>Monthly Savings Recommendation:</strong>
-                    <ul className=" mt-1">
-                      <li className="text-gray-700 mb-1 jost">
-                        <span className="mr-1">•</span>
-                        {recTexts[3] || "You are currently saving per month."}
-                      </li>
-                      <li className="text-gray-700 jost">
-                        <span className="mr-1">•</span>
-                        {recTexts[4] ||
-                          "Our model recommends increasing this to 15% to 25% per month to stay on track."}
-                      </li>
-                    </ul>
-                  </li>
+                    <Label
+                      value={`${dollarFormatter(retirementPoint.savings)}`}
+                      position="top"
+                      fill="#0e6634"
+                      fontSize={11}
+                      fontWeight={600}
+                      offset={15}
+                      className="custom-saving"
+                    />
+                  </ReferenceDot>
                 </>
-              );
-            } else {
-              // Default rendering for other scenarios
-              return recTexts?.map((rec, index) => (
-                <li
-                  key={index}
-                  className="jost text-left text-gray-700 leading-relaxed "
-                >
-                  <span className="text-lg font-semibold mr-1">•</span> {rec}
-                </li>
-              ));
-            }
-          })()}
-        </ul>
+              )}
+
+              {/* === "You are here" marker at the start age === */}
+              {startPoint && (
+                <>
+                  <ReferenceDot
+                    x={startPoint.age}
+                    y={startPoint.savings}
+                    r={5}
+                    fill="#567257"
+                  >
+                    <Label
+                      value="You are here"
+                      position="right"
+                      fill="#567257"
+                      fontSize={11}
+                      className="label-set"
+                      offset={10}
+                    />
+                  </ReferenceDot>
+                </>
+              )}
+            </LineChart>
+          </ResponsiveContainer>
+        </div>
+
+        <div className=" hidden sm:block">
+
+          <Recommendation data={data} />
+
+        </div>
       </div>
+      <div onClick={() => {setShowPeningItems(true); setShowRecommendation(true)}} className="px-2 py-2 mt-3 rounded-xl border-1 border-green-300 bg-white w-full max-w-full block sm:hidden">
+
+        {showRecommendation ? <Recommendation data={data} /> :
+          <p className=" text-sm max-w-xs rounded-xl flex justify-start items-center jost  text-black">
+
+            Tap here to view the analysis
+          </p>}
+      </div>
+      {showDisclaimer && (<div className="order-green-300 bg-green-100 p-3 jost rounded-xl mt-3">
+        To receive a free, educational retirement analysis tailored to your age, income, and goals, please enter your contact details below.”
+      </div>)}
     </div>
   );
 };

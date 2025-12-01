@@ -1,6 +1,5 @@
 @import url("https://fonts.googleapis.com/css2?family=Libre+Caslon+Text:ital,wght@0,400;0,700;1,400&display=swap");
 @import "tailwindcss";
-@import url("https://fonts.googleapis.com/css2?family=Libre+Caslon+Text:ital,wght@0,400;0,700;1,400&display=swap");
 
 :root {
   font-family: "Libre Caslon Text", serif;
@@ -9,10 +8,10 @@
 
 /* Ensure Rubik is applied to all elements */
 * {
-  font-family: "Libre Caslon Text", serif;
+  font-family: "Libre Caslon Text", serif; 
 }
 
-@theme {
+@theme { 
   --color-primary: #0e6634;
   --color-secondary: #5cc37e;
   --color-tertiary: #7bf1a8;
@@ -49,3 +48,4 @@ button {
     background-color: #ffffff;
   }
 }
+

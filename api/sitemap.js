@@ -1,5 +1,5 @@
 export default async function handler(req, res) {
-  const base = "https://dev.retiremate.com";
+  const base = "https://retiremate.com";
 
   const staticRoutes = [
     "/",

@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://dev.retiremate.com/sitemap.xml
+Sitemap: https://retiremate.com/sitemap.xml

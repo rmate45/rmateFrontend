@@ -2,7 +2,7 @@ export const QuestionOptions = ({ options, onOptionClick }) => {
   if (!options || options.length === 0) return null;
 
   return (
-    <div className="space-y-2 mx-4">
+    <div className="space-y-2">
       {options.map((option, idx) => (
         <button
           key={idx}

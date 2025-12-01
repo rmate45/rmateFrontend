@@ -21,8 +21,8 @@ async function getPageMetadata(url, queryParams) {
   const defaultMeta = {
     title: "RetireMate",
     description: "Expert-curated retirement and Medicare insights.",
-    image: "https://dev.retiremate.com/assets/meta-image-DYDKTIzA.png",
-    url: `https://dev.retiremate.com${url === "/" ? "" : url}`,
+    image: "https://retiremate.com/assets/meta-image-DYDKTIzA.png",
+    url: `https://retiremate.com${url === "/" ? "" : url}`,
   };
 
   try {

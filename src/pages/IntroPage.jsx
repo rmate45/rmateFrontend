@@ -120,7 +120,7 @@ function IntroPage() {
 
   // Event handlers - these are now optional since navigation is handled within components
   const handleLoginClick = () => {
-    console.log("Login clicked");
+     window.open("/quiz");
     // Add your login logic here
   };
 
@@ -154,7 +154,7 @@ function IntroPage() {
        <SeoHelmet 
        title="RetireMate" 
        description="Expert-curated retirement and Medicare insights." 
-       url={"https://dev.retiremate.com"} />
+       url={"https://retiremate.com"} />
       <Header logo={logo} onLoginClick={handleLoginClick} />
 
       <HeroSection
@@ -169,7 +169,13 @@ function IntroPage() {
       {/* <CustomStory /> */}
 
       <RetiremateEdge />
-
+      <RetirematePlanningQuestion />
+      <ExploreMoreQuestions />
+      <RothQuestions />
+      <ExploreMoreQuestions />
+      <MedicareQuiz/>
+      <MedicareQuestions />
+      <ExploreMoreQuestions />
       <SuggestedQuestions
         questions={suggestedQuestions}
         onQuestionClick={handleQuestionClick}
@@ -187,7 +193,7 @@ function IntroPage() {
         onQuestionClick={handleQuestionClick}
         onBrowseAllClick={handleBrowseAllClick}
       />
-      
+
       <ArticleSection />
 
       <LinkSection />
