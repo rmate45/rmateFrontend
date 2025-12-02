@@ -166,7 +166,7 @@ export default async function handler(req, res) {
     res.setHeader("Cache-Control", "no-cache, no-store, must-revalidate");
 
     res.status(200).send(finalHtml);
-  } catch (err) {
+  } catch (err) { 
     res.status(500).send("Server error");
   }
 }
