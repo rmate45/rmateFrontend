@@ -11,6 +11,7 @@ import FinancialPage from "./pages/FinancialPage.jsx";
 import MedicarePage from "./pages/MedicarePage.jsx";
 import ExploreQuestionsPage from "./pages/ExploreQuestionsPage.jsx";
 import Test from "./pages/Test.jsx";
+import QuizView from "./pages/QuizView.jsx";
 
 function App() {
   return (
@@ -18,7 +19,7 @@ function App() {
       <Routes>
         <Route path="/" element={<IntroPage />} />
         <Route path="/intro" element={<IntroPage />} />
-        <Route path="/quiz" element={<Quiz />} />
+        <Route path="/quiz" element={<QuizView />} />
         <Route path="/plans/:phone/:id" element={<PlanPage />} />
         <Route
           path="/Top-Roth-Conversion-Retirement-Questions/:slug"
