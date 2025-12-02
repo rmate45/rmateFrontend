@@ -3,8 +3,9 @@ import fs from "fs";
 import path from "path";
 import axios from "axios";
 
-const API_BASE_URL = import.meta.env.VITE_PRERENDER_API_BASE
-const WEBSITE_URL = import.meta.env.VITE_WEBSITE_URL
+const API_BASE_URL =
+  process.env.VITE_PRERENDER_API_BASE ||
+  "https://dev-api.retiremate.com/api/v1";
 
 function slugify(text) {
   return (text || "")
@@ -20,8 +21,8 @@ async function getPageMetadata(url, queryParams) {
   const defaultMeta = {
     title: "RetireMate",
     description: "Expert-curated retirement and Medicare insights.",
-    image: `${WEBSITE_URL}/assets/meta-image-DYDKTIzA.png`,
-    url: `${WEBSITE_URL}$${url === "/" ? "" : url}`,
+    image: "https://dev.retiremate.com/assets/meta-image-DYDKTIzA.png",
+    url: `https://dev.retiremate.com${url === "/" ? "" : url}`,
   };
 
   try {
@@ -81,7 +82,7 @@ async function getPageMetadata(url, queryParams) {
         return {
           title: data.question,
           description: (data.answer || "").slice(0, 160),
-          image: data?.image,
+         image: data?.image,
           url: defaultMeta.url,
         };
       return defaultMeta;
@@ -95,7 +96,7 @@ async function getPageMetadata(url, queryParams) {
         return {
           title: data.question,
           description: (data.answer || "").slice(0, 160),
-         image: data?.image,
+          image: data?.image,
           url: defaultMeta.url,
         };
       return defaultMeta;
@@ -109,7 +110,7 @@ async function getPageMetadata(url, queryParams) {
         return {
           title: data.persona_question,
           description: (data.persona_description || "").slice(0, 160),
-        image: data?.image,
+         image: data?.image,
           url: defaultMeta.url,
         };
       return defaultMeta;
