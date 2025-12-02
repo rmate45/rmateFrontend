@@ -1,6 +1,7 @@
 {
   "buildCommand": "npm run build",
   "outputDirectory": "dist",
+
   "headers": [
     {
       "source": "/index.html",
@@ -23,32 +24,41 @@
   ],
 
   "rewrites": [
-    { "source": "^/$", "destination": "/api/prerender?path=/" },
-    { "source": "/index.html", "destination": "/api/prerender?path=/" },
-    { "source": "/intro", "destination": "/api/prerender?path=/intro" },
     {
-      "source": "/Top-Explore-Questions/:slug",
-      "destination": "/api/prerender?path=/Top-Explore-Questions/:slug"
+      "source": "/",
+      "destination": "/api/prerender?path=/"
     },
     {
-      "source": "/Top-Roth-Conversion-Retirement-Questions/:slug",
-      "destination": "/api/prerender?path=/Top-Roth-Conversion-Retirement-Questions/:slug"
+      "source": "/intro",
+      "destination": "/api/prerender?path=/intro"
     },
     {
-      "source": "/Top-Financial-Planning-Questions/:slug",
-      "destination": "/api/prerender?path=/Top-Financial-Planning-Questions/:slug"
+      "source": "/Top-Explore-Questions/:slug*",
+      "destination": "/api/prerender?path=/Top-Explore-Questions/:slug*"
     },
     {
-      "source": "/Top-Medicare-Questions/:slug",
-      "destination": "/api/prerender?path=/Top-Medicare-Questions/:slug"
+      "source": "/Top-Roth-Conversion-Retirement-Questions/:slug*",
+      "destination": "/api/prerender?path=/Top-Roth-Conversion-Retirement-Questions/:slug*"
     },
     {
-      "source": "/Persona/:slug",
-      "destination": "/api/prerender?path=/Persona/:slug"
+      "source": "/Top-Financial-Planning-Questions/:slug*",
+      "destination": "/api/prerender?path=/Top-Financial-Planning-Questions/:slug*"
     },
-    { "source": "/(.*)", "destination": "/api/prerender?path=/$1" },
     {
-      "source": "/(.*)",
+      "source": "/Top-Medicare-Questions/:slug*",
+      "destination": "/api/prerender?path=/Top-Medicare-Questions/:slug*"
+    },
+    {
+      "source": "/Persona/:slug*",
+      "destination": "/api/prerender?path=/Persona/:slug*"
+    },
+
+    {
+      "source": "/assets/:match*",
+      "destination": "/assets/:match*"
+    },
+    {
+      "source": "/:match*",
       "destination": "/index.html"
     }
   ]
