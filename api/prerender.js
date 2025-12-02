@@ -81,7 +81,7 @@ async function getPageMetadata(url, queryParams) {
         return {
           title: data.question,
           description: (data.answer || "").slice(0, 160),
-          image: defaultMeta.image,
+          image: data?.image,
           url: defaultMeta.url,
         };
       return defaultMeta;
@@ -95,7 +95,7 @@ async function getPageMetadata(url, queryParams) {
         return {
           title: data.question,
           description: (data.answer || "").slice(0, 160),
-          image: defaultMeta.image,
+         image: data?.image,
           url: defaultMeta.url,
         };
       return defaultMeta;
@@ -109,7 +109,7 @@ async function getPageMetadata(url, queryParams) {
         return {
           title: data.persona_question,
           description: (data.persona_description || "").slice(0, 160),
-          image: defaultMeta.image,
+        image: data?.image,
           url: defaultMeta.url,
         };
       return defaultMeta;

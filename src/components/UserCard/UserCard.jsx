@@ -10,7 +10,7 @@ const UserCard = ({ item }) => {
             <div className="relative  rounded-2xl p-5 bg-white flex flex-col max-w-xs w-full" style={{ boxShadow: "rgba(0, 0, 0, 0.15) 0px 4px 15px" }}>
                 <div className="shrink-0 text-center flex gap-4">
                     <img
-                        src={oneImage}
+                        src={item?.image}
                         alt="Joel"
                         className="w-16 h-16 rounded-full object-cover mx-auto mb-2"
                     />
