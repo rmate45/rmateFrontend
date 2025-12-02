@@ -26,7 +26,10 @@
     { "source": "^/$", "destination": "/api/prerender?path=/" },
     { "source": "/index.html", "destination": "/api/prerender?path=/" },
     { "source": "/intro", "destination": "/api/prerender?path=/intro" },
-    { "source": "/quiz(?:\\?(.*))?", "destination": "/api/prerender?path=/quiz&$1" },
+    {
+      "source": "/quiz(?:\\?(.*))?",
+      "destination": "/api/prerender?path=/quiz&$1"
+    },
     {
       "source": "/Top-Explore-Questions/:slug",
       "destination": "/api/prerender?path=/Top-Explore-Questions/:slug"
