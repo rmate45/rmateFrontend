@@ -5,7 +5,7 @@ import axios from "axios";
 
 const API_BASE_URL =
   process.env.VITE_PRERENDER_API_BASE ||
-  "https://dev-api.retiremate.com/api/v1";
+  "https://quiz-api.retiremate.com/api/v1";
 
 function slugify(text) {
   return (text || "")
