@@ -3,9 +3,8 @@ import fs from "fs";
 import path from "path";
 import axios from "axios";
 
-const API_BASE_URL =
-  process.env.VITE_PRERENDER_API_BASE ||
-  "https://dev-api.retiremate.com/api/v1";
+const API_BASE_URL = import.meta.env.VITE_PRERENDER_API_BASE
+const WEBSITE_URL = import.meta.env.VITE_WEBSITE_URL
 
 function slugify(text) {
   return (text || "")
@@ -21,8 +20,8 @@ async function getPageMetadata(url, queryParams) {
   const defaultMeta = {
     title: "RetireMate",
     description: "Expert-curated retirement and Medicare insights.",
-    image: "https://retiremate.com/assets/meta-image-DYDKTIzA.png",
-    url: `https://retiremate.com${url === "/" ? "" : url}`,
+    image: `${WEBSITE_URL}/assets/meta-image-DYDKTIzA.png`,
+    url: `${WEBSITE_URL}$${url === "/" ? "" : url}`,
   };
 
   try {

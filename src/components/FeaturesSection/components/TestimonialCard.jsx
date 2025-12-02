@@ -38,7 +38,7 @@ const TestimonialCard = ({ item }) => {
     });
   };
   return (
-    <div onClick={handleClick} className="cursor-pointer flex flex-col p-5 rounded-xl gap-4 bg-white text-black h-full" style={{ boxShadow: "rgba(0, 0, 0, 0.15) 0px 4px 15px" }}>
+    <div key={item?.idx} onClick={handleClick} className="cursor-pointer flex flex-col p-5 rounded-xl gap-4 bg-white text-black h-full" style={{ boxShadow: "rgba(0, 0, 0, 0.15) 0px 4px 15px" }}>
       <div className="flex gap-3 items-center">
         <img
           src={item.img}

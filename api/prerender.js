@@ -68,7 +68,7 @@ async function getPageMetadata(url, queryParams) {
         return {
           title: data.question,
           description: (data.answer || "").replace(/<[^>]*>/g, "").slice(0, 160),
-          image: "https://images.bhaskarassets.com/web2images/521/2025/01/10/orig_retirement1583463092_1736458711.jpg",
+          image: data?.image,
           url: defaultMeta.url,
         };
       return defaultMeta;
@@ -82,7 +82,7 @@ async function getPageMetadata(url, queryParams) {
         return {
           title: data.question,
           description: (data.answer || "").slice(0, 160),
-          image: defaultMeta.image,
+         image: data?.image,
           url: defaultMeta.url,
         };
       return defaultMeta;
@@ -96,7 +96,7 @@ async function getPageMetadata(url, queryParams) {
         return {
           title: data.question,
           description: (data.answer || "").slice(0, 160),
-          image: defaultMeta.image,
+          image: data?.image,
           url: defaultMeta.url,
         };
       return defaultMeta;
@@ -110,7 +110,7 @@ async function getPageMetadata(url, queryParams) {
         return {
           title: data.persona_question,
           description: (data.persona_description || "").slice(0, 160),
-          image: defaultMeta.image,
+         image: data?.image,
           url: defaultMeta.url,
         };
       return defaultMeta;

@@ -75,7 +75,7 @@ export default function RothPage() {
 
     const pageTitle = card?.question || card?.title || "Top Roth Conversion Retirement Questions";
     const pageDesc = safeText(card?.answer || card?.answers?.[0]).replace(/<br\s*\/?>/gi, " ").slice(0, 160);
-    const ogImage = "https://retiremate.com/assets/logo-D1t2XXia.png"
+    const ogImage = card?.image
 
     const structuredData = {
         "@context": "https://schema.org",

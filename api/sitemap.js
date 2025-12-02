@@ -1,5 +1,6 @@
 export default async function handler(req, res) {
-  const base = "https://retiremate.com";
+  const base = import.meta.env.VITE_WEBSITE_URL;
+
 
   const staticRoutes = [
     "/",

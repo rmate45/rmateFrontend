@@ -84,11 +84,11 @@ const MedicareQuestions = () => {
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 mt-10">
                     {
                         data.map((item, index) => (
-                            <>
-                                <div className="relative  rounded-2xl p-5 bg-white flex flex-col" style={{ boxShadow: "rgba(0, 0, 0, 0.15) 0px 4px 15px" }}>
+                        
+                                <div key={index} className="relative  rounded-2xl p-5 bg-white flex flex-col" style={{ boxShadow: "rgba(0, 0, 0, 0.15) 0px 4px 15px" }}>
                                     <div className="shrink-0 text-center flex gap-4">
                                         <img
-                                            src={index === 0 ? oneImage : index === 1 ? twoImage : index === 2 ? threeImage : oneImage}
+                                            src={item?.image}
                                             alt="Joel"
                                             className="w-16 h-16 rounded-full object-cover mx-auto mb-2"
                                         />
@@ -118,14 +118,6 @@ const MedicareQuestions = () => {
                                         </div>
                                     </div>
                                 </div>
-
-
-                                {/* <p className="text-center text-xs text-gray-500 mt-3">
-                                        asked by <span className="font-medium">456 users</span> &nbsp; * * *
-                                    </p> */}
-                            </>
-
-
                         ))
                     }
                 </div>

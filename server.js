@@ -4,8 +4,7 @@ import path from "path";
 import axios from "axios";
 
 const API_BASE_URL =
-  process.env.VITE_PRERENDER_API_BASE ||
-  "https://dev-api.retiremate.com/api/v1";
+  import.meta.env.VITE_PRERENDER_API_BASE 
 
 function slugify(text) {
   return (text || "")

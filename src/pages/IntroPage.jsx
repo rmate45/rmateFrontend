@@ -148,13 +148,14 @@ function IntroPage() {
     console.log("Footer link clicked:", link);
     // Add your footer link logic here
   };
-
+const WEBSITE_URL = import.meta.env.VITE_WEBSITE_URL;
+  
   return (
     <>
        <SeoHelmet 
        title="RetireMate" 
        description="Expert-curated retirement and Medicare insights." 
-       url={"https://retiremate.com"} />
+       url={WEBSITE_URL} />
       <Header logo={logo} onLoginClick={handleLoginClick} />
 
       <HeroSection

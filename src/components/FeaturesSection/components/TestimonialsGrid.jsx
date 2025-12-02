@@ -34,7 +34,7 @@ const TestimonialsGrid = () => {
           text: persona.persona_description,
           question: persona.persona_question,
           chatBubble: persona.chat_bubble,
-          img: getAvatarImage(idx),
+          img:persona?.image,
           // Include original data for potential use
           personaId: persona.persona_id,
           gender: persona.gender,
@@ -42,6 +42,7 @@ const TestimonialsGrid = () => {
           annualIncome: persona.annual_income,
           totalSavings: persona.total_savings,
           persona_question: persona.persona_question,
+          idx:idx
         }));
 
         setTestimonials(transformedData);
