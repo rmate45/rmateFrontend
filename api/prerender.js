@@ -3,9 +3,8 @@ import fs from "fs";
 import path from "path";
 import axios from "axios";
 
-const API_BASE_URL =
-  process.env.VITE_PRERENDER_API_BASE ||
-  "https://dev-api.retiremate.com/api/v1";
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
+const WEBSITE_URL = import.meta.env.VITE_WEBSITE_URL;
 
 function slugify(text) {
   return (text || "")
@@ -17,12 +16,14 @@ function slugify(text) {
     .replace(/\-\-+/g, "-");
 }
 
-async function getPageMetadata(url, queryParams) {
+async function getPageMetadata(url, queryParams, manifest) {
+  const metaImage = manifest && manifest['src/assets/meta-image.png'] ? manifest['src/assets/meta-image.png'].file : null;
+
   const defaultMeta = {
     title: "RetireMate",
     description: "Expert-curated retirement and Medicare insights.",
-    image: "https://dev.retiremate.com/assets/meta-image-DYDKTIzA.png",
-    url: `https://dev.retiremate.com${url === "/" ? "" : url}`,
+    image: metaImage ? `${WEBSITE_URL}/${metaImage}` : "",
+    url: `${WEBSITE_URL}${url === "/" ? "" : url}`,
   };
 
   try {
@@ -68,7 +69,7 @@ async function getPageMetadata(url, queryParams) {
         return {
           title: data.question,
           description: (data.answer || "").replace(/<[^>]*>/g, "").slice(0, 160),
-          image: "https://images.bhaskarassets.com/web2images/521/2025/01/10/orig_retirement1583463092_1736458711.jpg",
+          image: data?.image,
           url: defaultMeta.url,
         };
       return defaultMeta;
@@ -116,6 +117,17 @@ async function getPageMetadata(url, queryParams) {
       return defaultMeta;
     }
 
+    if (url.startsWith("/quiz")) {
+      const title = queryParams?.title || "RetireMate Quiz";
+      return {
+        title: title,
+        description: "Answer a few questions to get personalized retirement insights.",
+        image: defaultMeta.image,
+        url: `${defaultMeta.url}/quiz${queryParams.title ? '?title=' + encodeURIComponent(queryParams.title) : ''}`,
+      };
+    }
+
+
     return defaultMeta;
   } catch (err) {
     return defaultMeta;
@@ -126,9 +138,18 @@ export default async function handler(req, res) {
   try {
     const pathParam = req.query.path || req.url || "/";
     const indexPath = path.resolve(process.cwd(), "dist", "index.html");
+    const manifestPath = path.resolve(process.cwd(), "dist", ".vite", "manifest.json");
+    
+    let manifest;
+    try {
+      const manifestContent = await fs.promises.readFile(manifestPath, "utf8");
+      manifest = JSON.parse(manifestContent);
+    } catch(e) {
+      manifest = {};
+    }
 
     const htmlData = await fs.promises.readFile(indexPath, "utf8");
-    const meta = await getPageMetadata(pathParam, req.query || {});
+    const meta = await getPageMetadata(pathParam, req.query || {}, manifest);
 
     let finalHtml = htmlData
       .replace(/__META_TITLE__/g, meta.title)
@@ -141,11 +162,8 @@ export default async function handler(req, res) {
     finalHtml = finalHtml.replace(/__META_[A-Z0-9_]+__/g, "");
 
     res.setHeader("Content-Type", "text/html; charset=utf-8");
-
-   res.setHeader("X-Prerender", "true");
-res.setHeader("Cache-Control", "no-cache, no-store, must-revalidate");
-
-res.status(200).send(finalHtml);
+    res.setHeader("X-Prerender", "true");
+    res.setHeader("Cache-Control", "no-cache, no-store, must-revalidate");
 
     res.status(200).send(finalHtml);
   } catch (err) {

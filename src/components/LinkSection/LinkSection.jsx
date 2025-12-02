@@ -31,7 +31,7 @@ const LinkSection = () => {
           {resources.map((item, index) => (
             <li key={index}>
               <Link
-                to="https://retiremate.com"
+                to={import.meta.env.VITE_WEBSITE_URL}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-base jost grow  text-[#6B7280] text-left  hover:text-primary/90 hover:!underline  transition-colors"

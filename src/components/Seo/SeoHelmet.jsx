@@ -23,7 +23,7 @@ const SeoHelmet = ({
       {/* Open Graph / Social */}
       <meta property="og:title" content={title} />
       <meta property="og:description" content={description} />
-      {image && <meta property="og:image" content={"http://localhost:5173/src/assets/retiremate-logo.svg"} />}
+      {image && <meta property="og:image" content={image} />}
       {url && <meta property="og:url" content={url} />}
       <meta property="og:type" content="article" />
 

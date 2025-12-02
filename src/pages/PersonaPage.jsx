@@ -80,7 +80,7 @@ console.log(id,"id");
 
     const pageTitle = card?.persona_question || card?.title || "Top Persona";
     const pageDesc = safeText(card?.persona_description || card?.answers?.[0]).replace(/<br\s*\/?>/gi, " ").slice(0, 160);
-    const ogImage = "https://retiremate.com/assets/logo-D1t2XXia.png"
+    const ogImage = `${import.meta.env.VITE_WEBSITE_URL}/assets/logo-D1t2XXia.png`
 
     const structuredData = {
         "@context": "https://schema.org",

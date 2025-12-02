@@ -154,7 +154,7 @@ function IntroPage() {
        <SeoHelmet 
        title="RetireMate" 
        description="Expert-curated retirement and Medicare insights." 
-       url={"https://dev.retiremate.com"} />
+       url={import.meta.env.VITE_WEBSITE_URL} />
       <Header logo={logo} onLoginClick={handleLoginClick} />
 
       <HeroSection

@@ -50,7 +50,7 @@ export const ChatFlow = ({
     try {
       setLoading(true);
       const response = await fetch(
-        `https://dev-api.retiremate.com/api/v1/get-next-question?next_question=${questionNumber}&prime_value=${nextValue}`
+        `${import.meta.env.VITE_API_BASE_URL}/get-next-question?next_question=${questionNumber}&prime_value=${nextValue}`
       );
       const data = await response.json();
 
