@@ -123,13 +123,41 @@ async function getPageMetadata(url, queryParams) {
 }
 
 export default async function handler(req, res) {
+  const start = Date.now();
+
   try {
+    // DEBUG — log request info
+    console.log("\n========= PRERENDER DEBUG =========");
+    console.log("Time:", new Date().toISOString());
+    console.log("Incoming URL:", req.url);
+    console.log("Query:", req.query);
+    console.log("User-Agent:", req.headers["user-agent"]);
+    console.log("Host:", req.headers["host"]);
+
+    // Resolve path
     const pathParam = req.query.path || req.url || "/";
+    console.log("Resolved pathParam:", pathParam);
+
+    // Resolve index.html path
     const indexPath = path.resolve(process.cwd(), "dist", "index.html");
+    console.log("index.html path resolved:", indexPath);
 
-    const htmlData = await fs.promises.readFile(indexPath, "utf8");
+    // Load HTML template
+    let htmlData;
+    try {
+      htmlData = await fs.promises.readFile(indexPath, "utf8");
+      console.log("index.html loaded successfully");
+    } catch (e) {
+      console.error("Failed to read index.html:", e.message);
+      throw e;
+    }
+
+    // Fetch metadata for URL
+    console.log("Fetching metadata...");
     const meta = await getPageMetadata(pathParam, req.query || {});
+    console.log("Generated META:", meta);
 
+    // Replace meta placeholders
     let finalHtml = htmlData
       .replace(/__META_TITLE__/g, meta.title)
       .replace(/__META_DESCRIPTION__/g, meta.description)
@@ -138,17 +166,41 @@ export default async function handler(req, res) {
       .replace(/__META_OG_IMAGE__/g, meta.image)
       .replace(/__META_OG_URL__/g, meta.url);
 
+    // Remove leftover placeholders
     finalHtml = finalHtml.replace(/__META_[A-Z0-9_]+__/g, "");
 
+    console.log("Final HTML size:", finalHtml.length);
+    console.log("Total time:", Date.now() - start + "ms");
+    console.log("========= END DEBUG =========\n");
+
+    // DEBUG MODE → return JSON instead of HTML
+    if (req.query.debug === "true") {
+      return res.status(200).json({
+        success: true,
+        pathParam,
+        meta,
+        htmlLength: finalHtml.length,
+        timeTaken: Date.now() - start,
+      });
+    }
+
+    // Send prerendered HTML
     res.setHeader("Content-Type", "text/html; charset=utf-8");
+    res.setHeader("X-Prerender", "true");
+    res.setHeader("Cache-Control", "no-cache, no-store, must-revalidate");
 
-   res.setHeader("X-Prerender", "true");
-res.setHeader("Cache-Control", "no-cache, no-store, must-revalidate");
+    return res.status(200).send(finalHtml);
 
-res.status(200).send(finalHtml);
-
-    res.status(200).send(finalHtml);
   } catch (err) {
-    res.status(500).send("Server error");
+    console.error("===== PRERENDER ERROR =====");
+    console.error(err);
+    console.error("===== END ERROR =====");
+
+    return res.status(500).json({
+      success: false,
+      message: "Prerender server error",
+      error: err.message,
+    });
   }
 }
+
