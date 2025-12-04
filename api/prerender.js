@@ -124,7 +124,25 @@ async function getPageMetadata(url, queryParams) {
 
 export default async function handler(req, res) {
   try {
-    const pathParam = req.query.path || req.url || "/";
+    // Extract path from query param, or normalize from URL
+    let pathParam = req.query?.path;
+    
+    // If no path in query, try to extract from URL
+    if (!pathParam) {
+      const urlPath = req.url?.split('?')[0]; // Remove query string
+      // If URL is the API route itself, default to root
+      if (urlPath === '/api/prerender' || urlPath === '/prerender') {
+        pathParam = "/";
+      } else {
+        pathParam = urlPath || "/";
+      }
+    }
+    
+    // Normalize path - ensure it starts with /
+    if (!pathParam.startsWith("/")) {
+      pathParam = "/" + pathParam;
+    }
+    
     const indexPath = path.resolve(process.cwd(), "dist", "index.html");
 
     const htmlData = await fs.promises.readFile(indexPath, "utf8");
@@ -142,10 +160,8 @@ export default async function handler(req, res) {
 
     res.setHeader("Content-Type", "text/html; charset=utf-8");
 
-   res.setHeader("X-Prerender", "true");
-res.setHeader("Cache-Control", "no-cache, no-store, must-revalidate");
-
-res.status(200).send(finalHtml);
+    res.setHeader("X-Prerender", "true");
+    res.setHeader("Cache-Control", "no-cache, no-store, must-revalidate");
 
     res.status(200).send(finalHtml);
   } catch (err) {
