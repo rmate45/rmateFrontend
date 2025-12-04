@@ -128,10 +128,10 @@ export default async function handler(req, res) {
     let pathParam = req.query?.path;
     
     // If no path in query, try to extract from URL
-    if (!pathParam) {
+    if (!pathParam || pathParam === '') {
       const urlPath = req.url?.split('?')[0]; // Remove query string
       // If URL is the API route itself, default to root
-      if (urlPath === '/api/prerender' || urlPath === '/prerender') {
+      if (urlPath === '/api/prerender' || urlPath === '/prerender' || !urlPath || urlPath === '/') {
         pathParam = "/";
       } else {
         pathParam = urlPath || "/";
@@ -143,19 +143,33 @@ export default async function handler(req, res) {
       pathParam = "/" + pathParam;
     }
     
+    // Ensure root route is exactly "/"
+    if (pathParam === "" || pathParam === "//") {
+      pathParam = "/";
+    }
+    
     const indexPath = path.resolve(process.cwd(), "dist", "index.html");
 
     const htmlData = await fs.promises.readFile(indexPath, "utf8");
     const meta = await getPageMetadata(pathParam, req.query || {});
+    
+    // Ensure we have valid meta values (fallback to defaults if needed)
+    const safeMeta = {
+      title: meta?.title || "RetireMate",
+      description: meta?.description || "Expert-curated retirement and Medicare insights.",
+      image: meta?.image || "https://dev.retiremate.com/assets/meta-image-DYDKTIzA.png",
+      url: meta?.url || `https://dev.retiremate.com${pathParam === "/" ? "" : pathParam}`
+    };
 
     let finalHtml = htmlData
-      .replace(/__META_TITLE__/g, meta.title)
-      .replace(/__META_DESCRIPTION__/g, meta.description)
-      .replace(/__META_OG_TITLE__/g, meta.title)
-      .replace(/__META_OG_DESCRIPTION__/g, meta.description)
-      .replace(/__META_OG_IMAGE__/g, meta.image)
-      .replace(/__META_OG_URL__/g, meta.url);
+      .replace(/__META_TITLE__/g, safeMeta.title)
+      .replace(/__META_DESCRIPTION__/g, safeMeta.description)
+      .replace(/__META_OG_TITLE__/g, safeMeta.title)
+      .replace(/__META_OG_DESCRIPTION__/g, safeMeta.description)
+      .replace(/__META_OG_IMAGE__/g, safeMeta.image)
+      .replace(/__META_OG_URL__/g, safeMeta.url);
 
+    // Remove any remaining placeholders as a safety measure
     finalHtml = finalHtml.replace(/__META_[A-Z0-9_]+__/g, "");
 
     res.setHeader("Content-Type", "text/html; charset=utf-8");
