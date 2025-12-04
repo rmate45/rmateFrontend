@@ -125,10 +125,12 @@ async function getPageMetadata(url, queryParams) {
 export default async function handler(req, res) {
   try {
     // Extract path from query param - this is the most reliable way
+    // For root route, ensure we handle it explicitly
     let pathParam = req.query?.path;
     
-    // Handle root route explicitly
-    if (!pathParam || pathParam === '' || pathParam === undefined || pathParam === null) {
+    // Special handling: if the request is to the API route itself without a path param,
+    // or if path is explicitly "/" or empty, treat as root
+    if (!pathParam || pathParam === '' || pathParam === undefined || pathParam === null || pathParam === '/') {
       pathParam = "/";
     }
     
@@ -175,15 +177,43 @@ export default async function handler(req, res) {
     // Verify replacements worked
     if (finalHtml.includes('__META_')) {
       console.error('[Prerender] WARNING: Some placeholders were not replaced!');
+      console.error('[Prerender] Remaining placeholders:', finalHtml.match(/__META_[A-Z0-9_]+__/g));
     }
 
     res.setHeader("Content-Type", "text/html; charset=utf-8");
-
     res.setHeader("X-Prerender", "true");
+    res.setHeader("X-Prerender-Path", pathParam);
     res.setHeader("Cache-Control", "no-cache, no-store, must-revalidate");
 
     res.status(200).send(finalHtml);
   } catch (err) {
-    res.status(500).send("Server error");
+    console.error('[Prerender] Error:', err);
+    // Even on error, try to return something with meta tags replaced
+    try {
+      const indexPath = path.resolve(process.cwd(), "dist", "index.html");
+      const htmlData = await fs.promises.readFile(indexPath, "utf8");
+      const defaultMeta = {
+        title: "RetireMate",
+        description: "Expert-curated retirement and Medicare insights.",
+        image: "https://dev.retiremate.com/assets/meta-image-DYDKTIzA.png",
+        url: "https://dev.retiremate.com"
+      };
+      
+      let errorHtml = htmlData
+        .replace(/__META_TITLE__/g, defaultMeta.title)
+        .replace(/__META_DESCRIPTION__/g, defaultMeta.description)
+        .replace(/__META_OG_TITLE__/g, defaultMeta.title)
+        .replace(/__META_OG_DESCRIPTION__/g, defaultMeta.description)
+        .replace(/__META_OG_IMAGE__/g, defaultMeta.image)
+        .replace(/__META_OG_URL__/g, defaultMeta.url)
+        .replace(/__META_[A-Z0-9_]+__/g, "");
+      
+      res.setHeader("Content-Type", "text/html; charset=utf-8");
+      res.setHeader("X-Prerender", "error-fallback");
+      res.status(200).send(errorHtml);
+    } catch (fallbackErr) {
+      console.error('[Prerender] Fallback error:', fallbackErr);
+      res.status(500).send("Server error");
+    }
   }
 }
