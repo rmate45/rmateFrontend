@@ -123,18 +123,12 @@ async function getPageMetadata(url, queryParams) {
 
 export default async function handler(req, res) {
   try {
-    // Extract path from query param, or normalize from URL
+    // Extract path from query param - this is the most reliable way
     let pathParam = req.query?.path;
     
-    // If no path in query, try to extract from URL
-    if (!pathParam || pathParam === '') {
-      const urlPath = req.url?.split('?')[0]; // Remove query string
-      // If URL is the API route itself, default to root
-      if (urlPath === '/api/prerender' || urlPath === '/prerender' || !urlPath || urlPath === '/') {
-        pathParam = "/";
-      } else {
-        pathParam = urlPath || "/";
-      }
+    // Handle root route explicitly
+    if (!pathParam || pathParam === '' || pathParam === undefined || pathParam === null) {
+      pathParam = "/";
     }
     
     // Normalize path - ensure it starts with /
@@ -146,6 +140,9 @@ export default async function handler(req, res) {
     if (pathParam === "" || pathParam === "//") {
       pathParam = "/";
     }
+    
+    // Debug logging (remove in production if needed)
+    console.log('[Prerender] Path:', pathParam, 'Query:', req.query, 'URL:', req.url);
     
     const indexPath = path.resolve(process.cwd(), "dist", "index.html");
 

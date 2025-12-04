@@ -124,18 +124,12 @@ async function getPageMetadata(url, queryParams) {
 
 export default async function handler(req, res) {
   try {
-    // Extract path from query param, or normalize from URL
+    // Extract path from query param - this is the most reliable way
     let pathParam = req.query?.path;
     
-    // If no path in query, try to extract from URL
-    if (!pathParam || pathParam === '') {
-      const urlPath = req.url?.split('?')[0]; // Remove query string
-      // If URL is the API route itself, default to root
-      if (urlPath === '/api/prerender' || urlPath === '/prerender' || !urlPath || urlPath === '/') {
-        pathParam = "/";
-      } else {
-        pathParam = urlPath || "/";
-      }
+    // Handle root route explicitly
+    if (!pathParam || pathParam === '' || pathParam === undefined || pathParam === null) {
+      pathParam = "/";
     }
     
     // Normalize path - ensure it starts with /
@@ -147,6 +141,9 @@ export default async function handler(req, res) {
     if (pathParam === "" || pathParam === "//") {
       pathParam = "/";
     }
+    
+    // Debug logging (remove in production if needed)
+    console.log('[Prerender] Path:', pathParam, 'Query:', req.query, 'URL:', req.url);
     
     const indexPath = path.resolve(process.cwd(), "dist", "index.html");
 
@@ -160,6 +157,9 @@ export default async function handler(req, res) {
       image: meta?.image || "https://dev.retiremate.com/assets/meta-image-DYDKTIzA.png",
       url: meta?.url || `https://dev.retiremate.com${pathParam === "/" ? "" : pathParam}`
     };
+    
+    // Debug: Log meta values to verify they're correct
+    console.log('[Prerender] Meta values:', safeMeta);
 
     let finalHtml = htmlData
       .replace(/__META_TITLE__/g, safeMeta.title)
@@ -171,6 +171,11 @@ export default async function handler(req, res) {
 
     // Remove any remaining placeholders as a safety measure
     finalHtml = finalHtml.replace(/__META_[A-Z0-9_]+__/g, "");
+    
+    // Verify replacements worked
+    if (finalHtml.includes('__META_')) {
+      console.error('[Prerender] WARNING: Some placeholders were not replaced!');
+    }
 
     res.setHeader("Content-Type", "text/html; charset=utf-8");
 
