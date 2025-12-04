@@ -156,6 +156,7 @@ export default async function handler(req, res) {
       image: meta?.image || "https://dev.retiremate.com/assets/meta-image-DYDKTIzA.png",
       url: meta?.url || `https://dev.retiremate.com${pathParam === "/" ? "" : pathParam}`
     };
+    
 
     let finalHtml = htmlData
       .replace(/__META_TITLE__/g, safeMeta.title)
