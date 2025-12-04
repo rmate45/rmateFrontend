@@ -21,16 +21,7 @@
       ]
     }
   ],
-  "routes": [
-    {
-      "src": "/",
-      "dest": "/api/prerender?path=/"
-    },
-    {
-      "src": "/index.html",
-      "dest": "/api/prerender?path=/"
-    }
-  ],
+
   "rewrites": [
     { "source": "/", "destination": "/api/prerender?path=/" },
     { "source": "/index.html", "destination": "/api/prerender?path=/" },
