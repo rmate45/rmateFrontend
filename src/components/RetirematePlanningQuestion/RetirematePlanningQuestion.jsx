@@ -57,7 +57,7 @@ const RetirematePlanningQuestion = () => {
                         Explore retirement through stories like yours
                     </h2>
                     <div className="flex justify-center items-center py-20">
-                        <div className="text-lg text-gray-600">Loading Top Finanical Planning questions...</div>
+                        <div className="text-lg text-gray-600">Loading Top Financial Planning Questions Asked by People Like You...</div>
                     </div>
                 </div>
             </div>
@@ -82,7 +82,7 @@ const RetirematePlanningQuestion = () => {
         <div className="text-center px-6 pt-10 sm:pt-16">
             <div className="max-w-7xl mx-auto">
                 <p className="text-introPrimary font-medium text-xl sm:text-2xl text-center">
-                    Top Finanical Planning  questions
+                  Top Financial Planning Questions Asked by People Like You
                 </p>
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 mt-10">
                     {
