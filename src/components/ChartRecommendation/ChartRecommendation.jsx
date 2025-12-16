@@ -1,19 +1,21 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import logo from "../../assets/retiremate-logo-favicon.svg";
 import { LoadingIndicator } from "../LoadingIndicator/LoadingIndicator";
 
-const ChartRecommendation = ({ setShowTapQuestions }) => {
-    const analysisData = {
-        yourSnapShot:
-            "Your savings are projected to last well past 95 - a strong and resilient trajectory. You've built a solid foundation, and with a few strategic choices, you can expand optionality even further. Let's take a look at what's driving your outlook and the adjustments that can enhance it.",
-        whatsShapingYourOutlook:
-            "Your contributions of 10% ($3500/mo) help your savings grow to about $14056677 before retirement. Retiring around age 67 sets the point where saving stops and withdrawals begin. Starting Social Security at 67 provides roughly $85610/yr, reducing how much you need to withdraw. A long-term growth rate of 6.7% shapes how quickly your balance builds and how long it lasts.",
-        howToStrengthenYourPlan:
-            "1. Increase your monthly contribution to 15-20% ($5250–$7000/mo): +5-8 years\n\nA higher contribution rate compounds over time and meaningfully extends how long your balance lasts.\n\n\n2. Delay collecting Social Security 1–3 years (start at age 68-70): +2-4 years\n\nDelaying increases your monthly benefit by up to 24%, reducing the amount you need to withdraw each year.\n\n\n3. Shift your transition away from full-time work by 2-4 years: +1-3 years\n\nEach additional working year adds income and shortens the withdrawal period, buying you more retirement time.\n\n\n4. Improve your long-term growth rate to 7.5%–9%: +3-6 years\n\nHigher long-term returns can significantly increase your peak savings and slow down future drawdowns.\n\n\n5. Reduce long-term costs by 10-15%: +2-4 years\n\nLower ongoing expenses decrease annual withdrawals and help your savings last longer.\n\n\n6. Explore location flexibility: +2-5 years\n\nLiving in a lower-cost area reduces required withdrawals and stretches both Social Security and savings.",
-        whatThisDoesntInclude:
-            "This is a clear starting point based on your answers. A few meaningful factors aren't included yet, but they can influence your long-term outlook:\n\nLong-term care needs or long-term care insurance\nMajor health events or medical shocks\nUnexpected changes in your ability to work\nDivorce, remarriage, or large inheritances\nHome equity decisions (downsizing, relocating, or renting)\nFuture changes to Social Security or tax policy.\n\nAs you refine your goals and add more details, your plan will become more personalized and precise.",
-    };
+const ChartRecommendation = ({ setShowTapQuestions, data, handlePandingItems }) => {
+    console.log(data?.text?.recommendations, "datarecomend");
 
+    /**
+     * ✅ Dynamic analysis data from API
+     * Fallback to empty object to avoid crashes
+     */
+    const analysisData = useMemo(() => {
+        return data?.text?.recommendations ?? {};
+    }, [data]);
+
+    /**
+     * Sections configuration (unchanged) 
+     */
     const sections = [
         { key: "yourSnapShot", title: "Your Snapshot" },
         { key: "whatsShapingYourOutlook", title: "What's Shaping Your Outlook" },
@@ -24,11 +26,14 @@ const ChartRecommendation = ({ setShowTapQuestions }) => {
     const [history, setHistory] = useState([]);
     const [currentSectionIndex, setCurrentSectionIndex] = useState(0);
     const [revealing, setRevealing] = useState(false);
-
+    const [strengthenExpanded, setStrengthenExpanded] = useState(false);
 
     const currentSection =
         currentSectionIndex !== null ? sections[currentSectionIndex] : null;
 
+    /**
+     * Handle tap reveal
+     */
     const handleSectionClick = () => {
         setRevealing(true);
 
@@ -38,49 +43,100 @@ const ChartRecommendation = ({ setShowTapQuestions }) => {
             if (currentSectionIndex < sections.length - 1) {
                 setCurrentSectionIndex((prev) => prev + 1);
             } else {
-                // ✅ LAST TAP – console only
-
-
                 setCurrentSectionIndex(null);
-                setShowTapQuestions(true)
+                handlePandingItems()
+                setShowTapQuestions(true);
             }
 
             setRevealing(false);
         }, 1500);
     };
 
+    /**
+     * Auto-scroll on section change
+     */
     useEffect(() => {
-
         window.scrollTo({
             top: document.documentElement.scrollHeight,
             behavior: "smooth",
         });
+    }, [currentSectionIndex,strengthenExpanded]);
 
-    }, [currentSectionIndex]);
+    useEffect(() => {
+        setStrengthenExpanded(false);
+    }, [analysisData]);
+    const parseTextToArray = (text = "") => {
+        return text
+            .split(/<br\s*\/?>/gi) // split on every <br>
+            .map(item => item.trim())
+            .filter(Boolean);
+    };
+
+    if (!data?.text?.recommendations) {
+        return (
+            <div className="flex justify-center mt-6">
+                <LoadingIndicator loading />
+            </div>
+        );
+    }
+
+    const strengthenText = analysisData?.howToStrengthenYourPlan;
+    const strengthenHasMoreThanThree =
+        !!strengthenText && parseTextToArray(strengthenText).length > 3;
+    const blockWhatDoesntIncludeUntilExpanded =
+        currentSection?.key === "whatThisDoesntInclude" &&
+        strengthenHasMoreThanThree &&
+        !strengthenExpanded;
 
     return (
         <div>
             <div className="max-w-4xl mx-auto mt-2">
                 <div className="space-y-2">
-                    {/* History Sections */}
+                    {/* 🔁 History Sections */}
                     {history.map((sectionIdx) => {
                         const section = sections[sectionIdx];
-                        const text = analysisData[section.key];
+                        const text = analysisData?.[section.key];
+                        if (!text) return null;
+
+                        const items = parseTextToArray(text);
+                        const isStrengthenYourPlan = section.key === "howToStrengthenYourPlan";
+                        const shouldShowMoreCta =
+                            isStrengthenYourPlan && !strengthenExpanded && items.length > 3;
+                        const itemsToRender = shouldShowMoreCta ? items.slice(0, 3) : items;
 
                         return (
                             <div key={`history-${sectionIdx}`} className="space-y-3">
-                                <div className="flex items-start gap-1">
+                                <div className="w-full">
                                     {/* <img src={logo} alt="logo" className="pt-1" /> */}
-                                    <div className="px-4 py-2 min-h-10 text-sm max-w-full w-full rounded-xl flex justify-center items-center jost border border-green-300 text-black">
+
+                                    <div className="">
                                         <div className="whitespace-pre-line space-y-2">
-                                            <h2 className="text-left jost text-base font-medium">
+                                            <h2 className="text-left  jost text-base font-medium bg-introPrimary p-3 rounded-xl text-white">
                                                 {section.title}
                                             </h2>
-                                            {text.split("\n\n").map((paragraph, idx) => (
-                                                <p key={idx} className="text-left jost ml-2">
-                                                    {paragraph}
-                                                </p>
+
+                                            {/* ✅ Handles \n\n and <br> safely */}
+                                            {itemsToRender.map((item, idx) => (
+                                                <div key={idx} className="px-4  py-2 min-h-10 text-sm  rounded-xl w-fit jost border border-green-300 text-black">
+                                                    {/* <span className="font-medium">{idx + 1}.</span> */}
+                                                    <p className="text-left jost">
+                                                        {item.replace(/\\n|\n/g, " ").replace(/\s+/g, " ").trim()}
+                                                    </p>
+                                                </div>
                                             ))}
+
+                                            {shouldShowMoreCta && (
+                                                <div
+                                                    onClick={() => setStrengthenExpanded(true)}
+                                                    className="w-full py-2 mb-2 px-3 text-white bg-introPrimary rounded-lg cursor-pointer"
+                                                >
+                                                    <h2 className="text-left jost">
+                                                        Tap for more ways to "Strengthen Your Plan"
+                                                    </h2>
+                                                </div>
+                                            )}
+
+
                                         </div>
                                     </div>
                                 </div>
@@ -88,15 +144,17 @@ const ChartRecommendation = ({ setShowTapQuestions }) => {
                         );
                     })}
 
-                    {/* Current Section */}
-                    {currentSection && (
+                    {/* 👉 Current Section CTA */}
+                    {currentSection && !blockWhatDoesntIncludeUntilExpanded && (
                         <div className="space-y-2">
                             <div className="mb-3 flex justify-end">
                                 <div
                                     onClick={handleSectionClick}
-                                    className="w-full py-2 mb-2 px-3 border border-green-300 rounded-lg cursor-pointer"
+                                    className="w-full py-2 mb-2 px-3 text-white bg-introPrimary rounded-lg cursor-pointer"
                                 >
-                                    <h2 className="text-left jost">Tap to view "{currentSection.title}"</h2>
+                                    <h2 className="text-left jost">
+                                        Tap to view "{currentSection.title}"
+                                    </h2>
                                 </div>
                             </div>
 
@@ -107,17 +165,6 @@ const ChartRecommendation = ({ setShowTapQuestions }) => {
                             )}
                         </div>
                     )}
-
-                    {/* Completion Message */}
-                    {/* {currentSectionIndex === null && history.length > 0 && (
-            <div className="mb-3 px-4 flex justify-center">
-              <div className="px-4 py-3 rounded-xl bg-green-300 text-black text-center max-w-xs">
-                <p className="text-left jost">
-                  You've completed all sections of your retirement analysis!
-                </p>
-              </div>
-            </div>
-          )} */}
                 </div>
             </div>
         </div>

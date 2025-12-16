@@ -53,7 +53,7 @@ const HeroSection = ({ searchIcon, onSearch, onVoiceSearch }) => {
 
   return (
     <>
-      <div className="bg-introPrimary sm:min-h-[606px] flex items-center justify-between text-white py-12 md:py-28 md:pb-42 text-center px-2 bg-no-repeat bg-cover bg-center relative" style={{ backgroundImage: `url(${bgImage})` }}>
+      <div className="bg-introPrimary sm:min-h-[606px] flex items-center justify-between text-white py-12 md:py-28 md:pb-42 text-center px-2 bg-no-repeat bg-cover bg-center relative bg-[url(/src/assets/mobile-image.png)] sm:bg-[url(/src/assets/bgImage.png)]" >
         <div className="max-w-2xl w-full mx-auto relative z-3">
           <h1 className="font-medium mb-3 text-3xl md:text-5xl mt-12 sm:mt-0">
             Retirement is Scary.

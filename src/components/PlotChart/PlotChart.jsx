@@ -100,7 +100,14 @@ const PlotChart = ({ data, showDisclaimer = false, setShowPeningItems, onTapAnal
       summaryText = `Retirement projections show your savings may last only until age ${savingsLastAge}. This is a critical warning sign. You need to act now, increase awareness, and start planning to avoid a financial shortfall in retirement.`;
     }
   }
-
+const handlePandingItems = ()=>{
+  setShowPeningItems(true);
+          setShowRecommendation(true);
+          if (showDisclaimer && typeof onTapAnalysis === "function") {
+            onTapAnalysis();
+            setShowDesc(true)
+          }
+}
   return (
     <div className="w-full">
       <div className="px-2 py-2 rounded-xl border border-green-300 bg-white w-full max-w-full">
@@ -216,15 +223,10 @@ const PlotChart = ({ data, showDisclaimer = false, setShowPeningItems, onTapAnal
         </div>
         {data?.text?.topStatement && (<p className="jost text-sm text-center text-gray-700 font-semibold mb-3 "> {data?.text?.topStatement}</p>)}
       </div>
-      {<ChartRecommendation setShowTapQuestions={setShowTapQuestions} />}
-      {showTapQuestion && (<div
+      {<ChartRecommendation setShowTapQuestions={setShowTapQuestions} data={data} handlePandingItems={handlePandingItems}/>}
+      {/* {showTapQuestion && (<div
         onClick={() => {
-          setShowPeningItems(true);
-          setShowRecommendation(true);
-          if (showDisclaimer && typeof onTapAnalysis === "function") {
-            onTapAnalysis();
-            setShowDesc(true)
-          }
+          
         }}
         className="px-2 py-2 mt-3 rounded-xl border-green-300 border bg-white w-full max-w-full block cursor-pointer"
       >
@@ -234,7 +236,7 @@ const PlotChart = ({ data, showDisclaimer = false, setShowPeningItems, onTapAnal
 
           Tap here to view the analysis
         </p>
-      </div>)}
+      </div>)} */}
       {showDesc && (<div className="order-green-300 bg-green-100 p-3 jost rounded-xl mt-3">
         To receive a free, educational retirement analysis tailored to your age, income, and goals, please enter your contact details below.”
       </div>)}

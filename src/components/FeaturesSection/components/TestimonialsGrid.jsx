@@ -104,7 +104,7 @@ const TestimonialsGrid = () => {
     <div className="px-6 py-5 sm:py-16 sm:pt-5">
     <div className="text-center  max-w-7xl mx-auto ">
       <div className="flex flex-col justify-center ">
-        <h2 className="text-introPrimary font-medium text-2xl mb-8">
+        <h2 className="text-introPrimary font-medium text-2xl mb-8 mt-10">
           Explore retirement through stories like yours
         </h2>
 

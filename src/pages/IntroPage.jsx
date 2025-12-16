@@ -34,6 +34,7 @@ import MedicareQuiz from "../components/MedicareQuiz/MedicareQuiz";
 import SeoHelmet from "../components/Seo/SeoHelmet";
 import chatImage from '.././assets/chat-bubble.png'
 import SearchManual from "../components/HeroSection/SearchManual";
+import ScrollToSection from "../components/ScrollToSection/ScrollToSection";
 function IntroPage() {
   // Data for components
   const suggestedQuestions = [
@@ -168,6 +169,7 @@ function IntroPage() {
         title="RetireMate"
         description="Expert-curated retirement and Medicare insights."
         url={WEBSITE_URL} />
+        <ScrollToSection/>
       <Header logo={logo} onLoginClick={handleLoginClick} />
 
       <HeroSection
@@ -176,10 +178,12 @@ function IntroPage() {
         onSearch={handleSearch}
         onVoiceSearch={handleVoiceSearch}
       />
-      <div id="search-manual">
+      {/* <div id="search-manual">
         <SearchManual onSearch={handleSearch} />
-      </div>
-      <TestimonialsGrid />
+      </div> */}
+     <section id="testimonials">
+       <TestimonialsGrid />
+     </section>
 
       {/* <CustomStory /> */}
 
@@ -203,11 +207,13 @@ function IntroPage() {
       <FeaturesSection features={features} />
 
       <AskAnything />
+      <section id="questions-to-action">
 
-      <QuestionsToAction
-        onQuestionClick={handleQuestionClick}
-        onBrowseAllClick={handleBrowseAllClick}
-      />
+        <QuestionsToAction
+          onQuestionClick={handleQuestionClick}
+          onBrowseAllClick={handleBrowseAllClick}
+        />
+      </section>
 
       <ArticleSection />
 
@@ -216,24 +222,21 @@ function IntroPage() {
       <ResourcesSection />
 
       <Footer onLinkClick={handleFooterLinkClick} />
-      <div
+      {/* <div
         className="fixed bottom-6 md:bottom-15 right-6 z-999 group cursor-pointer"
         onClick={handleScrollToSearchManual}
       >
-        {/* Chat Image */}
         <img
           src={chatImage}
           alt="Ask RetireMate"
           className=" transition-opacity duration-300 z-9 relative"
         />
-
-        {/* Hover Text */}
         <div className="absolute inset-0 flex items-center md:top-10 justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
           <span className="text-white text-sm font-semibold jost bg-introPrimary px-3 py-1 rounded-md">
             Ask RetireMate
           </span>
         </div>
-      </div>
+      </div> */}
     </>
   );
 }
