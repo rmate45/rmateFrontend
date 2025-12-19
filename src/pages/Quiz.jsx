@@ -161,9 +161,11 @@ const Quiz = () => {
   // console.log(showPendingItems, "showPendingItems");
   const [item, setItem] = useState(null)
   const [graphTitleQuestion, SetGraphTitleQuestion] = useState("")
-  console.log(showPendingItems,'showPendingItems');
-  console.log(showStarterQuestions,'showStarterQuestions');
-  
+  const [userAge, setUserAge] = useState("")
+  // const [userName, SetuserName] = useState("")
+  console.log(showPendingItems, 'showPendingItems');
+  console.log(showStarterQuestions, 'showStarterQuestions');
+
   useEffect(() => {
 
     initializeFlow();
@@ -193,14 +195,14 @@ const Quiz = () => {
       return;
     }
 
-    setConversation((prev) => [
-      ...prev,
-      {
-        type: "system",
-        text: "Let's get started with a few basic questions.",
-        // isMobile: true
-      },
-    ]);
+    // setConversation((prev) => [
+    //   ...prev,
+    //   {
+    //     type: "system",
+    //     text: "Let's get started with a few basic questions.",
+    //     // isMobile: true
+    //   },
+    // ]);
   }, [showPendingItems, urlData.isPersona]);
 
   useEffect(() => {
@@ -372,6 +374,8 @@ const Quiz = () => {
 
         if (fetchedData) {
           SetGraphTitleQuestion(fetchedData?.question)
+          setUserName(fetchedData?.name)
+          setUserAge(fetchedData?.age)
           // First message - question
           setTimeout(() => {
             setConversation([{ type: "answer", text: fetchedData?.question }]);
@@ -411,7 +415,7 @@ const Quiz = () => {
 
       if (urlData?.isPersona && urlData.id) {
         const fetched = await fetchPersonaById(urlData.id);
-        console.log("fetched",fetched)
+        console.log("fetched", fetched)
         await initialChartMessage(fetched);
       }
 
@@ -458,7 +462,7 @@ const Quiz = () => {
 
       if (
         statement?.question ==
-        "Your privacy matters! Anything you share stays private and is only used to improve your results. Learn more here."
+        "You're in control of what you share. Your answers stay private and only help personalize your results. Learn more here."
       ) {
         setConversation((prev) => [
           ...prev,
@@ -466,8 +470,7 @@ const Quiz = () => {
             type: "system",
             text: (
               <p className="jost">
-                Your privacy matters! Anything you share stays private and is
-                only used to improve your results. Learn more{" "}
+                You're in control of what you share. Your answers stay private and only help personalize your results. Learn more here.{" "}
                 <span
                   onClick={() => setShowModal(true)}
                   className="jost text-primary hover:!underline cursor-pointer"
@@ -750,8 +753,10 @@ const Quiz = () => {
     };
     const statementsResponse = await api.get("/get-statements");
     const intialStartMessages = statementsResponse?.data?.data
-    console.log(intialStartMessages,"statementsResponse")
+    console.log(intialStartMessages, "statementsResponse")
     SetGraphTitleQuestion(personaData?.persona_question)
+    setUserName(personaData?.name)
+    setUserAge(personaData?.age)
     setConversation([{ type: "system", text: intialStartMessages[0].question }]);
     console.log(statementsResponse, "statementsResponse")
     // Second message after 1 second
@@ -795,7 +800,7 @@ const Quiz = () => {
         ...prev,
         {
           type: "system",
-          text: personaData?.chat_bubble,
+          text: personaData?.persona_description,
         },
       ]);
     }, 3000);
@@ -1636,11 +1641,13 @@ const Quiz = () => {
               return (
                 <div key={idx} className="mb-4 px-4 ">
                   <PlotChart
-                  questionTitle={graphTitleQuestion}
+                    questionTitle={graphTitleQuestion}
+                    userName={userName}
                     data={item}
                     showDisclaimer={item.showDisclaimer}
                     setShowPeningItems={setShowPeningItems}
                     onTapAnalysis={handleTapAnalysis}
+                    userAge={userAge}
                   />
                 </div>
               );
@@ -1669,10 +1676,10 @@ const Quiz = () => {
               !showFollowUpQuestions
             }
           />
-       
+
           {showStarterQuestions && (
             <div className="mx-4">
-             
+
               <RetirementQa />
             </div>
           )}
@@ -1735,6 +1742,7 @@ const Quiz = () => {
                 onOptionClick={handleOptionClick}
                 onTextSubmit={handleTextSubmit}
                 onMultiSelectSubmit={handleMultiSelectSubmit}
+                setUserAge={setUserAge}
               />
             )}
 

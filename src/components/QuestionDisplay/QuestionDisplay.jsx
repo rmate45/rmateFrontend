@@ -17,6 +17,7 @@ export const QuestionDisplay = ({
   scrollUp,
   scrollToBottom, // Add this new prop for scrolling to bottom
   type,
+  setUserAge
 }) => {
   const [selectedMultiOptions, setSelectedMultiOptions] = useState([]);
 const [showModal, setShowModal] = useState(false);
@@ -86,6 +87,7 @@ const [showModal, setShowModal] = useState(false);
         {/* Regular Free Text Input (ZIP or other text) */}
         {currentQuestion.inputType === "free_text" && !isPhoneInput && (
           <TextInput
+            setUserAge={setUserAge}
             value={textInput}
             onChange={onTextChange}
             onSubmit={onTextSubmit}

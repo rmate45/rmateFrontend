@@ -31,8 +31,14 @@ const CustomTooltip = ({ active, payload }) => {
 
   if (active && payload && payload.length) {
     const data = payload[0].payload;
+    console.log(data,"data");
+    
     const showHouseholdIncome = data.age < 67;
     const showSocialSecurity = data.age >= 67;
+    const contributionAmount = data.contribution / 12
+    console.log(contributionAmount, "contributionAmount");
+    console.log(showHouseholdIncome, "showHouseholdIncome");
+    console.log(data.householdIncome, "data.householdIncome");
 
     return (
       <div className="bg-white p-2 border border-gray-300 jost rounded shadow-sm text-xs">
@@ -45,21 +51,25 @@ const CustomTooltip = ({ active, payload }) => {
             Household Income: {dollarFormatter(data.householdIncome)}
           </p>
         )}
-        {showSocialSecurity && (
+       
+        {showSocialSecurity && (<p className="text-red-600">
+          Withdrawal: {dollarFormatter(data.withdrawal)}
+        </p>)}
+        {showHouseholdIncome && (<p className="text-red-600">
+          Contributing: {dollarFormatter(contributionAmount)}
+        </p>)}
+         {showSocialSecurity && (
           <p className="text-blue-600">
             Social Security: {dollarFormatter(data.socialSecurity)}
           </p>
         )}
-        <p className="text-red-600">
-          Withdrawal: {dollarFormatter(data.withdrawal)}
-        </p>
       </div>
     );
   }
   return null;
 };
 
-const PlotChart = ({ data, showDisclaimer = false, setShowPeningItems, onTapAnalysis, questionTitle }) => {
+const PlotChart = ({ data, showDisclaimer = false, setShowPeningItems, onTapAnalysis, questionTitle, userName,userAge }) => {
   console.log(data, "data--123");
 
   const [showRecommendation, setShowRecommendation] = useState(false);
@@ -100,19 +110,19 @@ const PlotChart = ({ data, showDisclaimer = false, setShowPeningItems, onTapAnal
       summaryText = `Retirement projections show your savings may last only until age ${savingsLastAge}. This is a critical warning sign. You need to act now, increase awareness, and start planning to avoid a financial shortfall in retirement.`;
     }
   }
-const handlePandingItems = ()=>{
-  setShowPeningItems(true);
-          setShowRecommendation(true);
-          if (showDisclaimer && typeof onTapAnalysis === "function") {
-            onTapAnalysis();
-            setShowDesc(true)
-          }
-}
+  const handlePandingItems = () => {
+    setShowPeningItems(true);
+    setShowRecommendation(true);
+    if (showDisclaimer && typeof onTapAnalysis === "function") {
+      onTapAnalysis();
+      setShowDesc(true)
+    }
+  }
   return (
     <div className="w-full">
       <div className="px-2 py-2 rounded-xl border border-green-300 bg-white w-full max-w-full">
 
-        {questionTitle &&(<h1 className="jost text-gray-700 mb-2 mt-2 leading-relaxed text-center font-semibold">
+        {questionTitle && (<h1 className="jost text-gray-700 mb-2 mt-2 leading-relaxed text-center font-semibold">
           {questionTitle}
         </h1>)}
 
@@ -223,7 +233,7 @@ const handlePandingItems = ()=>{
         </div>
         {data?.text?.topStatement && (<p className="jost text-sm text-center text-gray-700 font-semibold mb-3 "> {data?.text?.topStatement}</p>)}
       </div>
-      {<ChartRecommendation setShowTapQuestions={setShowTapQuestions} data={data} handlePandingItems={handlePandingItems}/>}
+      {<ChartRecommendation userAge={userAge} userName={userName} setShowTapQuestions={setShowTapQuestions} data={data} handlePandingItems={handlePandingItems} />}
       {/* {showTapQuestion && (<div
         onClick={() => {
           

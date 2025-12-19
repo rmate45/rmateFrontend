@@ -2,26 +2,54 @@ import React, { useState, useEffect, useMemo } from "react";
 import logo from "../../assets/retiremate-logo-favicon.svg";
 import { LoadingIndicator } from "../LoadingIndicator/LoadingIndicator";
 
-const ChartRecommendation = ({ setShowTapQuestions, data, handlePandingItems }) => {
-    console.log(data?.text?.recommendations, "datarecomend");
+const ChartRecommendation = ({
+    setShowTapQuestions,
+    data,
+    handlePandingItems,
+    userName,
+    userAge,
+}) => {
 
-    /**
-     * ✅ Dynamic analysis data from API
-     * Fallback to empty object to avoid crashes
-     */
     const analysisData = useMemo(() => {
         return data?.text?.recommendations ?? {};
     }, [data]);
 
-    /**
-     * Sections configuration (unchanged) 
-     */
-    const sections = [
-        { key: "yourSnapShot", title: "Your Snapshot" },
-        { key: "whatsShapingYourOutlook", title: "What's Shaping Your Outlook" },
-        { key: "howToStrengthenYourPlan", title: "How To Strengthen Your Plan" },
-        { key: "whatThisDoesntInclude", title: "What This Doesn't Include" },
-    ];
+    console.log(Number(userAge) === 67, "Number(userAge) === 67");
+
+    const sections = useMemo(() => {
+        const baseSections = [
+            { key: "yourSnapShot", title: `${userName || "your"} Snapshot` },
+            { key: "whatsShapingYourOutlook", title: `What's Shaping ${userName || "your"} Outlook` },
+            { key: "yourRetirementPaycheck", title: `${userName || "your"} Retirement pay check` },
+            { key: "otherSourcesOfRetirementIncome", title: `Other sources of retirement income` },
+            { key: "estimatedAnnualCostsInRetirement", title: `Estimated annual costs in retirement` },
+            { key: "howToStrengthenYourPlan", title: `How RetireMate can help` },
+            { key: "whatThisDoesntInclude", title: `What This Doesn't Include` },
+        ];
+
+        const ageNum = Number(
+            typeof userAge === "number"
+                ? userAge
+                : String(userAge || "").replace(/\D/g, "")
+        );
+
+        
+        if (ageNum !== 67) {
+            console.log("ageNum:", !Number.isNaN(ageNum) && ageNum === 67);
+            return baseSections.filter(
+                (section) =>
+                    ![
+                        "yourRetirementPaycheck",
+                        "otherSourcesOfRetirementIncome",
+                        "estimatedAnnualCostsInRetirement",
+                    ].includes(section.key)
+            );
+        }
+        console.log(baseSections, "baseSections");
+        
+        return baseSections;
+    }, [userAge, userName]);
+    console.log(sections, "sections");
 
     const [history, setHistory] = useState([]);
     const [currentSectionIndex, setCurrentSectionIndex] = useState(0);
@@ -44,7 +72,7 @@ const ChartRecommendation = ({ setShowTapQuestions, data, handlePandingItems }) 
                 setCurrentSectionIndex((prev) => prev + 1);
             } else {
                 setCurrentSectionIndex(null);
-                handlePandingItems()
+                handlePandingItems();
                 setShowTapQuestions(true);
             }
 
@@ -60,15 +88,16 @@ const ChartRecommendation = ({ setShowTapQuestions, data, handlePandingItems }) 
             top: document.documentElement.scrollHeight,
             behavior: "smooth",
         });
-    }, [currentSectionIndex,strengthenExpanded]);
+    }, [currentSectionIndex, strengthenExpanded]);
 
     useEffect(() => {
         setStrengthenExpanded(false);
     }, [analysisData]);
+
     const parseTextToArray = (text = "") => {
         return text
-            .split(/<br\s*\/?>/gi) // split on every <br>
-            .map(item => item.trim())
+            .split(/<br\s*\/?>/gi)
+            .map((item) => item.trim())
             .filter(Boolean);
     };
 
@@ -83,6 +112,7 @@ const ChartRecommendation = ({ setShowTapQuestions, data, handlePandingItems }) 
     const strengthenText = analysisData?.howToStrengthenYourPlan;
     const strengthenHasMoreThanThree =
         !!strengthenText && parseTextToArray(strengthenText).length > 3;
+
     const blockWhatDoesntIncludeUntilExpanded =
         currentSection?.key === "whatThisDoesntInclude" &&
         strengthenHasMoreThanThree &&
@@ -95,50 +125,55 @@ const ChartRecommendation = ({ setShowTapQuestions, data, handlePandingItems }) 
                     {/* 🔁 History Sections */}
                     {history.map((sectionIdx) => {
                         const section = sections[sectionIdx];
+                        if (!section) return null;
+
                         const text = analysisData?.[section.key];
                         if (!text) return null;
 
                         const items = parseTextToArray(text);
-                        const isStrengthenYourPlan = section.key === "howToStrengthenYourPlan";
+                        const isStrengthenYourPlan =
+                            section.key === "howToStrengthenYourPlan";
+
                         const shouldShowMoreCta =
-                            isStrengthenYourPlan && !strengthenExpanded && items.length > 3;
-                        const itemsToRender = shouldShowMoreCta ? items.slice(0, 3) : items;
+                            isStrengthenYourPlan &&
+                            !strengthenExpanded &&
+                            items.length > 3;
+
+                        const itemsToRender = shouldShowMoreCta
+                            ? items.slice(0, 3)
+                            : items;
 
                         return (
                             <div key={`history-${sectionIdx}`} className="space-y-3">
-                                <div className="w-full">
-                                    {/* <img src={logo} alt="logo" className="pt-1" /> */}
+                                <div className="whitespace-pre-line space-y-2">
+                                    <h2 className="text-left jost text-base font-medium bg-introPrimary p-3 rounded-xl text-white">
+                                        {section.title}
+                                    </h2>
 
-                                    <div className="">
-                                        <div className="whitespace-pre-line space-y-2">
-                                            <h2 className="text-left  jost text-base font-medium bg-introPrimary p-3 rounded-xl text-white">
-                                                {section.title}
-                                            </h2>
-
-                                            {/* ✅ Handles \n\n and <br> safely */}
-                                            {itemsToRender.map((item, idx) => (
-                                                <div key={idx} className="px-4  py-2 min-h-10 text-sm  rounded-xl w-fit jost border border-green-300 text-black">
-                                                    {/* <span className="font-medium">{idx + 1}.</span> */}
-                                                    <p className="text-left jost">
-                                                        {item.replace(/\\n|\n/g, " ").replace(/\s+/g, " ").trim()}
-                                                    </p>
-                                                </div>
-                                            ))}
-
-                                            {shouldShowMoreCta && (
-                                                <div
-                                                    onClick={() => setStrengthenExpanded(true)}
-                                                    className="w-full py-2 mb-2 px-3 text-white bg-introPrimary rounded-lg cursor-pointer"
-                                                >
-                                                    <h2 className="text-left jost">
-                                                        Tap for more ways to "Strengthen Your Plan"
-                                                    </h2>
-                                                </div>
-                                            )}
-
-
+                                    {itemsToRender.map((item, idx) => (
+                                        <div
+                                            key={idx}
+                                            className="px-4 py-2 min-h-10 text-sm max-w-xs rounded-xl flex justify-start items-center jost rounded-tl-none border border-green-300 text-black"
+                                        >
+                                            <p className="text-left jost">
+                                                {item
+                                                    .replace(/\\n|\n/g, " ")
+                                                    .replace(/\s+/g, " ")
+                                                    .trim()}
+                                            </p>
                                         </div>
-                                    </div>
+                                    ))}
+
+                                    {shouldShowMoreCta && (
+                                        <div
+                                            onClick={() => setStrengthenExpanded(true)}
+                                            className="w-full py-2 mb-2 px-3 text-white bg-introPrimary rounded-lg cursor-pointer"
+                                        >
+                                            <h2 className="text-left jost">
+                                                Tap for more ways to "Strengthen {userName} Plan"
+                                            </h2>
+                                        </div>
+                                    )}
                                 </div>
                             </div>
                         );
