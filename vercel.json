@@ -23,6 +23,7 @@
   ],
   
   "rewrites": [
+    { "source": "/sitemap.xml", "destination": "/api/sitemap" },
     { "source": "^/$", "destination": "/api/prerender?path=/" },
     { "source": "/index.html", "destination": "/api/prerender?path=/" },
     { "source": "/intro", "destination": "/api/prerender?path=/intro" },
