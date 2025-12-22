@@ -21,7 +21,7 @@ async function getPageMetadata(url, queryParams) {
   const defaultMeta = {
     title: "RetireMate - Expert Retirement & Medicare Guidance",
     description: "Get expert-curated retirement and Medicare insights. Plan your retirement with confidence using our comprehensive tools and personalized guidance.",
-    image: "https://dev.retiremate.com/assets/meta-image-DYDKTIzA.png",
+    image: "https://dev.retiremate.com/meta-image.png", // Simplified path
     url: `https://dev.retiremate.com${url === "/" ? "" : url}`,
   };
 
@@ -129,7 +129,12 @@ async function getPageMetadata(url, queryParams) {
 export default async function handler(req, res) {
   try {
     const pathParam = req.query.path || req.url || "/";
+    const userAgent = req.headers['user-agent'] || '';
+    const isTeamsBot = userAgent.includes('MicrosoftPreview') || userAgent.includes('Teams') || userAgent.includes('SkypeUriPreview');
+    
     console.log("Prerender called for path:", pathParam);
+    console.log("User Agent:", userAgent);
+    console.log("Is Teams Bot:", isTeamsBot);
     
     const indexPath = path.resolve(process.cwd(), "dist", "_index.html");
     const fallbackPath = path.resolve(process.cwd(), "dist", "index.html");
@@ -167,9 +172,17 @@ export default async function handler(req, res) {
 
     console.log("Prerender successful for:", pathParam);
 
+    // Set headers - Teams is picky about these
     res.setHeader("Content-Type", "text/html; charset=utf-8");
     res.setHeader("X-Prerender", "true");
-    res.setHeader("Cache-Control", "no-cache, no-store, must-revalidate");
+    
+    if (isTeamsBot) {
+      // Teams-specific headers
+      res.setHeader("Cache-Control", "public, max-age=300"); // 5 minutes cache for Teams
+      res.setHeader("X-Robots-Tag", "index, follow");
+    } else {
+      res.setHeader("Cache-Control", "no-cache, no-store, must-revalidate");
+    }
 
     res.status(200).send(finalHtml);
   } catch (err) {
