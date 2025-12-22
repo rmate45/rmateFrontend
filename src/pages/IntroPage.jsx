@@ -169,7 +169,8 @@ function IntroPage() {
         title="RetireMate"
         description="Expert-curated retirement and Medicare insights."
         url={WEBSITE_URL} />
-        <ScrollToSection/>
+      image={`${WEBSITE_URL}/`}
+      <ScrollToSection />
       <Header logo={logo} onLoginClick={handleLoginClick} />
 
       <HeroSection
@@ -181,9 +182,9 @@ function IntroPage() {
       {/* <div id="search-manual">
         <SearchManual onSearch={handleSearch} />
       </div> */}
-     <section id="testimonials">
-       <TestimonialsGrid />
-     </section>
+      <section id="testimonials">
+        <TestimonialsGrid />
+      </section>
 
       {/* <CustomStory /> */}
 

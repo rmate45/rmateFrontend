@@ -3,149 +3,195 @@ import fs from "fs";
 import path from "path";
 import axios from "axios";
 
-const API_BASE_URL = import.meta.env.VITE_PRERENDER_API_BASE
-const WEBSITE_URL = import.meta.env.VITE_WEBSITE_URL
+/**
+ * ENV
+ */
+const API_BASE_URL = process.env.VITE_PRERENDER_API_BASE;
+const WEBSITE_URL = process.env.VITE_WEBSITE_URL;
 
-function slugify(text) {
-  return (text || "")
+/**
+ * Utils
+ */
+function slugify(text = "") {
+  return text
     .toString()
     .toLowerCase()
     .trim()
     .replace(/\s+/g, "-")
-    .replace(/[^\w\-]+/g, "")
-    .replace(/\-\-+/g, "-");
+    .replace(/[^\w-]+/g, "")
+    .replace(/--+/g, "-");
 }
 
-async function getPageMetadata(url, queryParams) {
+function stripHtml(text = "") {
+  return text.replace(/<[^>]*>/g, "").trim();
+}
+
+/**
+ * META RESOLVER
+ */
+async function getPageMetadata(url, queryParams = {}) {
+  const cleanUrl = url.split("?")[0];
+
   const defaultMeta = {
     title: "RetireMate",
     description: "Expert-curated retirement and Medicare insights.",
     image: `${WEBSITE_URL}/assets/meta-image-DYDKTIzA.png`,
-    url: `${WEBSITE_URL}$${url === "/" ? "" : url}`,
+    url: `${WEBSITE_URL}${cleanUrl === "/" ? "" : cleanUrl}`,
   };
 
   try {
-    if (url === "/") return defaultMeta;
+    if (cleanUrl === "/") return defaultMeta;
 
-    const slug = url.split("/").pop();
+    const slug = slugify(decodeURIComponent(cleanUrl.split("/").pop() || ""));
     const id = queryParams?.id;
 
-    async function fetchList(endpoint, matchField) {
-      const listRes = await axios.get(`${API_BASE_URL}/${endpoint}`);
-      const items = listRes.data.data || [];
+    const fetchList = async (endpoint, matchField) => {
+      const res = await axios.get(`${API_BASE_URL}/${endpoint}`);
+      const items = res.data?.data || [];
       return items.find(
         (it) =>
-          slugify(it[matchField] || it.title || it.name) ===
-          decodeURIComponent(slug)
+          slugify(it[matchField] || it.title || it.name) === slug
       );
-    }
+    };
 
-    async function fetchItem(endpoint, id) {
+    const fetchItem = async (endpoint, id) => {
       const res = await axios.get(`${API_BASE_URL}/${endpoint}/${id}`);
-      return res.data.data || res.data;
-    }
+      return res.data?.data || res.data;
+    };
 
-    if (url.includes("/Top-Explore-Questions/")) {
+    if (cleanUrl.includes("/Top-Explore-Questions/")) {
       const data = id
         ? await fetchItem("get-explore-question", id)
         : await fetchList("get-explore-questions", "question");
+
       if (data)
         return {
           title: data.question,
-          description: (data.answer || "").replace(/<[^>]*>/g, "").slice(0, 160),
+          description: stripHtml(data.answer).slice(0, 160),
           image: defaultMeta.image,
-          url: defaultMeta.url,
+          url: `${WEBSITE_URL}${cleanUrl}`,
         };
-      return defaultMeta;
     }
 
-    if (url.includes("/Top-Roth-Conversion-Retirement-Questions/")) {
+    if (cleanUrl.includes("/Top-Roth-Conversion-Retirement-Questions/")) {
       const data = id
         ? await fetchItem("get-roth-question", id)
         : await fetchList("get-roth-questions", "question");
+
       if (data)
         return {
           title: data.question,
-          description: (data.answer || "").replace(/<[^>]*>/g, "").slice(0, 160),
+          description: stripHtml(data.answer).slice(0, 160),
           image: defaultMeta.image,
-          url: defaultMeta.url,
+          url: `${WEBSITE_URL}${cleanUrl}`,
         };
-      return defaultMeta;
     }
 
-    if (url.includes("/Top-Financial-Planning-Questions/")) {
+    if (cleanUrl.includes("/Top-Financial-Planning-Questions/")) {
       const data = id
         ? await fetchItem("get-financial-planning", id)
         : await fetchList("get-financial-planning", "question");
+
       if (data)
         return {
           title: data.question,
-          description: (data.answer || "").slice(0, 160),
+          description: stripHtml(data.answer).slice(0, 160),
           image: defaultMeta.image,
-          url: defaultMeta.url,
+          url: `${WEBSITE_URL}${cleanUrl}`,
         };
-      return defaultMeta;
     }
 
-    if (url.includes("/Top-Medicare-Questions/")) {
+    if (cleanUrl.includes("/Top-Medicare-Questions/")) {
       const data = id
         ? await fetchItem("get-medicare-question", id)
         : await fetchList("get-medicare-question", "question");
+
       if (data)
         return {
           title: data.question,
-          description: (data.answer || "").slice(0, 160),
+          description: stripHtml(data.answer).slice(0, 160),
           image: defaultMeta.image,
-          url: defaultMeta.url,
+          url: `${WEBSITE_URL}${cleanUrl}`,
         };
-      return defaultMeta;
     }
 
-    if (url.includes("/Persona/")) {
+    if (cleanUrl.includes("/Persona/")) {
       const data = id
         ? await fetchItem("get-persona", id)
         : await fetchList("get-personas", "persona_question");
+
       if (data)
         return {
           title: data.persona_question,
-          description: (data.persona_description || "").slice(0, 160),
+          description: stripHtml(data.persona_description).slice(0, 160),
           image: defaultMeta.image,
-          url: defaultMeta.url,
+          url: `${WEBSITE_URL}${cleanUrl}`,
         };
-      return defaultMeta;
     }
 
     return defaultMeta;
   } catch (err) {
+    console.error("META ERROR:", err.message);
     return defaultMeta;
   }
 }
 
+/**
+ * PRERENDER HANDLER
+ */
 export default async function handler(req, res) {
   try {
-    const pathParam = req.query.path || req.url || "/";
     const indexPath = path.resolve(process.cwd(), "dist", "index.html");
+    let html = await fs.promises.readFile(indexPath, "utf8");
 
-    const htmlData = await fs.promises.readFile(indexPath, "utf8");
-    const meta = await getPageMetadata(pathParam, req.query || {});
+    const meta = await getPageMetadata(req.originalUrl, req.query || {});
 
-    let finalHtml = htmlData
-      .replace(/__META_TITLE__/g, meta.title)
-      .replace(/__META_DESCRIPTION__/g, meta.description)
-      .replace(/__META_OG_TITLE__/g, meta.title)
-      .replace(/__META_OG_DESCRIPTION__/g, meta.description)
-      .replace(/__META_OG_IMAGE__/g, meta.image)
-      .replace(/__META_OG_URL__/g, meta.url);
+    /**
+     * 1️⃣ HEAD INJECTION
+     */
+    html = html.replace(
+      "<!--app-head-->",
+      `
+<title>${meta.title}</title>
+<meta name="description" content="${meta.description}" />
 
-    finalHtml = finalHtml.replace(/__META_[A-Z0-9_]+__/g, "");
+<meta property="og:type" content="article" />
+<meta property="og:title" content="${meta.title}" />
+<meta property="og:description" content="${meta.description}" />
+<meta property="og:image" content="${meta.image}" />
+<meta property="og:url" content="${meta.url}" />
 
-    res.setHeader("Content-Type", "text/html; charset=utf-8");
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="${meta.title}" />
+<meta name="twitter:description" content="${meta.description}" />
+<meta name="twitter:image" content="${meta.image}" />
 
-    res.setHeader("X-Prerender", "true");
-    res.setHeader("Cache-Control", "no-cache, no-store, must-revalidate");
+<link rel="canonical" href="${meta.url}" />
+`
+    );
 
-    res.status(200).send(finalHtml);
+    /**
+     * 2️⃣ APP HTML (EMPTY – SPA MOUNTS CLIENT-SIDE)
+     */
+    html = html.replace("<!--app-html-->", "");
+
+    /**
+     * 3️⃣ APP SCRIPTS (KEEP SPA)
+     */
+    html = html.replace(
+      "<!--app-scripts-->",
+      `<script type="module" src="/assets/index.js"></script>`
+    );
+
+    res
+      .status(200)
+      .set("Content-Type", "text/html; charset=utf-8")
+      .set("X-Prerender", "true")
+      .set("Cache-Control", "no-cache, no-store, must-revalidate")
+      .send(html);
+
   } catch (err) {
+    console.error(err);
     res.status(500).send("Server error");
   }
 }
