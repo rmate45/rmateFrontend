@@ -202,7 +202,7 @@ const Quiz = () => {
     //     text: "Let's get started with a few basic questions.",
     //     // isMobile: true
     //   },
-    // ]);
+    // ]);  
   }, [showPendingItems, urlData.isPersona]);
 
   useEffect(() => {
@@ -1648,6 +1648,8 @@ const Quiz = () => {
                     setShowPeningItems={setShowPeningItems}
                     onTapAnalysis={handleTapAnalysis}
                     userAge={userAge}
+                    setConversation={setConversation}
+                    conversation={conversation}
                   />
                 </div>
               );

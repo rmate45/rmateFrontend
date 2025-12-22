@@ -69,8 +69,8 @@ const CustomTooltip = ({ active, payload }) => {
   return null;
 };
 
-const PlotChart = ({ data, showDisclaimer = false, setShowPeningItems, onTapAnalysis, questionTitle, userName,userAge }) => {
-  console.log(data, "data--123");
+const PlotChart = ({ data, showDisclaimer = false, setShowPeningItems, onTapAnalysis, questionTitle, userName,userAge, setConversation }) => {
+
 
   const [showRecommendation, setShowRecommendation] = useState(false);
   const [showDesc, setShowDesc] = useState(false)
@@ -111,6 +111,16 @@ const PlotChart = ({ data, showDisclaimer = false, setShowPeningItems, onTapAnal
     }
   }
   const handlePandingItems = () => {
+
+       setConversation((prev) => [
+      ...prev,
+      {
+        type: "system",
+        text: "Let's start with a few simple questions.",
+        // isMobile: true
+      },
+    ]);
+
     setShowPeningItems(true);
     setShowRecommendation(true);
     if (showDisclaimer && typeof onTapAnalysis === "function") {
