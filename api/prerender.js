@@ -125,7 +125,13 @@ async function getPageMetadata(url, queryParams) {
 export default async function handler(req, res) {
   try {
     const pathParam = req.query.path || req.url || "/";
-    const indexPath = path.resolve(process.cwd(), "dist", "index.html");
+    const indexPath = path.resolve(process.cwd(), "dist", "_index.html");
+
+    // Check if the HTML template exists
+    if (!fs.existsSync(indexPath)) {
+      console.error("HTML template not found:", indexPath);
+      return res.status(404).send("HTML template not found");
+    }
 
     const htmlData = await fs.promises.readFile(indexPath, "utf8");
     const meta = await getPageMetadata(pathParam, req.query || {});
@@ -136,19 +142,21 @@ export default async function handler(req, res) {
       .replace(/__META_OG_TITLE__/g, meta.title)
       .replace(/__META_OG_DESCRIPTION__/g, meta.description)
       .replace(/__META_OG_IMAGE__/g, meta.image)
-      .replace(/__META_OG_URL__/g, meta.url);
+      .replace(/__META_OG_URL__/g, meta.url)
+      .replace(/<!--app-html-->/g, "")
+      .replace(/<!--app-head-->/g, "")
+      .replace(/<!--app-scripts-->/g, "");
 
+    // Clean up any remaining placeholders
     finalHtml = finalHtml.replace(/__META_[A-Z0-9_]+__/g, "");
 
     res.setHeader("Content-Type", "text/html; charset=utf-8");
-
-   res.setHeader("X-Prerender", "true");
-res.setHeader("Cache-Control", "no-cache, no-store, must-revalidate");
-
-res.status(200).send(finalHtml);
+    res.setHeader("X-Prerender", "true");
+    res.setHeader("Cache-Control", "no-cache, no-store, must-revalidate");
 
     res.status(200).send(finalHtml);
   } catch (err) {
+    console.error("Prerender error:", err);
     res.status(500).send("Server error");
   }
 }

@@ -1,6 +1,11 @@
 {
   "buildCommand": "npm run build",
   "outputDirectory": "dist",
+  "functions": {
+    "api/prerender.js": {
+      "maxDuration": 30
+    }
+  },
   "headers": [
     {
       "source": "/index.html",
@@ -21,10 +26,11 @@
       ]
     }
   ],
-  
   "rewrites": [
     { "source": "/sitemap.xml", "destination": "/api/sitemap" },
-    { "source": "^/$", "destination": "/api/prerender?path=/" },
+    { "source": "/api/(.*)", "destination": "/api/$1" },
+    { "source": "/assets/(.*)", "destination": "/assets/$1" },
+    { "source": "/", "destination": "/api/prerender?path=/" },
     { "source": "/index.html", "destination": "/api/prerender?path=/" },
     { "source": "/intro", "destination": "/api/prerender?path=/intro" },
     { "source": "/Top-Explore-Questions/:slug", "destination": "/api/prerender?path=/Top-Explore-Questions/:slug" },
