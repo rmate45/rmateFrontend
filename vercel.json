@@ -8,16 +8,7 @@
   },
   "headers": [
     {
-      "source": "/index.html",
-      "headers": [
-        {
-          "key": "Cache-Control",
-          "value": "no-cache, no-store, must-revalidate, max-age=0"
-        }
-      ]
-    },
-    {
-      "source": "/",
+      "source": "/(.*)",
       "headers": [
         {
           "key": "Cache-Control",
@@ -30,6 +21,7 @@
     { "source": "/sitemap.xml", "destination": "/api/sitemap" },
     { "source": "/api/(.*)", "destination": "/api/$1" },
     { "source": "/assets/(.*)", "destination": "/assets/$1" },
+    { "source": "/src/(.*)", "destination": "/src/$1" },
     { "source": "/", "destination": "/api/prerender?path=/" },
     { "source": "/index.html", "destination": "/api/prerender?path=/" },
     { "source": "/intro", "destination": "/api/prerender?path=/intro" },
@@ -38,6 +30,6 @@
     { "source": "/Top-Financial-Planning-Questions/:slug", "destination": "/api/prerender?path=/Top-Financial-Planning-Questions/:slug" },
     { "source": "/Top-Medicare-Questions/:slug", "destination": "/api/prerender?path=/Top-Medicare-Questions/:slug" },
     { "source": "/Persona/:slug", "destination": "/api/prerender?path=/Persona/:slug" },
-    { "source": "/(.*)", "destination": "/api/prerender?path=/$1" }
+    { "source": "/((?!api|assets|src).*)", "destination": "/api/prerender?path=/$1" }
   ]
 }

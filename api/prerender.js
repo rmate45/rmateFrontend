@@ -19,14 +19,18 @@ function slugify(text) {
 
 async function getPageMetadata(url, queryParams) {
   const defaultMeta = {
-    title: "RetireMate",
-    description: "Expert-curated retirement and Medicare insights.",
+    title: "RetireMate - Expert Retirement & Medicare Guidance",
+    description: "Get expert-curated retirement and Medicare insights. Plan your retirement with confidence using our comprehensive tools and personalized guidance.",
     image: "https://dev.retiremate.com/assets/meta-image-DYDKTIzA.png",
     url: `https://dev.retiremate.com${url === "/" ? "" : url}`,
   };
 
   try {
-    if (url === "/") return defaultMeta;
+    // Always return default meta for root route
+    if (url === "/" || url === "/index.html" || !url) {
+      console.log("Returning default meta for root route:", url);
+      return defaultMeta;
+    }
 
     const slug = url.split("/").pop();
     const id = queryParams?.id;
@@ -125,16 +129,27 @@ async function getPageMetadata(url, queryParams) {
 export default async function handler(req, res) {
   try {
     const pathParam = req.query.path || req.url || "/";
+    console.log("Prerender called for path:", pathParam);
+    
     const indexPath = path.resolve(process.cwd(), "dist", "_index.html");
+    const fallbackPath = path.resolve(process.cwd(), "dist", "index.html");
 
-    // Check if the HTML template exists
+    // Try _index.html first, fallback to index.html
+    let htmlPath = indexPath;
     if (!fs.existsSync(indexPath)) {
-      console.error("HTML template not found:", indexPath);
+      console.log("_index.html not found, using index.html");
+      htmlPath = fallbackPath;
+    }
+
+    if (!fs.existsSync(htmlPath)) {
+      console.error("No HTML template found at:", htmlPath);
       return res.status(404).send("HTML template not found");
     }
 
-    const htmlData = await fs.promises.readFile(indexPath, "utf8");
+    const htmlData = await fs.promises.readFile(htmlPath, "utf8");
     const meta = await getPageMetadata(pathParam, req.query || {});
+    
+    console.log("Meta data:", meta);
 
     let finalHtml = htmlData
       .replace(/__META_TITLE__/g, meta.title)
@@ -150,6 +165,8 @@ export default async function handler(req, res) {
     // Clean up any remaining placeholders
     finalHtml = finalHtml.replace(/__META_[A-Z0-9_]+__/g, "");
 
+    console.log("Prerender successful for:", pathParam);
+
     res.setHeader("Content-Type", "text/html; charset=utf-8");
     res.setHeader("X-Prerender", "true");
     res.setHeader("Cache-Control", "no-cache, no-store, must-revalidate");
@@ -157,6 +174,6 @@ export default async function handler(req, res) {
     res.status(200).send(finalHtml);
   } catch (err) {
     console.error("Prerender error:", err);
-    res.status(500).send("Server error");
+    res.status(500).send(`Server error: ${err.message}`);
   }
 }
