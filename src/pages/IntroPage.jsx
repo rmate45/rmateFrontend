@@ -166,8 +166,8 @@ function IntroPage() {
   return (
     <>
       <SeoHelmet
-        title="RetireMate"
-        description="Expert-curated retirement and Medicare insights."
+        title="RetireMate | Instant retirement clarity"
+        description="See what your retirement could look like. Get clear, personalized guidance on savings, timing, and where you might retire — in minutes."
         url={WEBSITE_URL} 
         />
       {/* image={`${WEBSITE_URL}/`} */}

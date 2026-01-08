@@ -21,8 +21,8 @@ function slugify(text) {
 
 async function getPageMetadata(url, queryParams) {
   const defaultMeta = {
-    title: "RetireMate - Expert Retirement & Medicare Guidance",
-    description: "Get expert-curated retirement and Medicare insights. Plan your retirement with confidence using our comprehensive tools and personalized guidance.",
+    title: "RetireMate | Instant retirement clarity",
+    description: "See what your retirement could look like. Get clear, personalized guidance on savings, timing, and where you might retire — in minutes.",
     image: `${WEBSITE_URL}/retiremate.jpg`,
     url: `${WEBSITE_URL}${url === "/" ? "" : url}`,
   };
