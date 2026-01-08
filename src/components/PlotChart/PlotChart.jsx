@@ -136,7 +136,7 @@ const PlotChart = ({ data, showDisclaimer = false, setShowPeningItems, onTapAnal
           {questionTitle}
         </h1>)}
 
-        <div className="h-110">
+        <div className="h-120">
           <ResponsiveContainer>
             <LineChart
               data={filteredData}

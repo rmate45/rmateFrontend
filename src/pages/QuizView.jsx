@@ -1,7 +1,7 @@
 import React from 'react'
 import Quiz from './Quiz'
 import SeoHelmet from '../components/Seo/SeoHelmet'
-import MetaImage from '../assets/meta-image.png'
+import MetaImage from '../assets/retiremate.jpg'
 
 const QuizView = () => {
     const siteUrl = import.meta.env.VITE_WEBSITE_URL;

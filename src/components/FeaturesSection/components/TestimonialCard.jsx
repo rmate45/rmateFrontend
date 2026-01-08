@@ -70,7 +70,7 @@ const TestimonialCard = ({ item }) => {
             <button
               className="text-base rounded-lg px-4 py-2 bg-[#567257] text-white"
             >
-              Explore this retirement
+              Explore {item.name}'s retirement
             </button>
             <button onClick={handleClickWhatsApp}>
               <img src={shareImage} alt="Share" />

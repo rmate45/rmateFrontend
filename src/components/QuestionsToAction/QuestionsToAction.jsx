@@ -40,9 +40,9 @@ const QuestionsToAction = ({
   ];
 
   const defaultGenderOptions = [
-    { value: "Male", label: "Male" },
     { value: "Female", label: "Female" },
-    { value: "both", label: "Both" },
+    { value: "Male", label: "Male" },
+    { value: "either", label: "Either" },
   ];
 
   const ageOptionsToDisplay =

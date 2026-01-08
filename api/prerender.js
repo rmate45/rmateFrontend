@@ -7,6 +7,8 @@ const API_BASE_URL =
   process.env.VITE_PRERENDER_API_BASE ||
   "https://dev-api.retiremate.com/api/v1";
 
+const WEBSITE_URL = process.env.VITE_WEBSITE_URL || "https://dev.retiremate.com";
+
 function slugify(text) {
   return (text || "")
     .toString()
@@ -21,8 +23,8 @@ async function getPageMetadata(url, queryParams) {
   const defaultMeta = {
     title: "RetireMate - Expert Retirement & Medicare Guidance",
     description: "Get expert-curated retirement and Medicare insights. Plan your retirement with confidence using our comprehensive tools and personalized guidance.",
-    image: "https://dev.retiremate.com/meta-image.png", // Simplified path
-    url: `https://dev.retiremate.com${url === "/" ? "" : url}`,
+    image: `${WEBSITE_URL}/retiremate.jpg`,
+    url: `${WEBSITE_URL}${url === "/" ? "" : url}`,
   };
 
   try {

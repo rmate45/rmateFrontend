@@ -168,7 +168,8 @@ function IntroPage() {
       <SeoHelmet
         title="RetireMate"
         description="Expert-curated retirement and Medicare insights."
-        url={WEBSITE_URL} />
+        url={WEBSITE_URL} 
+        />
       {/* image={`${WEBSITE_URL}/`} */}
       <ScrollToSection />
       <Header logo={logo} onLoginClick={handleLoginClick} />

@@ -16,7 +16,7 @@ const MedicareQuiz = () => {
                             <p className="text-base jost grow text-[#6B7280] text-left">Ask RetireMate and learn about your Medicare,
                                 Medicare Advantage, Medigap & Part D
                             </p>
-                            <button onClick={handleQuestionClick} className="mt-5  text-base rounded-lg px-4 py-2 bg-[#567257] text-white">Ask RetireMate</button>
+                            <button onClick={handleQuestionClick} className="mt-5  text-base rounded-lg px-4 py-2 bg-[#567257] text-white">View Answer</button>
                         </div>
                     </div>
                 </div>

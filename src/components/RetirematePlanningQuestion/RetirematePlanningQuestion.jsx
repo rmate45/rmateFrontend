@@ -109,7 +109,7 @@ const RetirematePlanningQuestion = () => {
                                         <div className="flex mt-5 justify-between items-center w-full">
 
                                             <button onClick={() => handleQuestionClick(item)} className="  text-base rounded-lg px-4 py-2 bg-[#567257] text-white">
-                                                Ask RetireMate
+                                              View Answer
                                             </button>
                                             <button onClick={() => handleQuestionWhatsappClick(item)}>
                                                 <img src={shareImage} alt="Share" />

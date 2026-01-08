@@ -1,6 +1,6 @@
 import React from 'react'
 
-import imageTest from '../assets/meta-image.png'
+import imageTest from '../assets/retiremate.jpg'
 const Test = () => {
   return (
     <div>
