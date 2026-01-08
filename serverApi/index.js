@@ -33,8 +33,8 @@ async function getPageMetadata(url, queryParams = {}) {
   const cleanUrl = url.split("?")[0];
 
   const defaultMeta = {
-    title: "RetireMate",
-    description: "Expert-curated retirement and Medicare insights.",
+    title: "RetireMate | Instant retirement clarity",
+    description: "See what your retirement could look like. Get clear, personalized guidance on savings, timing, and where you might retire — in minutes",
     image: `${WEBSITE_URL}/retiremate.jpg`,
     url: `${WEBSITE_URL}${cleanUrl === "/" ? "" : cleanUrl}`,
   };
@@ -154,6 +154,7 @@ export default async function handler(req, res) {
       `
 <title>${meta.title}</title>
 <meta name="description" content="${meta.description}" />
+<meta name="robots" content="index, follow" />
 
 <meta property="og:type" content="article" />
 <meta property="og:title" content="${meta.title}" />
