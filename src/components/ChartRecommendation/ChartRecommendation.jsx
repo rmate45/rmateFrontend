@@ -17,7 +17,7 @@ const ChartRecommendation = ({
     console.log(Number(userAge) === 67, "Number(userAge) === 67");
 
     const sections = useMemo(() => {
-          const baseSections = [
+        const baseSections = [
             { key: "yourSnapShot", title: `${userName || "Your"} Snapshot` },
             { key: "whatsShapingYourOutlook", title: `What's Shaping ${userName || "your"} Outlook` },
             { key: "yourRetirementPaycheck", title: `${userName || "your"} Retirement pay check` },
@@ -34,13 +34,13 @@ const ChartRecommendation = ({
                 : String(userAge || "").replace(/\D/g, "")
         );
 
-        
+
         if (ageNum !== 67) {
             console.log("ageNum:", !Number.isNaN(ageNum) && ageNum === 67);
             return baseSections.filter(
                 (section) =>
                     ![
-                       "yourRetirementPaycheck",
+                        "yourRetirementPaycheck",
                         "otherWaysToSupportYourRetirement",
                         "whatYoureLikelyToSpendInRetirement",
                         "howRetireMateGuidesYouForward",
@@ -48,7 +48,7 @@ const ChartRecommendation = ({
             );
         }
         console.log(baseSections, "baseSections");
-        
+
         return baseSections;
     }, [userAge, userName]);
     console.log(sections, "sections");
@@ -157,12 +157,15 @@ const ChartRecommendation = ({
                                             key={idx}
                                             className="px-4 py-2 min-h-10 text-sm max-w-xs rounded-xl flex justify-start items-center jost rounded-tl-none border border-green-300 text-black"
                                         >
-                                            <p className="text-left jost">
-                                                {item
-                                                    .replace(/\\n|\n/g, " ")
-                                                    .replace(/\s+/g, " ")
-                                                    .trim()}
-                                            </p>
+                                            <div
+                                            className="text-left jost"
+                                                dangerouslySetInnerHTML={{
+                                                    __html: item
+                                                        .replace(/\\n|\n/g, "<br />")
+                                                        .replace(/\s+/g, " ")
+                                                        .trim(),
+                                                }}
+                                            />
                                         </div>
                                     ))}
 
