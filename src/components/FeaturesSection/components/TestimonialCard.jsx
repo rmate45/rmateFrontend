@@ -52,7 +52,7 @@ const TestimonialCard = ({ item }) => {
             <button
               className="text-base rounded-lg px-4 py-2 bg-[#567257] text-white"
             >
-             See what this plan looks 
+             See what this plan looks like
             </button>
             <button onClick={handleClickWhatsApp}>
               <img src={shareImage} alt="Share" />
