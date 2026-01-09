@@ -1,6 +1,5 @@
 import React, { useEffect, useState, useRef } from "react";
 import api from "../../api/api";
-import { slugify } from "../../utils/slugify";
 const ExploreMoreQuestions = () => {
   const [loading, setLoading] = useState(true);
   const [data, setData] = useState([]);
@@ -42,10 +41,8 @@ const[active,setActive]=useState("")
 
   const handleQuestionClick = (question) => {
     console.log(question, "inside");
-    const titleSlug = slugify(
-      `${question.question}`);
     const idParam = encodeURIComponent(question._id);
-    const url = `/Top-Explore-Questions/${titleSlug}?id=${idParam}&type=explore`;
+    const url = `/q/Top-Explore-Questions/general/${idParam}?type=explore`;
     window.open(url, "_blank");
 
   }

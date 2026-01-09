@@ -190,6 +190,13 @@ function IntroPage() {
       {/* <CustomStory /> */}
 
       <RetiremateEdge />
+      <section id="questions-to-action">
+
+        <QuestionsToAction
+          onQuestionClick={handleQuestionClick}
+          onBrowseAllClick={handleBrowseAllClick}
+        />
+      </section>
       <RetirematePlanningQuestion />
       <ExploreMoreQuestions />
       <RothQuestions />
@@ -209,13 +216,7 @@ function IntroPage() {
       <FeaturesSection features={features} />
 
       <AskAnything />
-      <section id="questions-to-action">
-
-        <QuestionsToAction
-          onQuestionClick={handleQuestionClick}
-          onBrowseAllClick={handleBrowseAllClick}
-        />
-      </section>
+      
 
       <ArticleSection />
 

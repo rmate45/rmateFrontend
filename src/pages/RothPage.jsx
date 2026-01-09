@@ -4,20 +4,17 @@ import { useParams, useLocation } from "react-router-dom";
 import api from "../api/api";
 import Quiz from "./Quiz";
 import SeoHelmet from "../components/Seo/SeoHelmet";
-import { slugify } from "../utils/slugify";
 
 const safeText = (v = "") => String(v || "");
 
 
 export default function RothPage() {
-    const { slug } = useParams();
-    const { search, href } = useLocation();
-    const params = new URLSearchParams(search);
-    const id = params.get("id");
+    const { id } = useParams();
+    const { href } = useLocation();
 
     const [card, setCard] = useState(null);
     const [state, setState] = useState({ loading: true, notFound: false });
-
+console.log(card,"card-->")
     useEffect(() => {
         let mounted = true;
 
@@ -25,32 +22,23 @@ export default function RothPage() {
             setState({ loading: true, notFound: false });
 
             try {
-                // 1) try fetch by id (authoritative, fast)
-                if (id) {
-                    const res = await api.get(`/get-roth-question/${encodeURIComponent(id)}`);
-                    const data = res?.data?.data || res?.data;
-                    if (mounted) {
-                        if (data) setCard(data);
-                        else setState({ loading: false, notFound: true });
-                        if (data) setState({ loading: false, notFound: false });
-                    }
+                if (!id) {
+                    if (mounted) setState({ loading: false, notFound: true });
                     return;
                 }
 
-                // 2) fallback to fetch list & match slug
-                const listRes = await api.get("/get-roth-questions");
-                const items = listRes?.data?.data || [];
-                const found = items.find((it) =>
-                    slugify(it.question || it.title || it.name) === decodeURIComponent(slug || "")
-                );
-
+                const res = await api.get(`/get-roth-question/${encodeURIComponent(id)}`);
+                const data = res?.data?.data || res?.data;
+                
                 if (mounted) {
-                    if (found) setCard(found);
-                    else setState({ loading: false, notFound: true });
-                    if (found) setState({ loading: false, notFound: false });
+                    if (data) {
+                        setCard(data);
+                        setState({ loading: false, notFound: false });
+                    } else {
+                        setState({ loading: false, notFound: true });
+                    }
                 }
             } catch (err) {
-                // network / unexpected
                 console.error("RothPage error:", err);
                 if (mounted) setState({ loading: false, notFound: true });
             }
@@ -59,7 +47,7 @@ export default function RothPage() {
         return () => {
             mounted = false;
         };
-    }, [slug, id]);
+    }, [id]);
 
     const { loading, notFound } = state;
 
@@ -88,7 +76,7 @@ export default function RothPage() {
     return (
         <>
             <SeoHelmet title={pageTitle} description={pageDesc} image={ogImage} url={href} structuredData={structuredData} />
-            <Quiz initialCard={card} />
+            <Quiz initialCard={card} initialId={id} initialType="roth" />
 
         </>
     );

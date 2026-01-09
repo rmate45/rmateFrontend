@@ -3,7 +3,6 @@ import api from "../../api/api";
 import oneImage from "../../assets/testimonial-2.jpeg"
 import twoImage from "../../assets/imageTwo.jpg"
 import threeImage from "../../assets/testimonial-2.jpeg"
-import { slugify } from "../../utils/slugify";
 import shareImage from '../../assets/mdi_share-outline.svg'
 import { shareViaSms } from "../../utils/shareViaSms";
 const MedicareQuestions = () => {
@@ -27,22 +26,17 @@ const MedicareQuestions = () => {
         }
     };
     const handleQuestionClick = (question) => {
-        const titleSlug = slugify(
-            `${question.name}-${question.age}-${question.profession}-${question.question}`);
         const idParam = encodeURIComponent(question._id);
-        const url = `/Top-Medicare-Questions/${titleSlug}?id=${idParam}&type=medicare`;
+        const url = `/q/Top-Explore-Questions/medicare/${idParam}?type=medicare`;
         window.open(url, "_blank");
-
     }
     const handleQuestionWhatsappClick = (question) => {
-        const titleSlug = slugify(
-            `${question.name}-${question.age}-${question.profession}-${question.question}`);
         const idParam = encodeURIComponent(question._id);
-        const url = `/Top-Medicare-Questions/${titleSlug}?id=${idParam}&type=medicare`;
+        const url = `/q/Top-Explore-Questions/medicare/${idParam}?type=medicare`;
         const fullUrl = `${window.location.origin}${url}`;
         shareViaSms({
             text: "click here to ask RetireMate",
-            url: fullUrl,          // NOT encoded
+            url: fullUrl,
         });
     }
 

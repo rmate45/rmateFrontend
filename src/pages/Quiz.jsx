@@ -98,17 +98,18 @@ const STARTER_QUESTIONS = {
   ],
 };
 
-const Quiz = () => {
+const Quiz = ({ initialCard, initialId, initialType }) => {
   const location = useLocation();
   const params = new URLSearchParams(location.search);
   console.log(params, "params");
 
   const urlData = {
-    id: params.get("id") || "",
+    id: initialId || params.get("id") || "",
     isPersona: params.get("isPersona") === "true" || false,
     isCustomPersona: params.get("isCustomPersona") === "true" || false,
-    type: params.get("type") || "",
+    type: initialType || params.get("type") || "",
   };
+console.log(urlData,"urlData");
 
   const initialText = location.state?.title || params.get("title") || "";
   console.log(initialText, "initialText");
@@ -160,6 +161,8 @@ const Quiz = () => {
   const [showPendingItems, setShowPeningItems] = useState(false)
   // console.log(showPendingItems, "showPendingItems");
   const [item, setItem] = useState(null)
+  console.log(item,"item");
+  
   const [graphTitleQuestion, SetGraphTitleQuestion] = useState("")
   const [userAge, setUserAge] = useState("")
   // const [userName, SetuserName] = useState("")
@@ -360,7 +363,7 @@ const Quiz = () => {
       if (!urlData?.isPersona && urlData.id) {
         const type = urlData.type;
         let fetchedData = null;
-
+        
         if (type === "roth") {
           fetchedData = await fetchQuestionRothById(urlData.id);
         } else if (type === "explore") {

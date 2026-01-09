@@ -22,23 +22,23 @@ function App() {
         <Route path="/quiz" element={<QuizView />} />
         <Route path="/plans/:phone/:id" element={<PlanPage />} />
         <Route
-          path="/Top-Roth-Conversion-Retirement-Questions/:slug"
+          path="/q/Top-Explore-Questions/roth-conversions/:id"
           element={<RothPage />}
         />
         <Route
-          path="/Persona/:slug"
+          path="/q/Top-Explore-Questions/persona/:id"
           element={<PersonaPage />}
         />
         <Route
-          path="/Top-Financial-Planning-Questions/:slug"
+          path="/q/Top-Explore-Questions/financial-planning/:id"
           element={<FinancialPage />}
         />
         <Route
-          path="/Top-Medicare-Questions/:slug"
+          path="/q/Top-Explore-Questions/medicare/:id"
           element={<MedicarePage />}
         />
         <Route
-          path="/Top-Explore-Questions/:slug"
+          path="/q/Top-Explore-Questions/general/:id"
           element={<ExploreQuestionsPage />}
         />
         <Route

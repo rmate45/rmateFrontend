@@ -1,5 +1,3 @@
-import React from "react";
-import { slugify } from "../../../utils/slugify";
 import shareImage from '../../../assets/mdi_share-outline.svg'
 import { shareViaSms } from "../../../utils/shareViaSms";
 const TestimonialCard = ({ item }) => {
@@ -8,33 +6,17 @@ const TestimonialCard = ({ item }) => {
 
   const handleClick = (e) => {
     e.stopPropagation();
-    const slug = slugify(
-      `${item.name || ""} ${item.age || ""} ${item.profession || ""} ${item.title || ""}`
-    );
-
-    const params = new URLSearchParams({
-      isPersona: "true",
-      id: item.id || "",
-    });
-    window.open(`/Persona/${slug}?${params.toString()}`, "_blank");
+    const idParam = encodeURIComponent(item.id || "");
+    window.open(`/q/Top-Explore-Questions/persona/${idParam}?isPersona=true`, "_blank");
   };
   const handleClickWhatsApp = (e) => {
     e.stopPropagation();
-
-    const slug = slugify(
-      `${item.name || ""} ${item.age || ""} ${item.profession || ""} ${item.title || ""}`
-    );
-
-    const params = new URLSearchParams({
-      isPersona: "true",
-      id: item.id || "",
-    });
-
-    const fullUrl = `${window.location.origin}/Persona/${slug}?${params.toString()}`;
+    const idParam = encodeURIComponent(item.id || "");
+    const fullUrl = `${window.location.origin}/q/Top-Explore-Questions/persona/${idParam}?isPersona=true`;
 
     shareViaSms({
       text: "click here to ask RetireMate",
-      url: fullUrl,          // NOT encoded
+      url: fullUrl,
     });
   };
   return (
@@ -70,7 +52,7 @@ const TestimonialCard = ({ item }) => {
             <button
               className="text-base rounded-lg px-4 py-2 bg-[#567257] text-white"
             >
-              Explore {item.name}'s retirement
+             See what this plan looks 
             </button>
             <button onClick={handleClickWhatsApp}>
               <img src={shareImage} alt="Share" />

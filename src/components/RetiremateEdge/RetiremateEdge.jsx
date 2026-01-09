@@ -11,7 +11,7 @@ const RetiremateEdge = () => {
           The RetireMate Edge
         </p>
 
-        <div className="flex flex-col sm:flex-row gap-10 max-w-[1080px] mx-auto pt-8">
+        <div className="flex flex-col sm:flex-row gap-10 max-w-[1080px] mx-auto pt-8 pb-16">
           {/* Answers you can trust */}
           <div className="flex gap-5 items-start">
             <img src={Qa} alt="QA" width={50} height={50} className="w-11 h-11" />

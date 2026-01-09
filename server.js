@@ -46,10 +46,11 @@ async function getPageMetadata(url, queryParams) {
       return res.data.data || res.data;
     }
 
-    if (url.includes("/Top-Explore-Questions/")) {
-      const data = id
-        ? await fetchItem("get-explore-question", id)
-        : await fetchList("get-explore-questions", "question");
+    if (url.includes("/q/Top-Explore-Questions/general/")) {
+      const pathId = url.split("/").pop();
+      const data = pathId
+        ? await fetchItem("get-explore-question", pathId)
+        : null;
       if (data)
         return {
           title: data.question,
@@ -60,10 +61,12 @@ async function getPageMetadata(url, queryParams) {
       return defaultMeta;
     }
 
-    if (url.includes("/Top-Roth-Conversion-Retirement-Questions/")) {
-      const data = id
-        ? await fetchItem("get-roth-question", id)
-        : await fetchList("get-roth-questions", "question");
+    if (url.includes("/q/Top-Explore-Questions/roth-conversions/")) {
+      // Extract id from URL path (last segment)
+      const pathId = url.split("/").pop();
+      const data = pathId
+        ? await fetchItem("get-roth-question", pathId)
+        : null;
       if (data)
         return {
           title: data.question,
@@ -74,10 +77,11 @@ async function getPageMetadata(url, queryParams) {
       return defaultMeta;
     }
 
-    if (url.includes("/Top-Financial-Planning-Questions/")) {
-      const data = id
-        ? await fetchItem("get-financial-planning", id)
-        : await fetchList("get-financial-planning", "question");
+    if (url.includes("/q/Top-Explore-Questions/financial-planning/")) {
+      const pathId = url.split("/").pop();
+      const data = pathId
+        ? await fetchItem("get-financial-planning", pathId)
+        : null;
       if (data)
         return {
           title: data.question,
@@ -88,10 +92,11 @@ async function getPageMetadata(url, queryParams) {
       return defaultMeta;
     }
 
-    if (url.includes("/Top-Medicare-Questions/")) {
-      const data = id
-        ? await fetchItem("get-medicare-question", id)
-        : await fetchList("get-medicare-question", "question");
+    if (url.includes("/q/Top-Explore-Questions/medicare/")) {
+      const pathId = url.split("/").pop();
+      const data = pathId
+        ? await fetchItem("get-medicare-question", pathId)
+        : null;
       if (data)
         return {
           title: data.question,
@@ -102,10 +107,11 @@ async function getPageMetadata(url, queryParams) {
       return defaultMeta;
     }
 
-    if (url.includes("/Persona/")) {
-      const data = id
-        ? await fetchItem("get-persona", id)
-        : await fetchList("get-personas", "persona_question");
+    if (url.includes("/q/Top-Explore-Questions/persona/")) {
+      const pathId = url.split("/").pop();
+      const data = pathId
+        ? await fetchItem("get-persona", pathId)
+        : null;
       if (data)
         return {
           title: data.persona_question,
