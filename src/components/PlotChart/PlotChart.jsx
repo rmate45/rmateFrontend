@@ -116,7 +116,7 @@ const PlotChart = ({ data, showDisclaimer = false, setShowPeningItems, onTapAnal
       ...prev,
       {
         type: "system",
-        text: "Let's start with a few simple questions.",
+        text: "No spam. No sales calls. Just your roadmap and helpful insights.",
         // isMobile: true
       },
     ]);
@@ -258,6 +258,7 @@ const PlotChart = ({ data, showDisclaimer = false, setShowPeningItems, onTapAnal
         </p>
       </div>)} */}
       {showDesc && (<div className="order-green-300 bg-green-100 p-3 jost rounded-xl mt-3">
+        <strong className="block jost">Want a copy of your RetireMate Roadmap?</strong>
         To receive a free, educational retirement analysis tailored to your age, income, and goals, please enter your contact details below.”
       </div>)}
     </div>

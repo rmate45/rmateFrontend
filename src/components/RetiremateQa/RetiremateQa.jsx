@@ -159,9 +159,9 @@ const RetirementQa = () => {
         <div className="">
             <div className="max-w-4xl mx-auto mt-2">
                 <div className="space-y-6">
-                    <div className="cursor-pointer w-full py-2 mb-2 px-3 border border-green-300 rounded-lg">
+                    <div className="text-left jost text-base font-medium bg-introPrimary p-3 rounded-xl text-white mb-2">
                         <p className='text-left jost'>
-                            Thanks ! Tap below to explore RetireMate
+                           You're all set. What would you like to explore next?
 
                         </p>
                     </div>

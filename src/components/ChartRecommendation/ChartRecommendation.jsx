@@ -17,13 +17,14 @@ const ChartRecommendation = ({
     console.log(Number(userAge) === 67, "Number(userAge) === 67");
 
     const sections = useMemo(() => {
-        const baseSections = [
-            { key: "yourSnapShot", title: `${userName || "your"} Snapshot` },
+          const baseSections = [
+            { key: "yourSnapShot", title: `${userName || "Your"} Snapshot` },
             { key: "whatsShapingYourOutlook", title: `What's Shaping ${userName || "your"} Outlook` },
             { key: "yourRetirementPaycheck", title: `${userName || "your"} Retirement pay check` },
-            { key: "otherSourcesOfRetirementIncome", title: `Other sources of retirement income` },
-            { key: "estimatedAnnualCostsInRetirement", title: `Estimated annual costs in retirement` },
-            { key: "howToStrengthenYourPlan", title: `How RetireMate can help` },
+            { key: "otherWaysToSupportYourRetirement", title: `Other ways to support your retirement` },
+            { key: "whatYoureLikelyToSpendInRetirement", title: `What you're likely to spend in retirement` },
+            { key: "howToStrengthenYourPlan", title: `How to strengthen your plan` },
+            { key: "howRetireMateGuidesYouForward", title: `How RetireMate guides your forward` },
             { key: "whatThisDoesntInclude", title: `What This Doesn't Include` },
         ];
 
@@ -39,9 +40,10 @@ const ChartRecommendation = ({
             return baseSections.filter(
                 (section) =>
                     ![
-                        "yourRetirementPaycheck",
-                        "otherSourcesOfRetirementIncome",
-                        "estimatedAnnualCostsInRetirement",
+                       "yourRetirementPaycheck",
+                        "otherWaysToSupportYourRetirement",
+                        "whatYoureLikelyToSpendInRetirement",
+                        "howRetireMateGuidesYouForward",
                     ].includes(section.key)
             );
         }
@@ -114,7 +116,7 @@ const ChartRecommendation = ({
         !!strengthenText && parseTextToArray(strengthenText).length > 3;
 
     const blockWhatDoesntIncludeUntilExpanded =
-        currentSection?.key === "whatThisDoesntInclude" &&
+        (currentSection?.key === "howRetireMateGuidesYouForward" || currentSection?.key === "whatThisDoesntInclude") &&
         strengthenHasMoreThanThree &&
         !strengthenExpanded;
 

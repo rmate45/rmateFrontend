@@ -157,7 +157,7 @@ console.log(urlData,"urlData");
   const [chartAlreadyShown, setChartAlreadyShown] = useState(false);
   // item passed from TestimonialCard via navigate('/quiz', { state: { item } })
   const [showDisclaimer, setShowDisclaimer] = useState(false)
-  // console.log(pendingQuestions, "pendingQuestions");
+  console.log(pendingQuestions, "pendingQuestions");
   const [showPendingItems, setShowPeningItems] = useState(false)
   // console.log(showPendingItems, "showPendingItems");
   const [item, setItem] = useState(null)
@@ -606,6 +606,34 @@ console.log(urlData,"urlData");
       setShowStarterQuestions(true);
       setLoading(false);
     }
+  };
+
+  // Function to skip current question (for pending questions like email/phone)
+  const handleSkipQuestion = (questionId) => {
+    // Add "Skipped" to conversation
+    addToConversation("answer", "Skipped");
+    
+    // Store skipped answer
+    const skippedAnswer = {
+      questionId: questionId,
+      answer: "Skipped",
+      value: "",
+      skipped: true,
+    };
+    
+    setUserAnswers((prev) => ({
+      ...prev,
+      [questionId]: skippedAnswer,
+    }));
+    
+    // Clear text input
+    setTextInput("");
+    
+    // Move to next question
+    moveToNextQuestion({
+      ...userAnswers,
+      [questionId]: skippedAnswer,
+    });
   };
 
   const moveToNextQuestion = (answers) => {
@@ -1747,6 +1775,7 @@ console.log(urlData,"urlData");
                 onOptionClick={handleOptionClick}
                 onTextSubmit={handleTextSubmit}
                 onMultiSelectSubmit={handleMultiSelectSubmit}
+                onSkip={handleSkipQuestion}
                 setUserAge={setUserAge}
               />
             )}

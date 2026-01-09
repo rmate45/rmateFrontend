@@ -14,6 +14,7 @@ export const QuestionDisplay = ({
   onTextSubmit,
   onMultiSelectSubmit,
   onValidationError,
+  onSkip,
   scrollUp,
   scrollToBottom, // Add this new prop for scrolling to bottom
   type,
@@ -36,7 +37,9 @@ const [showModal, setShowModal] = useState(false);
 
   const isValidateZip = currentQuestion?.questionId === "MQ1"; 
   const isPhoneInput = currentQuestion?.questionId === "MQ9" || currentQuestion?.questionId === "Q8";
-  const isAgeInput = currentQuestion?.questionId === "Q1"; 
+  const isEmailInput = currentQuestion?.questionId === "Q7";
+  const isAgeInput = currentQuestion?.questionId === "Q1";
+  const isPendingQuestion = isPhoneInput || isEmailInput;
 
   const handleMultiSelectToggle = (option) => {
     setSelectedMultiOptions(prev => {
@@ -60,6 +63,13 @@ const [showModal, setShowModal] = useState(false);
   // Handle phone number submission with full phone data
   const handlePhoneSubmit = (phoneData) => {
     onTextSubmit(phoneData);
+  };
+
+  // Handle skip for pending questions
+  const handleSkip = () => {
+    if (onSkip) {
+      onSkip(currentQuestion.questionId);
+    }
   };
 
   return (
@@ -143,6 +153,18 @@ const [showModal, setShowModal] = useState(false);
         </div>
       )}
      </div>
+
+     {/* Skip button bubble on right side for pending questions */}
+     {isPendingQuestion && onSkip && (
+       <div className="flex justify-end ml-2">
+         <button
+           onClick={handleSkip}
+           className="px-4 py-2 min-h-10 text-sm max-w-xs rounded-xl flex justify-center items-center jost  rounded-br-none bg-green-300 text-left text-black !font-normal"
+         >
+           Skip →
+         </button>
+       </div>
+     )}
      </div>
     </div>
   );
