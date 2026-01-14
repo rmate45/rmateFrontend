@@ -34,20 +34,20 @@ const ChartRecommendation = ({
                 : String(userAge || "").replace(/\D/g, "")
         );
 
-
-        if (ageNum !== 67) {
-            console.log("ageNum:", !Number.isNaN(ageNum) && ageNum === 67);
-            return baseSections.filter(
-                (section) =>
-                    ![
-                        "yourRetirementPaycheck",
-                        "otherWaysToSupportYourRetirement",
-                        "whatYoureLikelyToSpendInRetirement",
-                        "howRetireMateGuidesYouForward",
-                    ].includes(section.key)
-            );
-        }
-        console.log(baseSections, "baseSections");
+        // TODO: Uncomment age-based filtering when needed
+        // if (ageNum !== 67) {
+        //     console.log("ageNum:", !Number.isNaN(ageNum) && ageNum === 67);
+        //     return baseSections.filter(
+        //         (section) =>
+        //             ![
+        //                 "yourRetirementPaycheck",
+        //                 "otherWaysToSupportYourRetirement",
+        //                 "whatYoureLikelyToSpendInRetirement",
+        //                 "howRetireMateGuidesYouForward",
+        //             ].includes(section.key)
+        //     );
+        // }
+        // console.log(baseSections, "baseSections");
 
         return baseSections;
     }, [userAge, userName]);
