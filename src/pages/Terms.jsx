@@ -13,7 +13,7 @@ const Terms = () => {
 
   return (
     <>
-      <Header onLoginClick={handleLoginClick} alwaysGreen={true} />
+      <Header onLoginClick={handleLoginClick} alwaysGreen={true} redirectToHome={true} />
       <div className="min-h-screen pt-32 pb-16 px-4 sm:px-6 bg-white">
         <div className="max-w-4xl mx-auto">
           {/* Header Section */}

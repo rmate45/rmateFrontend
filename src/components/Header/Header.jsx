@@ -1,11 +1,13 @@
 // components/Header/Header.js
 import React, { useEffect, useState, useRef } from "react";
+import { useNavigate } from "react-router-dom";
 import logo from "../../assets/logo.png";
 import clsx from "clsx";
 
-const Header = ({ onLoginClick, alwaysGreen = false }) => {
+const Header = ({ onLoginClick, alwaysGreen = false, redirectToHome = false }) => {
   const [isScrolled, setIsScrolled] = useState(false);
   const signUpButtonRef = useRef(null);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -28,7 +30,21 @@ const Header = ({ onLoginClick, alwaysGreen = false }) => {
       }
     }
     
-    // Scroll to top smoothly
+    // If redirectToHome is true, navigate to home page and scroll to top
+    if (redirectToHome) {
+      window.scrollTo({
+        top: 0,
+        behavior: "smooth"
+      });
+      navigate("/");
+      // Ensure scroll to top after navigation
+      setTimeout(() => {
+        window.scrollTo(0, 0);
+      }, 100);
+      return;
+    }
+    
+    // Otherwise, scroll to top smoothly
     window.scrollTo({
       top: 0,
       behavior: "smooth"
