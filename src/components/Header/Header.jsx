@@ -3,7 +3,7 @@ import React, { useEffect, useState, useRef } from "react";
 import logo from "../../assets/logo.png";
 import clsx from "clsx";
 
-const Header = ({ onLoginClick }) => {
+const Header = ({ onLoginClick, alwaysGreen = false }) => {
   const [isScrolled, setIsScrolled] = useState(false);
   const signUpButtonRef = useRef(null);
 
@@ -39,8 +39,10 @@ const Header = ({ onLoginClick }) => {
     <div
       className={clsx(
         "fixed top-0 w-full z-999 transition-all duration-300 cursor-pointer",
-        isScrolled
-          ? "bg-[#567257] shadow-md py-4"
+        alwaysGreen
+          ? "bg-introPrimary shadow-md py-4"
+          : isScrolled
+          ? "bg-introPrimary shadow-md py-4"
           : "bg-transparent py-4 sm:py-6"
       )}
       onClick={handleHeaderClick}

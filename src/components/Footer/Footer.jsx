@@ -1,7 +1,23 @@
 // components/Footer/Footer.js
 import React from 'react';
+import { Link } from 'react-router-dom';
 
 const FooterLink = ({ href, children, onClick }) => {
+  // Check if href is an internal route (starts with /)
+  const isInternalRoute = href && href.startsWith('/');
+  
+  if (isInternalRoute) {
+    return (
+      <Link
+        to={href}
+        className="hover:underline text-white jost font-medium py-4 text-base"
+        onClick={onClick}
+      >
+        {children}
+      </Link>
+    );
+  }
+  
   return (
     <a
       className="hover:underline text-white jost font-medium py-4 text-base"
@@ -25,9 +41,9 @@ const Footer = ({
   const defaultCopyrightText = "© 2026 CareMaps Group, Inc";
   
   const defaultLinks = [
-    { id: 1, text: "Terms", href: "#" },
-    { id: 2, text: "Privacy", href: "#" },
-    { id: 3, text: "Your Privacy Choices", href: "#" }
+    { id: 1, text: "Terms", href: "/terms" },
+    { id: 2, text: "Privacy", href: "/privacy-policy" },
+    { id: 3, text: "Your Privacy Choices", href: "/your-privacy-choices" }
   ];
 
   const linksToDisplay = links.length > 0 ? links : defaultLinks;
@@ -54,7 +70,11 @@ const Footer = ({
                 href={link.href}
                 onClick={(e) => {
                   if (onLinkClick) {
-                    e.preventDefault();
+                    // Only prevent default for external links
+                    const isInternalRoute = link.href && link.href.startsWith('/');
+                    if (!isInternalRoute) {
+                      e.preventDefault();
+                    }
                     onLinkClick(link);
                   }
                 }}
