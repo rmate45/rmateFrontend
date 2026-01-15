@@ -40,19 +40,19 @@ const Header = ({ onLoginClick }) => {
       className={clsx(
         "fixed top-0 w-full z-999 transition-all duration-300 cursor-pointer",
         isScrolled
-          ? "bg-[#567257] shadow-md py-3"
+          ? "bg-[#567257] shadow-md py-4"
           : "bg-transparent py-4 sm:py-6"
       )}
       onClick={handleHeaderClick}
     >
-      <div className="px-4 sm:px-10 flex justify-end items-center max-w-[1750px] mx-auto relative">
+      <div className="px-4 sm:px-10 flex justify-center items-center max-w-[1750px] mx-auto relative">
         <img
-          className="w-[130px] lg:w-[150px] absolute left-1/2 -translate-x-1/2"
+          className="w-[130px] lg:w-[150px] max-h-[60px]"
           src={logo}
           alt="RetireMate Logo"
         />
 
-        <button
+        {/* <button
           ref={signUpButtonRef}
           className="text-xs lg:text-base border bg-[#E8FFBD] border-[#E8FFBD] text-[#253D2C] rounded-[10px] jost px-2 lg:px-5 py-2 hover:bg-[#e8fdba]/95 hover:text-[#567257] transition cursor-pointer"
           onClick={(e) => {
@@ -61,7 +61,7 @@ const Header = ({ onLoginClick }) => {
           }}
         >
           Sign up
-        </button>
+        </button> */}
       </div>
     </div>
   );

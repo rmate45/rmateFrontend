@@ -101,10 +101,10 @@ const TestimonialsGrid = () => {
   }
 
   return (
-    <div className="px-6 py-5 sm:py-16 sm:pt-5">
+    <div className="px-6 py-10 sm:py-16 sm:pt-5">
     <div className="text-center  max-w-7xl mx-auto ">
       <div className="flex flex-col justify-center ">
-        <h2 className="text-introPrimary font-medium text-2xl mb-8 mt-10">
+        <h2 className="text-introPrimary font-medium text-2xl mb-8 mt-5 sm:mt-10">
           How people like you are preparing for retirement
         </h2>
 

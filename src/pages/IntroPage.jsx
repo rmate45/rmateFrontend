@@ -197,28 +197,30 @@ function IntroPage() {
           onBrowseAllClick={handleBrowseAllClick}
         />
       </section>
+
+      <InsightsSection />
+
       <RetirematePlanningQuestion />
       <ExploreMoreQuestions />
+      <FeaturesSection features={features} />
       <RothQuestions />
       <ExploreMoreQuestions />
-      <MedicareQuiz />
-      <MedicareQuestions />
-      <ExploreMoreQuestions />
+      {/* <MedicareQuiz /> */}
+      {/* <MedicareQuestions /> */}
+      {/* <ExploreMoreQuestions /> */}
       <SuggestedQuestions
         questions={suggestedQuestions}
         onQuestionClick={handleQuestionClick}
       />
 
-      <InsightsSection />
 
-      <RetireMateAdvantage />
+      {/* <RetireMateAdvantage /> */}
 
-      <FeaturesSection features={features} />
 
-      <AskAnything />
+      {/* <AskAnything /> */}
       
 
-      <ArticleSection />
+      {/* <ArticleSection /> */}
 
       <LinkSection />
 

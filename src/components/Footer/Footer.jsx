@@ -19,9 +19,10 @@ const Footer = ({
   links = [],
   onLinkClick 
 }) => {
-  const defaultDisclaimerText = "The content provided her and elsewhere on the RetireMate site is provided for general informational purposes only. It is not indended as, and RetireMate does not provide, financial advice or legal advice.";
+  const defaultDisclaimerText = `The content on RetireMate is provided for general informational and educational purposes only 
+  and does not constitute financial, investment, tax, or legal advice.`;
   
-  const defaultCopyrightText = "© 2023 CareMaps Group, Inc";
+  const defaultCopyrightText = "© 2026 CareMaps Group, Inc";
   
   const defaultLinks = [
     { id: 1, text: "Terms", href: "#" },

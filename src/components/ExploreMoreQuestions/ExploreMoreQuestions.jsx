@@ -72,7 +72,7 @@ const[active,setActive]=useState("")
   return (
     <div className="text-center px-6 pt-10 sm:pt-16">
       <div className="max-w-7xl mx-auto flex flex-col items-center justify-center">
-        <p className="text-introPrimary font-medium text-xl sm:text-2xl mb-10">
+        <p className="text-introPrimary font-medium text-xl sm:text-2xl mb-8 sm:mb-10">
           Explore more questions
         </p>
 
