@@ -243,7 +243,7 @@ const PlotChart = ({ data, showDisclaimer = false, setShowPeningItems, onTapAnal
           </ResponsiveContainer>
 
         </div>
-        {data?.text?.topStatement && (<p className="jost text-sm sm:text-base text-center text-gray-700 font-semibold mb-3 "> {data?.text?.topStatement}</p>)}
+        {data?.text?.topStatement && (<p className="jost text-base text-center text-gray-700 font-semibold mb-3 "> {data?.text?.topStatement}</p>)}
       </div>
       {<ChartRecommendation userAge={userAge} userName={userName} setShowTapQuestions={setShowTapQuestions} data={data} handlePandingItems={handlePandingItems} />}
       {/* {showTapQuestion && (<div

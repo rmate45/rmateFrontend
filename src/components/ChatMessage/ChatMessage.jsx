@@ -29,7 +29,7 @@ export const ChatMessage = ({
       )}
 
       {(!isAnswer || isComment) && (<img src={retiremateLogo} alt="retiremate" className="pt-1" />)}     <div
-        className={`px-4 py-2 min-h-10 text-sm sm:text-base max-w-xs rounded-xl flex justify-center items-center jost  ${isAnswer
+        className={`px-4 py-2 min-h-10 text-base max-w-xs rounded-xl flex justify-center items-center jost  ${isAnswer
             ? "rounded-br-none bg-green-300 text-left text-black"
             : isComment
               ? "rounded-tl-none bg-blue-100 border border-blue-300 text-black italic  text-left"

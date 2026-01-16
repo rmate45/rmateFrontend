@@ -202,7 +202,7 @@ const RetirementQa = () => {
                         <div key={`qa-${qa.questionId}-${index}`} className="space-y-3">
                             {/* Question */}
                             <div className='mb-3 px-4 flex justify-end'>
-                                <div className="px-4 py-2 min-h-10 text-sm sm:text-base max-w-xs rounded-xl flex justify-center items-center jost  rounded-br-none bg-green-300 text-left text-black">
+                                <div className="px-4 py-2 min-h-10 text-base max-w-xs rounded-xl flex justify-center items-center jost  rounded-br-none bg-green-300 text-left text-black">
                                     <h2 className="text-left jost">
                                         {qa.question}
                                     </h2>
@@ -211,7 +211,7 @@ const RetirementQa = () => {
                             {/* Answer */}
                             <div className='flex items-start gap-1'>
                                 <img src={logo} alt="logo" className='pt-1' />
-                                <div className="px-4 py-2 min-h-10 text-sm sm:text-base max-w-xs rounded-xl flex justify-center items-center jost  rounded-tl-none border-1 border-green-300 text-black">
+                                <div className="px-4 py-2 min-h-10 text-base max-w-xs rounded-xl flex justify-center items-center jost  rounded-tl-none border-1 border-green-300 text-black">
                                     <div className="space-y-2">
                                         {(qa.answers || []).map((answer, idx) => (
                                             <p key={idx} className="text-left jost">
@@ -239,7 +239,7 @@ const RetirementQa = () => {
 
                                 <div
                                     onClick={handleQuestionClick}
-                                    className="px-4 py-2 cursor-pointer min-h-10 text-sm sm:text-base max-w-xs rounded-xl flex justify-center items-center jost  rounded-br-none bg-green-300 text-left text-black"
+                                    className="px-4 py-2 cursor-pointer min-h-10 text-base max-w-xs rounded-xl flex justify-center items-center jost  rounded-br-none bg-green-300 text-left text-black"
                                 >
                                     <h2 className="text-left jost">
                                         {currentQuestion.question}
