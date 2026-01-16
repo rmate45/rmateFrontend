@@ -28,7 +28,7 @@ const SeoHelmet = ({
       <meta property="og:type" content="article" />
 
       {/* No index option */}
-      {noIndex && <meta name="robots" content="index,follow" />}
+      {noIndex && <meta name="robots" content="index, follow" />}
 
       {/* JSON-LD (Structured Data) */}
       {structuredData && (

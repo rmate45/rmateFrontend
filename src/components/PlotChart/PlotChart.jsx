@@ -148,10 +148,10 @@ const PlotChart = ({ data, showDisclaimer = false, setShowPeningItems, onTapAnal
                 label={{
                   value: "Age",
                   position: "insideBottom",
-                  offset: -5,
-                  style: { fontSize: 10 },
+                  offset: -10,
+                  style: { fontSize: 14 },
                 }}
-                tick={{ fontSize: 10 }}
+                tick={{ fontSize: 14 }}
               />
               <YAxis
                 tickFormatter={dollarFormatter}
@@ -159,9 +159,11 @@ const PlotChart = ({ data, showDisclaimer = false, setShowPeningItems, onTapAnal
                   value: "Savings",
                   angle: -90,
                   position: "insideLeft",
-                  style: { fontSize: 10 },
+                  offset: 8,
+                  dy: -16,
+                  style: { fontSize: 14 },
                 }}
-                tick={{ fontSize: 10 }}
+                tick={{ fontSize: 14 }}
               />
               <Tooltip content={<CustomTooltip />} />
 
@@ -208,7 +210,7 @@ const PlotChart = ({ data, showDisclaimer = false, setShowPeningItems, onTapAnal
                       value={`${dollarFormatter(retirementPoint.savings)}`}
                       position="top"
                       fill="#0e6634"
-                      fontSize={11}
+                      fontSize={16}
                       fontWeight={600}
                       offset={15}
                       className="custom-saving"
@@ -230,7 +232,7 @@ const PlotChart = ({ data, showDisclaimer = false, setShowPeningItems, onTapAnal
                       value="You are here"
                       position="right"
                       fill="#567257"
-                      fontSize={11}
+                      fontSize={16}
                       className="label-set"
                       offset={10}
                     />
@@ -241,7 +243,7 @@ const PlotChart = ({ data, showDisclaimer = false, setShowPeningItems, onTapAnal
           </ResponsiveContainer>
 
         </div>
-        {data?.text?.topStatement && (<p className="jost text-sm text-center text-gray-700 font-semibold mb-3 "> {data?.text?.topStatement}</p>)}
+        {data?.text?.topStatement && (<p className="jost text-sm sm:text-base text-center text-gray-700 font-semibold mb-3 "> {data?.text?.topStatement}</p>)}
       </div>
       {<ChartRecommendation userAge={userAge} userName={userName} setShowTapQuestions={setShowTapQuestions} data={data} handlePandingItems={handlePandingItems} />}
       {/* {showTapQuestion && (<div

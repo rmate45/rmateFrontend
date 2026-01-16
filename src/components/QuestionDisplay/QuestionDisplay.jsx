@@ -78,7 +78,7 @@ const [showModal, setShowModal] = useState(false);
      <div className="flex gap-1 items-start">
       <img src={RetirmateLogo} alt="retiremate" className="pt-1" />
       <div className="grow">
-       <div className="mb-2 jost text-sm border-2 border-green-300 px-4 py-2 text-center flex gap-2 items-center justify-center rounded-xl text-gray-800 font-semibold max-w-sm">
+       <div className="mb-2 jost text-sm sm:text-base border-2 border-green-300 px-4 py-2 text-center flex gap-2 items-center justify-center rounded-xl text-gray-800 font-semibold max-w-sm">
         {currentQuestion.questionText} {type === "medicareQuiz" && <img src={cuidaAlert} alt="retiremate" onClick={() => setShowModal(true)} />}
       </div>
 

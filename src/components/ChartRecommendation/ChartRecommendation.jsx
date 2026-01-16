@@ -155,7 +155,8 @@ const ChartRecommendation = ({
                                     {itemsToRender.map((item, idx) => (
                                         <div
                                             key={idx}
-                                            className="px-4 py-2 min-h-10 text-sm rounded-xl flex justify-start items-center jost rounded-tl-none border border-green-300 text-black"
+                                            className="px-4 py-2 min-h-10 text-sm sm:text-base rounded-xl flex justify-start items-center jost 
+                                            rounded-tl-none border border-green-300 text-black"
                                         >
                                             <div
                                             className="text-left jost"
