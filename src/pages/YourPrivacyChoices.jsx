@@ -1,8 +1,13 @@
-import React from "react";
+import React, { useEffect } from "react";
 import Header from "../components/Header/Header";
 import Footer from "../components/Footer/Footer";
+import { Link } from "react-router-dom";
 
 const YourPrivacyChoices = () => {
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }, []);
+
   const handleLoginClick = () => {
     window.open("/quiz");
   };
@@ -33,7 +38,7 @@ const YourPrivacyChoices = () => {
               Depending on where you live, you may have certain rights regarding your personal information under applicable privacy laws.
             </p>
             <p className="text-base sm:text-lg leading-relaxed text-gray-700">
-              RetireMate provides this page to explain how you can make privacy-related requests or ask questions about our data practices. For information about how we collect, use, and share information, please review our Privacy Policy.
+              RetireMate provides this page to explain how you can make privacy-related requests or ask questions about our data practices. For information about how we collect, use, and share information, please review our <Link className="!underline" to="/privacy-policy">Privacy Policy</Link>.
             </p>
           </div>
 
@@ -66,7 +71,7 @@ const YourPrivacyChoices = () => {
                   RetireMate is a brand operated by CareMaps Group Inc., a Delaware corporation. Our privacy practices may evolve as our Services develop, and this page is intended to provide a centralized way for users to reach us regarding privacy-related matters.
                 </p>
                 <p className="text-base sm:text-lg">
-                  For more details, please refer to our Privacy Policy.
+                  For more details, please refer to our <Link className="!underline" to="/privacy-policy">Privacy Policy</Link>.
                 </p>
               </div>
             </section>

@@ -38,7 +38,7 @@ const Footer = ({
   const defaultDisclaimerText = `The content on RetireMate is provided for general informational and educational purposes only 
   and does not constitute financial, investment, tax, or legal advice.`;
   
-  const defaultCopyrightText = "© 2026 CareMaps Group, Inc";
+  const defaultCopyrightText = "© 2025 CareMaps Group, Inc";
   
   const defaultLinks = [
     { id: 1, text: "Terms", href: "/terms" },
