@@ -55,6 +55,21 @@ export const TextInputPhone = ({
 
   return (
     <div className="flex flex-col gap-2">
+      <style>{`
+        .phone-input-upward .flag-dropdown.open .country-list,
+        .phone-input-upward .flag-dropdown.open ul.country-list {
+          top: auto !important;
+          bottom: 100% !important;
+          margin-bottom: 4px !important;
+          transform: none !important;
+          position: absolute !important;
+        }
+        .phone-dropdown-upward {
+          top: auto !important;
+          bottom: 100% !important;
+          margin-bottom: 4px !important;
+        }
+      `}</style>
       {validationMessage && (
         <p className="text-red-500 jost text-sm">{validationMessage}</p>
       )}
@@ -73,7 +88,8 @@ export const TextInputPhone = ({
           buttonClass={`!border-2 !rounded-l-xl ${
             isValid ? "!border-gray-300" : "!border-red-500 "
           }`}
-          containerClass="w-full jost"
+          containerClass="w-full jost phone-input-upward"
+          dropdownClass="phone-dropdown-upward"
           inputProps={{
             name: "phone",
             required: true,
