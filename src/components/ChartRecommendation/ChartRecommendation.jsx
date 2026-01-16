@@ -19,8 +19,8 @@ const ChartRecommendation = ({
     const sections = useMemo(() => {
         const baseSections = [
             { key: "yourSnapShot", title: `${userName || "Your"} Snapshot` },
-            { key: "whatsShapingYourOutlook", title: `What's Shaping ${userName || "your"} Outlook` },
-            { key: "yourRetirementPaycheck", title: `${userName || "your"} Retirement pay check` },
+            { key: "whatsShapingYourOutlook", title: `What's Shaping ${userName || "Your"} Outlook` },
+            { key: "yourRetirementPaycheck", title: `${userName || "Your"} Retirement pay check` },
             { key: "otherWaysToSupportYourRetirement", title: `Other ways to support your retirement` },
             { key: "whatYoureLikelyToSpendInRetirement", title: `What you're likely to spend in retirement` },
             { key: "howToStrengthenYourPlan", title: `How to strengthen your plan` },
