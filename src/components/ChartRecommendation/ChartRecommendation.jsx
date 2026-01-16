@@ -193,7 +193,7 @@ const ChartRecommendation = ({
                                     onClick={handleSectionClick}
                                     className="w-full py-2 mb-2 px-3 text-white bg-introPrimary rounded-lg cursor-pointer"
                                 >
-                                    <h2 className="text-left jost">
+                                    <h2 className="text-left text-base jost">
                                         Tap to view "{currentSection.title}"
                                     </h2>
                                 </div>
