@@ -7,11 +7,14 @@ const RetiremateEdge = () => {
   return (
     <div className="text-center px-6">
       <div className="max-w-7xl mx-auto">
-        <p className="text-introPrimary  font-medium text-xl sm:text-2xl text-center">
+        <p className="text-introPrimary  font-medium text-3xl sm:!text-[48px] sm:text-3xl text-center">
           The RetireMate Edge
         </p>
+        <p className="text-xl sm:text-3xl  jost inline-block p-1.5 rounded text-[#567257] text-center"> 
+          Instant retirement guidance, every step of the way
+        </p>
 
-        <div className="flex flex-col sm:flex-row gap-10 max-w-[1080px] mx-auto pt-8">
+        <div className="flex flex-col sm:flex-row gap-8 sm:gap-10 max-w-[1080px] mx-auto  mt-8 sm:mt-10 pb-10 sm:pb-16">
           {/* Answers you can trust */}
           <div className="flex gap-5 items-start">
             <img src={Qa} alt="QA" width={50} height={50} className="w-11 h-11" />

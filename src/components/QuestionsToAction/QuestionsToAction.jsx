@@ -40,9 +40,9 @@ const QuestionsToAction = ({
   ];
 
   const defaultGenderOptions = [
-    { value: "Male", label: "Male" },
     { value: "Female", label: "Female" },
-    { value: "both", label: "Both" },
+    { value: "Male", label: "Male" },
+    { value: "either", label: "Either" },
   ];
 
   const ageOptionsToDisplay =
@@ -114,7 +114,7 @@ const QuestionsToAction = ({
   console.log(questionsToDisplay(), "questionsToDisplay");
 
   return (
-    <div className="bg-[#D9D8D5] text-center px-4 sm:px-6 py-10 sm:py-16">
+    <div className="bg-[#D9D8D5] text-center px-4 sm:px-6 py-10 sm:py-16" >
       <div className="max-w-7xl mx-auto">
         <div className="flex flex-col xl:flex-row justify-between gap-10 items-center">
           {/* Left side: Questions heading and filters */}

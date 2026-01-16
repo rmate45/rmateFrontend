@@ -3,7 +3,6 @@ import api from "../../api/api";
 import oneImage from "../../assets/testimonial-2.jpeg"
 import twoImage from "../../assets/imageTwo.jpg"
 import threeImage from "../../assets/testimonial-2.jpeg"
-import { slugify } from "../../utils/slugify";
 import shareImage from '../../assets/mdi_share-outline.svg'
 import { shareViaSms } from "../../utils/shareViaSms";
 const RetirematePlanningQuestion = () => {
@@ -27,26 +26,20 @@ const RetirematePlanningQuestion = () => {
         }
     };
     const handleQuestionClick = (question) => {
-
-        const titleSlug = slugify(
-            `${question.name}-${question.age}-${question.profession}-${question.question}`);
         const idParam = encodeURIComponent(question._id);
-        const url = `/Top-Financial-Planning-Questions/${titleSlug}?id=${idParam}&type=financial`;
+        const url = `/q/Top-Explore-Questions/financial-planning/${idParam}?type=financial`;
         window.open(url, "_blank");
-
     }
     const handleQuestionWhatsappClick = (question) => {
-        const titleSlug = slugify(
-            `${question.name}-${question.age}-${question.profession}-${question.question}`);
         const idParam = encodeURIComponent(question._id);
-        const url = `/Top-Financial-Planning-Questions/${titleSlug}?id=${idParam}&type=financial`;
+        const url = `/q/Top-Explore-Questions/financial-planning/${idParam}?type=financial`;
 
         const fullUrl = `${window.location.origin}${url}`;
         console.log(fullUrl,"fullUrl");
         
         shareViaSms({
             text: "click here to ask RetireMate",
-            url: fullUrl,          // NOT encoded
+            url: fullUrl,
         });
     }
     if (loading) {
@@ -57,7 +50,7 @@ const RetirematePlanningQuestion = () => {
                         Explore retirement through stories like yours
                     </h2>
                     <div className="flex justify-center items-center py-20">
-                        <div className="text-lg text-gray-600">Loading Top Finanical Planning questions...</div>
+                        <div className="text-lg text-gray-600">Loading Top Financial Planning Questions Asked by People Like You...</div>
                     </div>
                 </div>
             </div>
@@ -82,7 +75,7 @@ const RetirematePlanningQuestion = () => {
         <div className="text-center px-6 pt-10 sm:pt-16">
             <div className="max-w-7xl mx-auto">
                 <p className="text-introPrimary font-medium text-xl sm:text-2xl text-center">
-                    Top Finanical Planning  questions
+                  Top Financial Planning Questions Asked by People Like You
                 </p>
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 mt-10">
                     {
@@ -109,7 +102,7 @@ const RetirematePlanningQuestion = () => {
                                         <div className="flex mt-5 justify-between items-center w-full">
 
                                             <button onClick={() => handleQuestionClick(item)} className="  text-base rounded-lg px-4 py-2 bg-[#567257] text-white">
-                                                Ask RetireMate
+                                              View Answer
                                             </button>
                                             <button onClick={() => handleQuestionWhatsappClick(item)}>
                                                 <img src={shareImage} alt="Share" />

@@ -1,18 +1,85 @@
 // components/Header/Header.js
-import React from "react";
+import React, { useEffect, useState, useRef } from "react";
+import { useNavigate } from "react-router-dom";
 import logo from "../../assets/logo.png";
+import clsx from "clsx";
 
-const Header = ({ onLoginClick }) => {
+const Header = ({ onLoginClick, alwaysGreen = false, redirectToHome = false }) => {
+  const [isScrolled, setIsScrolled] = useState(false);
+  const signUpButtonRef = useRef(null);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setIsScrolled(window.scrollY > 20); // change at 20px
+    };
+
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
+  const handleHeaderClick = (e) => {
+    // Get the Sign Up button's position
+    if (signUpButtonRef.current) {
+      const buttonRect = signUpButtonRef.current.getBoundingClientRect();
+      const clickX = e.clientX;
+      
+      // If click is within 40px to the left of the button or on the button, don't scroll
+      if (clickX >= buttonRect.left - 40) {
+        return;
+      }
+    }
+    
+    // If redirectToHome is true, navigate to home page and scroll to top
+    if (redirectToHome) {
+      window.scrollTo({
+        top: 0,
+        behavior: "smooth"
+      });
+      navigate("/");
+      // Ensure scroll to top after navigation
+      setTimeout(() => {
+        window.scrollTo(0, 0);
+      }, 100);
+      return;
+    }
+    
+    // Otherwise, scroll to top smoothly
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth"
+    });
+  };
+
   return (
-    <div className="bg-[#567257] py-4 px-4 sm:px-10 sm:py-6 flex justify-between items-center sticky top-0 z-[9999]">
-      <div className="max-w-[1750px] flex justify-end items-center mx-auto w-full relative">
-        <img className="w-[130px] lg:w-[150px] absolute left-1/2 -translate-x-1/2" src={logo} alt="RetireMate Logo" />
-        <button
-          className="text-xs lg:text-base border border-primary text-primary bg-[#f7f8f7] !font-semibold rounded-[10px] jost px-2 lg:px-5 py-2 hover:bg-[#e8fdba]/95 hover:text-[#567257] transition"
-          onClick={onLoginClick}
+    <div
+      className={clsx(
+        "fixed top-0 w-full z-999 transition-all duration-300 cursor-pointer",
+        alwaysGreen
+          ? "bg-introPrimary shadow-md py-4"
+          : isScrolled
+          ? "bg-introPrimary shadow-md py-4"
+          : "bg-transparent py-4 sm:py-6"
+      )}
+      onClick={handleHeaderClick}
+    >
+      <div className="px-4 sm:px-10 flex justify-center items-center max-w-[1750px] mx-auto relative">
+        <img
+          className="w-[130px] lg:w-[150px] max-h-[60px]"
+          src={logo}
+          alt="RetireMate Logo"
+        />
+
+        {/* <button
+          ref={signUpButtonRef}
+          className="text-xs lg:text-base border bg-[#E8FFBD] border-[#E8FFBD] text-[#253D2C] rounded-[10px] jost px-2 lg:px-5 py-2 hover:bg-[#e8fdba]/95 hover:text-[#567257] transition cursor-pointer"
+          onClick={(e) => {
+            e.stopPropagation(); // Prevent scroll to top when clicking Sign Up
+            onLoginClick();
+          }}
         >
           Sign up
-        </button>
+        </button> */}
       </div>
     </div>
   );

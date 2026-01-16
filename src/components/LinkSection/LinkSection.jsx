@@ -22,7 +22,7 @@ const LinkSection = () => {
   ];
 
   return (
-    <div className="bg-white  px-6 py-10 sm:py-16">
+    <div className="bg-white  px-6 pb-10 sm:pb-16">
       <div className="max-w-7xl mx-auto">
         <h1 className="text-introPrimary text-center font-medium text-2xl mb-8">
           Retirement Resources, News & Advice

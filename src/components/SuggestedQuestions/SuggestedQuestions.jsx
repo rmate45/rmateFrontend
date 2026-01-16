@@ -22,7 +22,7 @@ const SuggestedQuestions = ({ questions, onQuestionClick }) => {
           Tap a question below to begin.
         </p>
 
-        <div className="max-w-[1080px] mx-auto my-10 sm:my-16">
+        <div className="max-w-[1080px] mx-auto my-8 sm:my-16">
           <ResponsiveCarousel
             items={questions}
             renderItem={(q) => (
@@ -61,12 +61,12 @@ const SuggestedQuestions = ({ questions, onQuestionClick }) => {
           />
         </div>
 
-        <div className="text-center">
+        {/* <div className="text-center">
           <p className="text-[#2A2420] font-medium text-xl sm:text-2xl">
             We believe everyone should have access to instant,
             <br /> personalized retirement answers - for free
           </p>
-        </div>
+        </div> */}
       </div>
     </div>
   );

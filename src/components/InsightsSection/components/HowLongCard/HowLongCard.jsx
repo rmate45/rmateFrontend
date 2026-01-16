@@ -55,7 +55,7 @@ const HowLongCard = () => {
       </p>
 
       <div className="flex flex-wrap xl:flex-nowrap items-end">
-        <div className="w-full h-64">
+        <div className="w-full h-64 w-full  pb-5 lg:pb-0">
           <ResponsiveContainer>
             <LineChart
               data={data}
@@ -88,6 +88,7 @@ const HowLongCard = () => {
               ))}
             </LineChart>
           </ResponsiveContainer>
+          <p className="text-xs text-introPrimary jost ">Example visualization - coming soon</p>
         </div>
 
         <div className="mt-2 flex flex-col items-center xl:items-start">

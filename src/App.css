@@ -49,7 +49,9 @@ body * {
     transform: rotate(360deg);
   }
 }
-
+section {
+  scroll-margin-top: 90px;
+}
 .st0 {
   fill: #5cc37e;
 }

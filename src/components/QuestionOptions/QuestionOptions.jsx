@@ -7,7 +7,8 @@ export const QuestionOptions = ({ options, onOptionClick }) => {
         <button
           key={idx}
           onClick={() => onOptionClick(option)}
-          className="w-full py-2 px-3 text-left jost border-2 border-gray-300 rounded-lg hover:border-green-300 hover:bg-green-50 transition-all"
+          className="w-full text-base py-2 px-3 text-left jost border-2 border-gray-300 rounded-lg
+           hover:border-green-300 hover:bg-green-50 transition-all"
         >
           {option.text}
         </button>

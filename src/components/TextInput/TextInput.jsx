@@ -10,6 +10,7 @@ export const TextInput = ({
   onValidationError,
   isAgeInput = false,
   scrollToBottom,
+  setUserAge
 }) => {
   const [isValid, setIsValid] = useState(true);
   const [validationMessage, setValidationMessage] = useState(null);
@@ -181,6 +182,7 @@ export const TextInput = ({
       cleaned = rawValue.replace(/\D/g, "");
     } else if (isAgeInput) {
       cleaned = rawValue.replace(/\D/g, "");
+      setUserAge(cleaned);
       if (cleaned.length > 3) {
         cleaned = cleaned.slice(0, 3);
       }

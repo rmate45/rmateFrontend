@@ -14,9 +14,11 @@ export const QuestionDisplay = ({
   onTextSubmit,
   onMultiSelectSubmit,
   onValidationError,
+  onSkip,
   scrollUp,
   scrollToBottom, // Add this new prop for scrolling to bottom
   type,
+  setUserAge
 }) => {
   const [selectedMultiOptions, setSelectedMultiOptions] = useState([]);
 const [showModal, setShowModal] = useState(false);
@@ -35,7 +37,9 @@ const [showModal, setShowModal] = useState(false);
 
   const isValidateZip = currentQuestion?.questionId === "MQ1"; 
   const isPhoneInput = currentQuestion?.questionId === "MQ9" || currentQuestion?.questionId === "Q8";
-  const isAgeInput = currentQuestion?.questionId === "Q1"; 
+  const isEmailInput = currentQuestion?.questionId === "Q7";
+  const isAgeInput = currentQuestion?.questionId === "Q1";
+  const isPendingQuestion = isPhoneInput || isEmailInput;
 
   const handleMultiSelectToggle = (option) => {
     setSelectedMultiOptions(prev => {
@@ -61,13 +65,20 @@ const [showModal, setShowModal] = useState(false);
     onTextSubmit(phoneData);
   };
 
+  // Handle skip for pending questions
+  const handleSkip = () => {
+    if (onSkip) {
+      onSkip(currentQuestion.questionId);
+    }
+  };
+
   return (
     <div className={`mt-0 px-4`}>
         <PrivacyTrustModal show={showModal} onClose={() => setShowModal(false)} />
      <div className="flex gap-1 items-start">
       <img src={RetirmateLogo} alt="retiremate" className="pt-1" />
       <div className="grow">
-       <div className="mb-2 jost text-sm border-2 border-green-300 px-4 py-2 text-center flex gap-2 items-center justify-center rounded-xl text-gray-800 font-semibold max-w-sm">
+       <div className="mb-2 jost text-base border-2 border-green-300 px-4 py-2 text-center flex gap-2 items-center justify-center rounded-xl text-gray-800 font-semibold max-w-sm">
         {currentQuestion.questionText} {type === "medicareQuiz" && <img src={cuidaAlert} alt="retiremate" onClick={() => setShowModal(true)} />}
       </div>
 
@@ -86,6 +97,7 @@ const [showModal, setShowModal] = useState(false);
         {/* Regular Free Text Input (ZIP or other text) */}
         {currentQuestion.inputType === "free_text" && !isPhoneInput && (
           <TextInput
+            setUserAge={setUserAge}
             value={textInput}
             onChange={onTextChange}
             onSubmit={onTextSubmit}
@@ -141,6 +153,18 @@ const [showModal, setShowModal] = useState(false);
         </div>
       )}
      </div>
+
+     {/* Skip button bubble on right side for pending questions */}
+     {isPendingQuestion && onSkip && (
+       <div className="flex justify-end ml-2">
+         <button
+           onClick={handleSkip}
+           className="px-4 py-2 min-h-10 text-sm max-w-xs rounded-xl flex justify-center items-center jost  rounded-br-none bg-green-300 text-left text-black !font-normal"
+         >
+           Skip →
+         </button>
+       </div>
+     )}
      </div>
     </div>
   );

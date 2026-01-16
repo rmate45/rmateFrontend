@@ -12,6 +12,7 @@ import {
   ReferenceLine,
 } from "recharts";
 import Recommendation from "./Recommendation";
+import ChartRecommendation from "../ChartRecommendation/ChartRecommendation";
 
 const dollarFormatter = (value) => {
   if (value >= 1_000_000) {
@@ -30,8 +31,14 @@ const CustomTooltip = ({ active, payload }) => {
 
   if (active && payload && payload.length) {
     const data = payload[0].payload;
+    console.log(data,"data");
+    
     const showHouseholdIncome = data.age < 67;
     const showSocialSecurity = data.age >= 67;
+    const contributionAmount = data.contribution / 12
+    console.log(contributionAmount, "contributionAmount");
+    console.log(showHouseholdIncome, "showHouseholdIncome");
+    console.log(data.householdIncome, "data.householdIncome");
 
     return (
       <div className="bg-white p-2 border border-gray-300 jost rounded shadow-sm text-xs">
@@ -44,23 +51,30 @@ const CustomTooltip = ({ active, payload }) => {
             Household Income: {dollarFormatter(data.householdIncome)}
           </p>
         )}
-        {showSocialSecurity && (
+       
+        {showSocialSecurity && (<p className="text-red-600">
+          Withdrawal: {dollarFormatter(data.withdrawal)}
+        </p>)}
+        {showHouseholdIncome && (<p className="text-red-600">
+          Contributing: {dollarFormatter(contributionAmount)}
+        </p>)}
+         {showSocialSecurity && (
           <p className="text-blue-600">
             Social Security: {dollarFormatter(data.socialSecurity)}
           </p>
         )}
-        <p className="text-red-600">
-          Withdrawal: {dollarFormatter(data.withdrawal)}
-        </p>
       </div>
     );
   }
   return null;
 };
 
-const PlotChart = ({ data, showDisclaimer= false,setShowPeningItems }) => {
-  
+const PlotChart = ({ data, showDisclaimer = false, setShowPeningItems, onTapAnalysis, questionTitle, userName,userAge, setConversation }) => {
+
+
   const [showRecommendation, setShowRecommendation] = useState(false);
+  const [showDesc, setShowDesc] = useState(false)
+  const [showTapQuestion, setShowTapQuestions] = useState(false)
   const parsedData =
     typeof data.text === "string"
       ? JSON.parse(data.text?.data)
@@ -96,16 +110,33 @@ const PlotChart = ({ data, showDisclaimer= false,setShowPeningItems }) => {
       summaryText = `Retirement projections show your savings may last only until age ${savingsLastAge}. This is a critical warning sign. You need to act now, increase awareness, and start planning to avoid a financial shortfall in retirement.`;
     }
   }
+  const handlePandingItems = () => {
 
+       setConversation((prev) => [
+      ...prev,
+      {
+        type: "system",
+        text: "No spam. No sales calls. Just your roadmap and helpful insights.",
+        // isMobile: true
+      },
+    ]);
+
+    setShowPeningItems(true);
+    setShowRecommendation(true);
+    if (showDisclaimer && typeof onTapAnalysis === "function") {
+      onTapAnalysis();
+      setShowDesc(true)
+    }
+  }
   return (
     <div className="w-full">
-      <div className="px-2 py-2 rounded-xl border-1 border-green-300 bg-white w-full max-w-full">
+      <div className="px-2 py-2 rounded-xl border border-green-300 bg-white w-full max-w-full">
 
-        <h1 className="jost text-gray-700 mb-2 mt-2 leading-relaxed text-center">
-          How Long Will My Savings Last?
-        </h1>
+        {questionTitle && (<h1 className="jost text-gray-700 mb-2 mt-2 leading-relaxed text-center font-semibold">
+          {questionTitle}
+        </h1>)}
 
-        <div className="h-96">
+        <div className="h-120">
           <ResponsiveContainer>
             <LineChart
               data={filteredData}
@@ -117,10 +148,10 @@ const PlotChart = ({ data, showDisclaimer= false,setShowPeningItems }) => {
                 label={{
                   value: "Age",
                   position: "insideBottom",
-                  offset: -5,
-                  style: { fontSize: 10 },
+                  offset: -10,
+                  style: { fontSize: 14 },
                 }}
-                tick={{ fontSize: 10 }}
+                tick={{ fontSize: 14 }}
               />
               <YAxis
                 tickFormatter={dollarFormatter}
@@ -128,9 +159,11 @@ const PlotChart = ({ data, showDisclaimer= false,setShowPeningItems }) => {
                   value: "Savings",
                   angle: -90,
                   position: "insideLeft",
-                  style: { fontSize: 10 },
+                  offset: 8,
+                  dy: -16,
+                  style: { fontSize: 14 },
                 }}
-                tick={{ fontSize: 10 }}
+                tick={{ fontSize: 14 }}
               />
               <Tooltip content={<CustomTooltip />} />
 
@@ -177,7 +210,7 @@ const PlotChart = ({ data, showDisclaimer= false,setShowPeningItems }) => {
                       value={`${dollarFormatter(retirementPoint.savings)}`}
                       position="top"
                       fill="#0e6634"
-                      fontSize={11}
+                      fontSize={16}
                       fontWeight={600}
                       offset={15}
                       className="custom-saving"
@@ -199,7 +232,7 @@ const PlotChart = ({ data, showDisclaimer= false,setShowPeningItems }) => {
                       value="You are here"
                       position="right"
                       fill="#567257"
-                      fontSize={11}
+                      fontSize={16}
                       className="label-set"
                       offset={10}
                     />
@@ -208,23 +241,26 @@ const PlotChart = ({ data, showDisclaimer= false,setShowPeningItems }) => {
               )}
             </LineChart>
           </ResponsiveContainer>
-        </div>
-
-        <div className=" hidden sm:block">
-
-          <Recommendation data={data} />
 
         </div>
+        {data?.text?.topStatement && (<p className="jost text-base text-center text-gray-700 font-semibold mb-3 "> {data?.text?.topStatement}</p>)}
       </div>
-      <div onClick={() => {setShowPeningItems(true); setShowRecommendation(true)}} className="px-2 py-2 mt-3 rounded-xl border-1 border-green-300 bg-white w-full max-w-full block sm:hidden">
+      {<ChartRecommendation userAge={userAge} userName={userName} setShowTapQuestions={setShowTapQuestions} data={data} handlePandingItems={handlePandingItems} />}
+      {/* {showTapQuestion && (<div
+        onClick={() => {
+          
+        }}
+        className="px-2 py-2 mt-3 rounded-xl border-green-300 border bg-white w-full max-w-full block cursor-pointer"
+      >
 
-        {showRecommendation ? <Recommendation data={data} /> :
-          <p className=" text-sm max-w-xs rounded-xl flex justify-start items-center jost  text-black">
 
-            Tap here to view the analysis
-          </p>}
-      </div>
-      {showDisclaimer && (<div className="order-green-300 bg-green-100 p-3 jost rounded-xl mt-3">
+        <p className="border-green-300 text-sm max-w-xs rounded-xl flex justify-start items-center jost  text-black">
+
+          Tap here to view the analysis
+        </p>
+      </div>)} */}
+      {showDesc && (<div className="order-green-300 bg-green-100 p-3 jost rounded-xl mt-3">
+        <strong className="block jost">Want a copy of your RetireMate Roadmap?</strong>
         To receive a free, educational retirement analysis tailored to your age, income, and goals, please enter your contact details below.”
       </div>)}
     </div>

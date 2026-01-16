@@ -11,6 +11,7 @@ import PrivacyTrustModal from "../components/PrivacyTrustModal/PrivacyTrustModal
 import RetirementQa from "../components/RetiremateQa/RetiremateQa.jsx";
 import { isDesktop } from "react-device-detect";
 import UserCard from "../components/UserCard/UserCard.jsx";
+import ChartRecommendation from "../components/ChartRecommendation/ChartRecommendation.jsx";
 
 const chatApiUrl = import.meta.env.VITE_CHAT_API_URL;
 
@@ -97,17 +98,18 @@ const STARTER_QUESTIONS = {
   ],
 };
 
-const Quiz = () => {
+const Quiz = ({ initialCard, initialId, initialType }) => {
   const location = useLocation();
   const params = new URLSearchParams(location.search);
   console.log(params, "params");
 
   const urlData = {
-    id: params.get("id") || "",
+    id: initialId || params.get("id") || "",
     isPersona: params.get("isPersona") === "true" || false,
     isCustomPersona: params.get("isCustomPersona") === "true" || false,
-    type: params.get("type") || "",
+    type: initialType || params.get("type") || "",
   };
+console.log(urlData,"urlData");
 
   const initialText = location.state?.title || params.get("title") || "";
   console.log(initialText, "initialText");
@@ -155,10 +157,18 @@ const Quiz = () => {
   const [chartAlreadyShown, setChartAlreadyShown] = useState(false);
   // item passed from TestimonialCard via navigate('/quiz', { state: { item } })
   const [showDisclaimer, setShowDisclaimer] = useState(false)
-  // console.log(pendingQuestions, "pendingQuestions");
+  console.log(pendingQuestions, "pendingQuestions");
   const [showPendingItems, setShowPeningItems] = useState(false)
   // console.log(showPendingItems, "showPendingItems");
   const [item, setItem] = useState(null)
+  console.log(item,"item");
+  
+  const [graphTitleQuestion, SetGraphTitleQuestion] = useState("")
+  const [userAge, setUserAge] = useState("")
+  // const [userName, SetuserName] = useState("")
+  console.log(showPendingItems, 'showPendingItems');
+  console.log(showStarterQuestions, 'showStarterQuestions');
+
   useEffect(() => {
 
     initializeFlow();
@@ -188,14 +198,14 @@ const Quiz = () => {
       return;
     }
 
-    setConversation((prev) => [
-      ...prev,
-      {
-        type: "system",
-        text: "Let's get started with a few basic questions.",
-        isMobile: true
-      },
-    ]);
+    // setConversation((prev) => [
+    //   ...prev,
+    //   {
+    //     type: "system",
+    //     text: "Let's get started with a few basic questions.",
+    //     // isMobile: true
+    //   },
+    // ]);  
   }, [showPendingItems, urlData.isPersona]);
 
   useEffect(() => {
@@ -260,6 +270,16 @@ const Quiz = () => {
     } catch (err) {
       console.error("Error fetching persona:", err);
       return null;
+    }
+  };
+
+  // Used by mobile chart view (Tap here to view the analysis)
+  const handleTapAnalysis = () => {
+    if (pendingQuestions.length > 0) {
+      continueWithPendingQuestions();
+    } else {
+      setShowStarterQuestions(true);
+      setLoading(false);
     }
   };
 
@@ -343,7 +363,7 @@ const Quiz = () => {
       if (!urlData?.isPersona && urlData.id) {
         const type = urlData.type;
         let fetchedData = null;
-
+        
         if (type === "roth") {
           fetchedData = await fetchQuestionRothById(urlData.id);
         } else if (type === "explore") {
@@ -356,6 +376,9 @@ const Quiz = () => {
         }
 
         if (fetchedData) {
+          SetGraphTitleQuestion(fetchedData?.question)
+          setUserName(fetchedData?.name)
+          setUserAge(fetchedData?.age)
           // First message - question
           setTimeout(() => {
             setConversation([{ type: "answer", text: fetchedData?.question }]);
@@ -395,6 +418,7 @@ const Quiz = () => {
 
       if (urlData?.isPersona && urlData.id) {
         const fetched = await fetchPersonaById(urlData.id);
+        console.log("fetched", fetched)
         await initialChartMessage(fetched);
       }
 
@@ -441,7 +465,7 @@ const Quiz = () => {
 
       if (
         statement?.question ==
-        "Your privacy matters! Anything you share stays private and is only used to improve your results. Learn more here."
+        "You're in control of what you share. Your answers stay private and only help personalize your results. Learn more here."
       ) {
         setConversation((prev) => [
           ...prev,
@@ -449,8 +473,7 @@ const Quiz = () => {
             type: "system",
             text: (
               <p className="jost">
-                Your privacy matters! Anything you share stays private and is
-                only used to improve your results. Learn more{" "}
+                You're in control of what you share. Your answers stay private and only help personalize your results. Learn more here.{" "}
                 <span
                   onClick={() => setShowModal(true)}
                   className="jost text-primary hover:!underline cursor-pointer"
@@ -583,6 +606,34 @@ const Quiz = () => {
       setShowStarterQuestions(true);
       setLoading(false);
     }
+  };
+
+  // Function to skip current question (for pending questions like email/phone)
+  const handleSkipQuestion = (questionId) => {
+    // Add "Skipped" to conversation
+    addToConversation("answer", "Skipped");
+    
+    // Store skipped answer
+    const skippedAnswer = {
+      questionId: questionId,
+      answer: "Skipped",
+      value: "",
+      skipped: true,
+    };
+    
+    setUserAnswers((prev) => ({
+      ...prev,
+      [questionId]: skippedAnswer,
+    }));
+    
+    // Clear text input
+    setTextInput("");
+    
+    // Move to next question
+    moveToNextQuestion({
+      ...userAnswers,
+      [questionId]: skippedAnswer,
+    });
   };
 
   const moveToNextQuestion = (answers) => {
@@ -733,7 +784,10 @@ const Quiz = () => {
     };
     const statementsResponse = await api.get("/get-statements");
     const intialStartMessages = statementsResponse?.data?.data
-    // Initial greeting with loading delay
+    console.log(intialStartMessages, "statementsResponse")
+    SetGraphTitleQuestion(personaData?.persona_question)
+    setUserName(personaData?.name)
+    setUserAge(personaData?.age)
     setConversation([{ type: "system", text: intialStartMessages[0].question }]);
     console.log(statementsResponse, "statementsResponse")
     // Second message after 1 second
@@ -760,7 +814,7 @@ const Quiz = () => {
               used to improve your results. Learn more{" "}
               <span
                 onClick={() => setShowModal(true)}
-                className="jost text-primary hover:!underline cursor-pointer"
+                className="jost text-primary hover:underline! cursor-pointer"
               >
                 {" "}
                 here.
@@ -777,7 +831,7 @@ const Quiz = () => {
         ...prev,
         {
           type: "system",
-          text: personaData?.chat_bubble,
+          text: personaData?.persona_description,
         },
       ]);
     }, 3000);
@@ -807,16 +861,16 @@ const Quiz = () => {
           setShowDisclaimer(false)
 
           // On larger screens, show the intro message here
-          if (typeof window !== "undefined" && window.innerWidth > 767) {
-            setConversation((prev) => [
-              ...prev,
-              {
-                type: "system",
-                text: "Let's get started with a few basic questions.",
-                isDesktop: true
-              },
-            ]);
-          }
+          // if (typeof window !== "undefined" && window.innerWidth > 767) {
+          //   setConversation((prev) => [
+          //     ...prev,
+          //     {
+          //       type: "system",
+          //       text: "Let's get started with a few basic questions.",
+          //       isDesktop: false
+          //     },
+          //   ]);
+          // }
 
           setTimeout(fetchAppropriateQuestions, 1000);
         } else {
@@ -960,15 +1014,8 @@ const Quiz = () => {
         // Mark that chart has been shown
         setChartAlreadyShown(true);
 
-        // Continue with pending questions after chart is loaded
-        if (pendingQuestions.length > 0) {
-          setTimeout(() => {
-            continueWithPendingQuestions();
-          }, 1000);
-        } else {
-          setShowStarterQuestions(true);
-          setLoading(false);
-        }
+        // Stop loading and wait for user action (e.g. tap on mobile CTA)
+        setLoading(false);
 
         // Wait a bit, then show the structured questions
         // setTimeout(() => {
@@ -982,33 +1029,19 @@ const Quiz = () => {
       } else {
         addToConversation(
           "system",
-          "I couldn't generate your chart data, but let's continue with your retirement planning questions!"
+          "I couldn't generate your chart data, but you can still continue with your retirement planning questions."
         );
-        // Continue with pending questions even if chart fails
-        if (pendingQuestions.length > 0) {
-          setTimeout(() => {
-            continueWithPendingQuestions();
-          }, 1000);
-        } else {
-          setShowStarterQuestions(true);
-          setLoading(false);
-        }
+        // Stop loading and wait for user action even if chart fails
+        setLoading(false);
       }
     } catch (error) {
       console.error("Error starting structured Q&A:", error);
       addToConversation(
         "system",
-        "Something went wrong while generating your analysis, but let's continue with your retirement planning questions!"
+        "Something went wrong while generating your analysis, but you can still continue with your retirement planning questions."
       );
-      // Continue with pending questions even on error
-      if (pendingQuestions.length > 0) {
-        setTimeout(() => {
-          continueWithPendingQuestions();
-        }, 1000);
-      } else {
-        setShowStarterQuestions(true);
-        setLoading(false);
-      }
+      // Stop loading and wait for user action on error
+      setLoading(false);
     }
   };
 
@@ -1638,7 +1671,17 @@ const Quiz = () => {
             if (item.type === "chart") {
               return (
                 <div key={idx} className="mb-4 px-4 ">
-                  <PlotChart data={item} showDisclaimer={item.showDisclaimer} setShowPeningItems={setShowPeningItems} />
+                  <PlotChart
+                    questionTitle={graphTitleQuestion}
+                    userName={userName}
+                    data={item}
+                    showDisclaimer={item.showDisclaimer}
+                    setShowPeningItems={setShowPeningItems}
+                    onTapAnalysis={handleTapAnalysis}
+                    userAge={userAge}
+                    setConversation={setConversation}
+                    conversation={conversation}
+                  />
                 </div>
               );
             }
@@ -1669,6 +1712,7 @@ const Quiz = () => {
 
           {showStarterQuestions && (
             <div className="mx-4">
+
               <RetirementQa />
             </div>
           )}
@@ -1717,7 +1761,7 @@ const Quiz = () => {
               On mobile (<= 767px), also require showPendingItems; on larger screens, always show. */}
           {!showStarterQuestions &&
             !showFollowUpQuestions &&
-            (!isMobile || showPendingItems) &&
+            showPendingItems &&
             currentQuestion && (
               <QuestionDisplay
                 type={urlData.type}
@@ -1731,6 +1775,8 @@ const Quiz = () => {
                 onOptionClick={handleOptionClick}
                 onTextSubmit={handleTextSubmit}
                 onMultiSelectSubmit={handleMultiSelectSubmit}
+                onSkip={handleSkipQuestion}
+                setUserAge={setUserAge}
               />
             )}
 

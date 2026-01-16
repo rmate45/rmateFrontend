@@ -1,4 +1,5 @@
 const Recommendation = ({data}) =>{
+  console.log(data,"data--data")
     return(
       <div className=" text-sm sm:px-4">
         <p className="jost text-lg text-gray-700 leading-relaxed ">

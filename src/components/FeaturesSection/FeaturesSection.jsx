@@ -103,7 +103,7 @@ const FeaturesSection = ({ features = [], testimonials = [] }) => {
  
 
   return (
-    <div className="bg-gray-50 px-6 py-10 sm:py-16">
+    <div className="bg-gray-50 px-6 py-10 sm:py-16  mt-10 sm:mt-16">
       {/* Features Section */}
       <div className="max-w-7xl mx-auto text-center">
         <h2 className="text-introPrimary font-medium text-2xl">

@@ -44,8 +44,8 @@ const RetireAgeCard = () => {
         lifestyle in Los Angeles, CA, by saving <strong>$1,000/month</strong>.
       </p>
 
-      <div className="flex flex-wrap xl:flex-nowrap items-end">
-        <div className="w-full h-64">
+      <div className="flex flex-wrap xl:flex-nowrap items-start">
+        <div className="w-full h-64 pb-5 lg:pb-0">
           <ResponsiveContainer>
             <BarChart
               data={barData}
@@ -92,6 +92,7 @@ const RetireAgeCard = () => {
               </Bar>
             </BarChart>
           </ResponsiveContainer>
+            <p className="text-xs text-introPrimary jost ">Example visualization - coming soon</p>
         </div>
 
         <div className="mt-2 flex-1/2 flex flex-col items-center xl:items-start">

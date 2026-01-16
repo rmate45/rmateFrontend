@@ -12,6 +12,9 @@ import MedicarePage from "./pages/MedicarePage.jsx";
 import ExploreQuestionsPage from "./pages/ExploreQuestionsPage.jsx";
 import Test from "./pages/Test.jsx";
 import QuizView from "./pages/QuizView.jsx";
+import PrivacyPolicy from "./pages/PrivacyPolicy.jsx";
+import Terms from "./pages/Terms.jsx";
+import YourPrivacyChoices from "./pages/YourPrivacyChoices.jsx";
 
 function App() {
   return (
@@ -22,31 +25,44 @@ function App() {
         <Route path="/quiz" element={<QuizView />} />
         <Route path="/plans/:phone/:id" element={<PlanPage />} />
         <Route
-          path="/Top-Roth-Conversion-Retirement-Questions/:slug"
+          path="/q/Top-Explore-Questions/roth-conversions/:id"
           element={<RothPage />}
         />
         <Route
-          path="/Persona/:slug"
+          path="/q/Top-Explore-Questions/persona/:id"
           element={<PersonaPage />}
         />
         <Route
-          path="/Top-Financial-Planning-Questions/:slug"
+          path="/q/Top-Explore-Questions/financial-planning/:id"
           element={<FinancialPage />}
         />
         <Route
-          path="/Top-Medicare-Questions/:slug"
+          path="/q/Top-Explore-Questions/medicare/:id"
           element={<MedicarePage />}
         />
         <Route
-          path="/Top-Explore-Questions/:slug"
+          path="/q/Top-Explore-Questions/general/:id"
           element={<ExploreQuestionsPage />}
         />
         <Route
           path="/test"
           element={<Test />}
         />
+        <Route
+          path="/privacy-policy"
+          element={<PrivacyPolicy />}
+        />
+        <Route
+          path="/terms"
+          element={<Terms />}
+        />
+        <Route
+          path="/your-privacy-choices"
+          element={<YourPrivacyChoices />}
+        />
       </Routes>
     </>
+    
   );
 }
 

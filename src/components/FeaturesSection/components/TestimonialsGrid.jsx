@@ -75,7 +75,7 @@ const TestimonialsGrid = () => {
       <div className="text-center px-6 max-w-7xl mx-auto py-10 sm:py-16">
         <div className="flex flex-col justify-center px-5">
           <h2 className="text-introPrimary font-medium text-2xl mb-8">
-            Explore retirement through stories like yours
+            How people like you are preparing for retirement
           </h2>
           <div className="flex justify-center items-center py-20">
             <div className="text-lg text-gray-600">Loading testimonials...</div>
@@ -90,7 +90,7 @@ const TestimonialsGrid = () => {
       <div className="text-center px-6 max-w-7xl mx-auto py-10 sm:py-16">
         <div className="flex flex-col justify-center px-5">
           <h2 className="text-introPrimary font-medium text-2xl mb-8">
-            Explore retirement through stories like yours
+            How people like you are preparing for retirement
           </h2>
           <div className="flex justify-center items-center py-20">
             <div className="text-lg text-red-600">{error}</div>
@@ -101,11 +101,11 @@ const TestimonialsGrid = () => {
   }
 
   return (
-    <div className="px-6 py-10 sm:py-16">
+    <div className="px-6 py-10 sm:py-16 sm:pt-5">
     <div className="text-center  max-w-7xl mx-auto ">
       <div className="flex flex-col justify-center ">
-        <h2 className="text-introPrimary font-medium text-2xl mb-8">
-          Explore retirement through stories like yours
+        <h2 className="text-introPrimary font-medium text-2xl mb-8 mt-5 sm:mt-10">
+          How people like you are preparing for retirement
         </h2>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">

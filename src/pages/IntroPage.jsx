@@ -32,6 +32,9 @@ import ExploreMoreQuestions from "../components/ExploreMoreQuestions/ExploreMore
 import MedicareQuestions from "../components/MedicareQuestions/MedicareQuestions";
 import MedicareQuiz from "../components/MedicareQuiz/MedicareQuiz";
 import SeoHelmet from "../components/Seo/SeoHelmet";
+import chatImage from '.././assets/chat-bubble.png'
+import SearchManual from "../components/HeroSection/SearchManual";
+import ScrollToSection from "../components/ScrollToSection/ScrollToSection";
 function IntroPage() {
   // Data for components
   const suggestedQuestions = [
@@ -120,7 +123,7 @@ function IntroPage() {
 
   // Event handlers - these are now optional since navigation is handled within components
   const handleLoginClick = () => {
-     window.open("/quiz");
+    window.open("/quiz");
     // Add your login logic here
   };
 
@@ -148,14 +151,27 @@ function IntroPage() {
     console.log("Footer link clicked:", link);
     // Add your footer link logic here
   };
-const WEBSITE_URL = import.meta.env.VITE_WEBSITE_URL;
-  
+  const WEBSITE_URL = import.meta.env.VITE_WEBSITE_URL;
+
+  const handleScrollToSearchManual = () => {
+    const el = document.getElementById("search-manual");
+    if (!el) return;
+
+    const yOffset = -90;
+    const y = el.getBoundingClientRect().top + window.pageYOffset + yOffset;
+
+    window.scrollTo({ top: y, behavior: "smooth" });
+  };
+
   return (
     <>
-       <SeoHelmet 
-       title="RetireMate" 
-       description="Expert-curated retirement and Medicare insights." 
-       url={WEBSITE_URL} />
+      <SeoHelmet
+        title="RetireMate | Instant retirement clarity"
+        description="See what your retirement could look like. Get clear, personalized guidance on savings, timing, and where you might retire — in minutes."
+        url={WEBSITE_URL} 
+        />
+      {/* image={`${WEBSITE_URL}/`} */}
+      <ScrollToSection />
       <Header logo={logo} onLoginClick={handleLoginClick} />
 
       <HeroSection
@@ -164,44 +180,68 @@ const WEBSITE_URL = import.meta.env.VITE_WEBSITE_URL;
         onSearch={handleSearch}
         onVoiceSearch={handleVoiceSearch}
       />
-
-      <TestimonialsGrid />
+      {/* <div id="search-manual">
+        <SearchManual onSearch={handleSearch} />
+      </div> */}
+      <section id="testimonials">
+        <TestimonialsGrid />
+      </section>
 
       {/* <CustomStory /> */}
 
       <RetiremateEdge />
+      <section id="questions-to-action">
+
+        <QuestionsToAction
+          onQuestionClick={handleQuestionClick}
+          onBrowseAllClick={handleBrowseAllClick}
+        />
+      </section>
+
+      <InsightsSection />
+
       <RetirematePlanningQuestion />
       <ExploreMoreQuestions />
+      <FeaturesSection features={features} />
       <RothQuestions />
       <ExploreMoreQuestions />
-      <MedicareQuiz/>
-      <MedicareQuestions />
-      <ExploreMoreQuestions />
+      {/* <MedicareQuiz /> */}
+      {/* <MedicareQuestions /> */}
+      {/* <ExploreMoreQuestions /> */}
       <SuggestedQuestions
         questions={suggestedQuestions}
         onQuestionClick={handleQuestionClick}
       />
 
-      <InsightsSection />
 
-      <RetireMateAdvantage />
+      {/* <RetireMateAdvantage /> */}
 
-      <FeaturesSection features={features} />
 
-      <AskAnything />
+      {/* <AskAnything /> */}
+      
 
-      <QuestionsToAction
-        onQuestionClick={handleQuestionClick}
-        onBrowseAllClick={handleBrowseAllClick}
-      />
-
-      <ArticleSection />
+      {/* <ArticleSection /> */}
 
       <LinkSection />
 
       <ResourcesSection />
 
       <Footer onLinkClick={handleFooterLinkClick} />
+      {/* <div
+        className="fixed bottom-6 md:bottom-15 right-6 z-999 group cursor-pointer"
+        onClick={handleScrollToSearchManual}
+      >
+        <img
+          src={chatImage}
+          alt="Ask RetireMate"
+          className=" transition-opacity duration-300 z-9 relative"
+        />
+        <div className="absolute inset-0 flex items-center md:top-10 justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+          <span className="text-white text-sm font-semibold jost bg-introPrimary px-3 py-1 rounded-md">
+            Ask RetireMate
+          </span>
+        </div>
+      </div> */}
     </>
   );
 }
