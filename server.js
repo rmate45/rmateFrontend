@@ -5,7 +5,7 @@ import axios from "axios";
 
 const API_BASE_URL =
   import.meta.env.VITE_API_BASE_URL;
-const WEBSITE_URL = import.meta.env.VITE_WEBSITE_URL || "https://dev.retiremate.com";
+const WEBSITE_URL = import.meta.env.VITE_WEBSITE_URL || "https://www.retiremate.com";
 
 function slugify(text) {
   return (text || "")

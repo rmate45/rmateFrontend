@@ -15,7 +15,7 @@ export default defineConfig(({ mode }) => {
       createHtmlPlugin({ minify: true }),
 
       Sitemap({
-        hostname: env.VITE_WEBSITE_URL || 'https://dev.retiremate.com',
+        hostname: env.VITE_WEBSITE_URL || 'https://www.retiremate.com',
       }),
     ],
 

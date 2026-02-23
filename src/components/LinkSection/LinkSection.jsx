@@ -2,7 +2,7 @@ import React from "react";
 import { Link } from "react-router-dom";
 
 const LinkSection = () => {
-  const websiteUrl = import.meta.env.VITE_WEBSITE_URL || "https://dev.retiremate.com";
+  const websiteUrl = import.meta.env.VITE_WEBSITE_URL || "https://www.retiremate.com";
   
   const resources = [
     "Important Retirement Dates",

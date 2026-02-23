@@ -7,7 +7,7 @@ const API_BASE_URL =
   process.env.VITE_API_BASE_URL ||
   "https://quiz-api.retiremate.com/api/v1";
 
-const WEBSITE_URL = process.env.VITE_WEBSITE_URL || "https://dev.retiremate.com";
+const WEBSITE_URL = process.env.VITE_WEBSITE_URL || "https://www.retiremate.com";
 
 function slugify(text) {
   return (text || "")
