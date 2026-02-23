@@ -6,7 +6,7 @@ import axios from "axios";
 /**
  * ENV
  */
-const API_BASE_URL = process.env.VITE_PRERENDER_API_BASE;
+const API_BASE_URL = process.env.VITE_API_BASE_URL;
 const WEBSITE_URL = process.env.VITE_WEBSITE_URL;
 
 /**
@@ -33,7 +33,7 @@ async function getPageMetadata(url, queryParams = {}) {
   const cleanUrl = url.split("?")[0];
 
   const defaultMeta = {
-    title: "RetireMate | Instant retirement clarity",
+    title: "RetireMate: Instant Retirement Guidance, Every Step of the Way",
     description: "See what your retirement could look like. Get clear, personalized guidance on savings, timing, and where you might retire — in minutes",
     image: `${WEBSITE_URL}/retiremate.jpg`,
     url: `${WEBSITE_URL}${cleanUrl === "/" ? "" : cleanUrl}`,
@@ -122,6 +122,23 @@ async function getPageMetadata(url, queryParams = {}) {
 
     if (cleanUrl.includes("/q/Top-Explore-Questions/persona/")) {
       const pathId = cleanUrl.split("/").pop();
+      const data = pathId
+        ? await fetchItem("get-persona", pathId)
+        : null;
+
+      if (data)
+        return {
+          title: data.persona_question,
+          description: stripHtml(data.persona_description).slice(0, 160),
+          image: defaultMeta.image,
+          url: `${WEBSITE_URL}${cleanUrl}`,
+        };
+    }
+
+    // New persona URL pattern: /p/[name-age-career]/[persona-id]
+    if (cleanUrl.includes("/p/")) {
+      const pathSegments = cleanUrl.split("/");
+      const pathId = pathSegments[pathSegments.length - 1];
       const data = pathId
         ? await fetchItem("get-persona", pathId)
         : null;

@@ -1,18 +1,29 @@
 import shareImage from '../../../assets/mdi_share-outline.svg'
 import { shareViaSms } from "../../../utils/shareViaSms";
+
 const TestimonialCard = ({ item }) => {
 
   console.log(item, "item-->")
 
+  // Helper function to create URL-friendly slug
+  const createPersonaSlug = (name, age, title) => {
+    const slugName = (name || '').toLowerCase().replace(/\s+/g, '-');
+    const slugTitle = (title || '').toLowerCase().replace(/\s+/g, '-');
+    return `${slugName}-${age}-${slugTitle}`;
+  };
+
   const handleClick = (e) => {
     e.stopPropagation();
+    const slug = createPersonaSlug(item.name, item.age, item.title);
     const idParam = encodeURIComponent(item.id || "");
-    window.open(`/q/Top-Explore-Questions/persona/${idParam}?isPersona=true`, "_blank");
+    window.open(`/p/${slug}/${idParam}?isPersona=true`, "_blank");
   };
+  
   const handleClickWhatsApp = (e) => {
     e.stopPropagation();
+    const slug = createPersonaSlug(item.name, item.age, item.title);
     const idParam = encodeURIComponent(item.id || "");
-    const fullUrl = `${window.location.origin}/q/Top-Explore-Questions/persona/${idParam}?isPersona=true`;
+    const fullUrl = `${window.location.origin}/p/${slug}/${idParam}?isPersona=true`;
 
     shareViaSms({
       text: "click here to ask RetireMate",

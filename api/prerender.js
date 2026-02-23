@@ -4,7 +4,7 @@ import path from "path";
 import axios from "axios";
 
 const API_BASE_URL =
-  process.env.VITE_PRERENDER_API_BASE ||
+  process.env.VITE_API_BASE_URL ||
   "https://quiz-api.retiremate.com/api/v1";
 
 const WEBSITE_URL = process.env.VITE_WEBSITE_URL || "https://dev.retiremate.com";
@@ -20,11 +20,16 @@ function slugify(text) {
 }
 
 async function getPageMetadata(url, queryParams) {
+  // Determine if this is a dev environment
+  const isDev = WEBSITE_URL.includes('dev.retiremate.com') || WEBSITE_URL.includes('dev-');
+  const robotsContent = isDev ? 'noindex, nofollow' : 'index, follow';
+  
   const defaultMeta = {
-    title: "RetireMate | Instant retirement clarity",
-    description: "See what your retirement could look like. Get clear, personalized guidance on savings, timing, and where you might retire — in minutes.",
+    title: "RetireMate: Instant Retirement Guidance, Every Step of the Way",
+    description: "See what your retirement could look like. Get instant, personalized retirement guidance and test-drive retirement plans for people like you.",
     image: `${WEBSITE_URL}/retiremate.jpg`,
     url: `${WEBSITE_URL}${url === "/" ? "" : url}`,
+    robots: robotsContent,
   };
 
   try {
@@ -63,6 +68,7 @@ async function getPageMetadata(url, queryParams) {
           description: (data.answer || "").replace(/<[^>]*>/g, "").slice(0, 160),
           image: defaultMeta.image,
           url: defaultMeta.url,
+          robots: defaultMeta.robots,
         };
       return defaultMeta;
     }
@@ -79,6 +85,7 @@ async function getPageMetadata(url, queryParams) {
           description: (data.answer || "").replace(/<[^>]*>/g, "").slice(0, 160),
           image: data?.image,
           url: defaultMeta.url,
+          robots: defaultMeta.robots,
         };
       return defaultMeta;
     }
@@ -94,6 +101,7 @@ async function getPageMetadata(url, queryParams) {
           description: (data.answer || "").slice(0, 160),
          image: data?.image,
           url: defaultMeta.url,
+          robots: defaultMeta.robots,
         };
       return defaultMeta;
     }
@@ -109,6 +117,7 @@ async function getPageMetadata(url, queryParams) {
           description: (data.answer || "").slice(0, 160),
           image: data?.image,
           url: defaultMeta.url,
+          robots: defaultMeta.robots,
         };
       return defaultMeta;
     }
@@ -124,6 +133,25 @@ async function getPageMetadata(url, queryParams) {
           description: (data.persona_description || "").slice(0, 160),
          image: data?.image,
           url: defaultMeta.url,
+          robots: defaultMeta.robots,
+        };
+      return defaultMeta;
+    }
+
+    // New persona URL pattern: /p/[name-age-career]/[persona-id]
+    if (url.includes("/p/")) {
+      const pathSegments = url.split("/");
+      const pathId = pathSegments[pathSegments.length - 1];
+      const data = pathId
+        ? await fetchItem("get-persona", pathId)
+        : null;
+      if (data)
+        return {
+          title: data.persona_question,
+          description: (data.persona_description || "").slice(0, 160),
+          image: data?.image,
+          url: defaultMeta.url,
+          robots: defaultMeta.robots,
         };
       return defaultMeta;
     }
@@ -171,6 +199,7 @@ export default async function handler(req, res) {
       .replace(/__META_OG_DESCRIPTION__/g, meta.description)
       .replace(/__META_OG_IMAGE__/g, meta.image)
       .replace(/__META_OG_URL__/g, meta.url)
+      .replace(/__META_ROBOTS__/g, meta.robots)
       .replace(/<!--app-html-->/g, "")
       .replace(/<!--app-head-->/g, "")
       .replace(/<!--app-scripts-->/g, "");
