@@ -6,7 +6,7 @@ import axios from "axios";
 /**
  * ENV
  */
-const API_BASE_URL = process.env.VITE_PRERENDER_API_BASE;
+const API_BASE_URL = process.env.VITE_API_BASE_URL;
 const WEBSITE_URL = process.env.VITE_WEBSITE_URL;
 
 /**
