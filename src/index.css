@@ -7,9 +7,9 @@
 }
 
 /* Ensure Rubik is applied to all elements */
-* {
+/* * {
   font-family: "Libre Caslon Text", serif; 
-}
+} */
 
 @theme { 
   --color-primary: #0e6634;
