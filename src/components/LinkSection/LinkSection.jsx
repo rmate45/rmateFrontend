@@ -2,6 +2,8 @@ import React from "react";
 import { Link } from "react-router-dom";
 
 const LinkSection = () => {
+  const websiteUrl = import.meta.env.VITE_WEBSITE_URL || "https://dev.retiremate.com";
+  
   const resources = [
     "Important Retirement Dates",
     "Retirement calculators",
@@ -31,7 +33,7 @@ const LinkSection = () => {
           {resources.map((item, index) => (
             <li key={index}>
               <Link
-                to="https://retiremate.com"
+                to={websiteUrl}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-base jost grow  text-[#6B7280] text-left  hover:text-primary/90 hover:!underline  transition-colors"

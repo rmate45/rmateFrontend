@@ -25,8 +25,8 @@ async function getPageMetadata(url, queryParams) {
   const robotsContent = isDev ? 'noindex, nofollow' : 'index, follow';
   
   const defaultMeta = {
-    title: "RetireMate | Instant retirement clarity",
-    description: "See what your retirement could look like. Get clear, personalized guidance on savings, timing, and where you might retire — in minutes.",
+    title: "RetireMate: Instant Retirement Guidance, Every Step of the Way",
+    description: "See what your retirement could look like. Get instant, personalized retirement guidance and test-drive retirement plans for people like you.",
     image: `${WEBSITE_URL}/retiremate.jpg`,
     url: `${WEBSITE_URL}${url === "/" ? "" : url}`,
     robots: robotsContent,
@@ -132,6 +132,24 @@ async function getPageMetadata(url, queryParams) {
           title: data.persona_question,
           description: (data.persona_description || "").slice(0, 160),
          image: data?.image,
+          url: defaultMeta.url,
+          robots: defaultMeta.robots,
+        };
+      return defaultMeta;
+    }
+
+    // New persona URL pattern: /p/[name-age-career]/[persona-id]
+    if (url.includes("/p/")) {
+      const pathSegments = url.split("/");
+      const pathId = pathSegments[pathSegments.length - 1];
+      const data = pathId
+        ? await fetchItem("get-persona", pathId)
+        : null;
+      if (data)
+        return {
+          title: data.persona_question,
+          description: (data.persona_description || "").slice(0, 160),
+          image: data?.image,
           url: defaultMeta.url,
           robots: defaultMeta.robots,
         };

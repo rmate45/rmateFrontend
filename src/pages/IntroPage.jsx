@@ -166,8 +166,8 @@ function IntroPage() {
   return (
     <>
       <SeoHelmet
-        title="RetireMate | Instant retirement clarity"
-        description="See what your retirement could look like. Get clear, personalized guidance on savings, timing, and where you might retire — in minutes."
+        title="RetireMate: Instant Retirement Guidance, Every Step of the Way"
+        description="See what your retirement could look like. Get instant, personalized retirement guidance and test-drive retirement plans for people like you."
         url={WEBSITE_URL} 
         />
       {/* image={`${WEBSITE_URL}/`} */}

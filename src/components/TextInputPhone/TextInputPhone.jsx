@@ -75,7 +75,10 @@ export const TextInputPhone = ({
       )}
       <div className="relative flex" ref={inputRef}>
         <PhoneInput
-          country={"us"} // default country
+         country="us"
+  onlyCountries={["us", "ca"]}
+  preferredCountries={["us", "ca"]}
+  disableCountryCode={true}
           value={value}
           onChange={(phone) => {
             onChange(phone);

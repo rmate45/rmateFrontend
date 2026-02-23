@@ -33,6 +33,10 @@ function App() {
           element={<PersonaPage />}
         />
         <Route
+          path="/p/:slug/:id"
+          element={<PersonaPage />}
+        />
+        <Route
           path="/q/Top-Explore-Questions/financial-planning/:id"
           element={<FinancialPage />}
         />
