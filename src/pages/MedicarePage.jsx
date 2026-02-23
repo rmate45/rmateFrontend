@@ -29,7 +29,7 @@ export default function MedicarePage() {
 
                 const res = await api.get(`/get-medicare-question/${encodeURIComponent(id)}`);
                 const data = res?.data?.data || res?.data;
-                
+
                 if (mounted) {
                     if (data) {
                         setCard(data);
@@ -63,7 +63,8 @@ export default function MedicarePage() {
 
     const pageTitle = card?.question || card?.title || "Top Medicare Questions";
     const pageDesc = safeText(card?.answer || card?.answers?.[0]).replace(/<br\s*\/?>/gi, " ").slice(0, 160);
-    const ogImage = "https://retiremate.com/assets/logo-D1t2XXia.png"
+    const websiteUrl = import.meta.env.VITE_WEBSITE_URL || "https://dev.retiremate.com";
+    const ogImage = `${websiteUrl}/assets/logo-D1t2XXia.png`;
 
     const structuredData = {
         "@context": "https://schema.org",
