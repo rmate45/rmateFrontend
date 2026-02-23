@@ -8,6 +8,8 @@ export const TextInputPhone = ({
   onChange,
   onSubmit,
   onValidationError,
+  question,
+  questionNumber
 }) => {
   const [isValid, setIsValid] = useState(true);
   const [validationMessage, setValidationMessage] = useState(null);
@@ -41,6 +43,22 @@ export const TextInputPhone = ({
     if (value) {
       const isPhoneValid = validatePhoneNumber(value);
       if (isPhoneValid) {
+        // Push to Google Tag Manager dataLayer
+        if (typeof window !== 'undefined' && window.dataLayer) {
+          window.dataLayer.push({
+            event: "quiz_answer",
+            quiz_question_number: questionNumber || "phone",
+            quiz_question_text: question || "Phone Number",
+            quiz_answer_text: `+${value}`,
+          });
+          console.log('GTM Event Pushed (Phone):', {
+            event: "quiz_answer",
+            quiz_question_number: questionNumber || "phone",
+            quiz_question_text: question || "Phone Number",
+            quiz_answer_text: `+${value}`,
+          });
+        }
+        
         onSubmit?.({
           fullNumber: `+${value}`, // react-phone-input-2 gives full number with country code
           phoneNumber: value,

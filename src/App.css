@@ -10,9 +10,9 @@
   pointer-events: none;
 }
 
-body * {
+/* body * {
   font-family: "Libre Caslon Text", serif;
-}
+} */
 
 @media (prefers-reduced-motion: no-preference) {
   .App-logo {

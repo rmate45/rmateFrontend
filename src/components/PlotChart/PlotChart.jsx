@@ -261,7 +261,7 @@ const PlotChart = ({ data, showDisclaimer = false, setShowPeningItems, onTapAnal
       </div>)} */}
       {showDesc && (<div className="order-green-300 bg-green-100 p-3 jost rounded-xl mt-3">
         <strong className="block jost">Want a copy of your RetireMate Roadmap?</strong>
-        To receive a free, educational retirement analysis tailored to your age, income, and goals, please enter your contact details below.”
+        Get a free educational retirement analysis that builds on what you've already seen - tailored to your age, income, and goals - so you can revisit it, explore changes, and see how your plan evolves over time.
       </div>)}
     </div>
   );

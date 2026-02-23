@@ -10,7 +10,9 @@ export const TextInput = ({
   onValidationError,
   isAgeInput = false,
   scrollToBottom,
-  setUserAge
+  setUserAge,
+  question,
+  questionNumber
 }) => {
   const [isValid, setIsValid] = useState(true);
   const [validationMessage, setValidationMessage] = useState(null);
@@ -212,11 +214,41 @@ export const TextInput = ({
         }
       } else {
         setIsValid(true);
+         if (typeof window !== 'undefined' && window.dataLayer) {
+          window.dataLayer.push({
+            event: "quiz_answer",
+            quiz_question_number: questionNumber,
+            quiz_question_text: question,
+            quiz_answer_text: value,
+          });
+          console.log('GTM Event Pushed:', {
+            event: "quiz_answer",
+            quiz_question_number: questionNumber,
+            quiz_question_text: question,
+            quiz_answer_text: value,
+          });
+        }
         onSubmit();
       }
     } else {
       if (value.trim()) {
         setIsValid(true);
+        // Push to Google Tag Manager dataLayer
+        if (typeof window !== 'undefined' && window.dataLayer) {
+          window.dataLayer.push({
+            event: "quiz_answer",
+            quiz_question_number: questionNumber,
+            quiz_question_text: question,
+            quiz_answer_text: value,
+          });
+          console.log('GTM Event Pushed:', {
+            event: "quiz_answer",
+            quiz_question_number: questionNumber,
+            quiz_question_text: question,
+            quiz_answer_text: value,
+          });
+        }
+        
         onSubmit();
       } else {
         setIsValid(false);

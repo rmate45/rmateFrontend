@@ -14,18 +14,18 @@ const ChartRecommendation = ({
         return data?.text?.recommendations ?? {};
     }, [data]);
 
-    console.log(Number(userAge) === 67, "Number(userAge) === 67");
+    console.log(analysisData,"analysisData");
 
     const sections = useMemo(() => {
         const baseSections = [
             { key: "yourSnapShot", title: `${userName || "Your"} Snapshot` },
             { key: "whatsShapingYourOutlook", title: `What's Shaping ${userName || "your"} Outlook` },
-            { key: "yourRetirementPaycheck", title: `${userName || "your"} Retirement pay check` },
-            { key: "otherWaysToSupportYourRetirement", title: `Other ways to support your retirement` },
-            { key: "whatYoureLikelyToSpendInRetirement", title: `What you're likely to spend in retirement` },
-            { key: "howToStrengthenYourPlan", title: `How to strengthen your plan` },
-            { key: "howRetireMateGuidesYouForward", title: `How RetireMate guides your forward` },
-            { key: "whatThisDoesntInclude", title: `What This Doesn't Include` },
+            { key: "yourRetirementPaycheck", title: `${userName || "Your"} Retirement Paycheck` },
+            { key: "otherWaysToSupportYourRetirement", title: `Other Ways to Support Your Retirement` },
+            { key: "whatYoureLikelyToSpendInRetirement", title: `What You're Likely to Spend in Retirement` },
+            { key: "howToStrengthenYourPlan", title: `How to Strengthen Your Plan` },
+            { key: "howRetireMateGuidesYouForward", title: `How RetireMate Guides You Forward` },
+            { key: "whatThisDoesntInclude", title: `What This Snapshot Doesn't Include (Yet)` },
         ];
 
         const ageNum = Number(

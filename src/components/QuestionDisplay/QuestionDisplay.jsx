@@ -54,6 +54,25 @@ const [showModal, setShowModal] = useState(false);
 
   const handleMultiSelectSubmitClick = () => {
     if (selectedMultiOptions.length > 0) {
+      // Push to Google Tag Manager dataLayer
+      if (typeof window !== 'undefined' && window.dataLayer) {
+        const selectedTexts = selectedMultiOptions.map(opt => opt.text).join(', ');
+        window.dataLayer.push({
+          event: "quiz_answer",
+          quiz_question_number: currentQuestion?.questionId || "unknown",
+          quiz_question_text: currentQuestion.questionText,
+          quiz_answer_text: selectedTexts,
+          quiz_answer_count: selectedMultiOptions.length,
+        });
+        console.log('GTM Event Pushed (Multi-Select):', {
+          event: "quiz_answer",
+          quiz_question_number: currentQuestion?.questionId || "unknown",
+          quiz_question_text: currentQuestion.questionText,
+          quiz_answer_text: selectedTexts,
+          quiz_answer_count: selectedMultiOptions.length,
+        });
+      }
+      
       onMultiSelectSubmit(selectedMultiOptions);
       scrollUp();
       setSelectedMultiOptions([]);
@@ -86,6 +105,8 @@ const [showModal, setShowModal] = useState(false);
         {/* Phone Number Input */}
         {currentQuestion.inputType === "free_text" && isPhoneInput && (
           <TextInputPhone
+          questionNumber={currentQuestion?.questionId}
+            question={currentQuestion.questionText}
             value={textInput}
             onChange={onTextChange}
             onSubmit={handlePhoneSubmit}
@@ -97,6 +118,8 @@ const [showModal, setShowModal] = useState(false);
         {/* Regular Free Text Input (ZIP or other text) */}
         {currentQuestion.inputType === "free_text" && !isPhoneInput && (
           <TextInput
+           questionNumber={currentQuestion?.questionId}
+           question={currentQuestion.questionText}
             setUserAge={setUserAge}
             value={textInput}
             onChange={onTextChange}
@@ -114,6 +137,8 @@ const [showModal, setShowModal] = useState(false);
         <QuestionOptions
           options={currentQuestion.options}
           onOptionClick={onOptionClick}
+          question={currentQuestion.questionText}
+          questionNumber={currentQuestion?.questionId}
         />
       )}
 
