@@ -7,10 +7,10 @@ const RetiremateEdge = () => {
   return (
     <div className="text-center px-6">
       <div className="max-w-7xl mx-auto">
-        <p className="text-introPrimary  font-medium text-3xl sm:!text-[48px] sm:text-3xl text-center">
+        <p className="text-introPrimary jost font-medium text-3xl sm:text-3xl text-center">
           The RetireMate Edge
         </p>
-        <p className="text-xl sm:text-3xl  jost inline-block p-1.5 rounded text-[#567257] text-center"> 
+        <p className="text-xl sm:text-3xl  jost inline-block p-1.5 rounded text-introPrimary text-center"> 
           Instant retirement guidance, every step of the way
         </p>
 
