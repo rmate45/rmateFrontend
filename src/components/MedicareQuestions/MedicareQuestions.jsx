@@ -27,12 +27,12 @@ const MedicareQuestions = () => {
     };
     const handleQuestionClick = (question) => {
         const idParam = encodeURIComponent(question._id);
-        const url = `/q/Top-Explore-Questions/medicare/${idParam}?type=medicare`;
+        const url = `/q/Top-Explore-Questions/medicare/${idParam}`;
         window.open(url, "_blank");
     }
     const handleQuestionWhatsappClick = (question) => {
         const idParam = encodeURIComponent(question._id);
-        const url = `/q/Top-Explore-Questions/medicare/${idParam}?type=medicare`;
+        const url = `/q/Top-Explore-Questions/medicare/${idParam}`;
         const fullUrl = `${window.location.origin}${url}`;
         shareViaSms({
             text: "click here to ask RetireMate",

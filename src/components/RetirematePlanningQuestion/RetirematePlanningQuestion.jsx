@@ -27,12 +27,12 @@ const RetirematePlanningQuestion = () => {
     };
     const handleQuestionClick = (question) => {
         const idParam = encodeURIComponent(question._id);
-        const url = `/q/Top-Explore-Questions/financial-planning/${idParam}?type=financial`;
+        const url = `/q/Top-Explore-Questions/financial-planning/${idParam}`;
         window.open(url, "_blank");
     }
     const handleQuestionWhatsappClick = (question) => {
         const idParam = encodeURIComponent(question._id);
-        const url = `/q/Top-Explore-Questions/financial-planning/${idParam}?type=financial`;
+        const url = `/q/Top-Explore-Questions/financial-planning/${idParam}`;
 
         const fullUrl = `${window.location.origin}${url}`;
         console.log(fullUrl,"fullUrl");
@@ -81,7 +81,7 @@ const RetirematePlanningQuestion = () => {
                     {
                         data.map((item, index) => (
                         
-                                <div key={index} className="relative  rounded-2xl p-5 bg-white flex flex-col" style={{ boxShadow: "rgba(0, 0, 0, 0.15) 0px 4px 15px" }}>
+                                <div key={index} onClick={() => handleQuestionClick(item)}  className="relative cursor-pointer rounded-2xl p-5 bg-white flex flex-col" style={{ boxShadow: "rgba(0, 0, 0, 0.15) 0px 4px 15px" }}>
                                     <div className="shrink-0 text-center flex gap-4">
                                         <img
                                             src={item?.image}
