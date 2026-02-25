@@ -495,7 +495,7 @@ console.log(urlData,"urlData");
             type: "system",
             text: (
               <p className="jost">
-                You're in control of what you share. Your answers stay private and only help personalize your results. Learn more here.{" "}
+                You're in control of what you share. Your answers stay private and only help personalize your results. Learn more {" "}
                 <span
                   onClick={() => setShowModal(true)}
                   className="jost text-primary hover:!underline cursor-pointer"

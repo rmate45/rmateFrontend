@@ -41,22 +41,22 @@ const PrivacyTrustModal = ({show, onClose}) => {
             </button>
 
             {/* Title */}
-            <h2 className="text-xl font-semibold mb-4 text-center">
+            <h2 className="text-xl font-semibold mb-4 text-center jost">
               Privacy &amp; Trust
             </h2>
 
             {/* Description */}
-            <p className="text-gray-700 text-base font-semibold mb-4 leading-relaxed">
+            <p className="text-gray-700 text-base font-semibold mb-4 leading-relaxed jost">
               We built RetireMate to help you explore and achieve a better
               retirement — not to collect your personal data.
             </p>
 
-            <p className="text-gray-700 text-sm font-medium mb-2">
+            <p className="text-gray-700 text-sm font-medium mb-2 jost">
               Here's how we handle information:
             </p>
 
             {/* Info List */}
-            <ul className="list-disc list-inside text-gray-700 text-sm space-y-2 text-left pl-8">
+            <ul className="list-disc list-inside text-gray-700 text-sm space-y-2 text-left pl-8 jost">
               <li className="list-outside">
                 You can use the site anonymously. We don't track you or set
                 cookies.
@@ -81,7 +81,7 @@ const PrivacyTrustModal = ({show, onClose}) => {
             <div className="flex justify-center mt-6">
               <button
                 onClick={() => {setIsOpen(false); onClose()}}
-                className="bg-[#D8EBD2] text-gray-800 font-medium px-6 py-2 rounded-md hover:bg-[#c4e0be] transition"
+                className="bg-[#D8EBD2] text-gray-800 font-medium px-6 py-2 rounded-md hover:bg-[#c4e0be] transition jost"
               >
                 Close
               </button>
