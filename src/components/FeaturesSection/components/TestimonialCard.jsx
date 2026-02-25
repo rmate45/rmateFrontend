@@ -16,14 +16,14 @@ const TestimonialCard = ({ item }) => {
     e.stopPropagation();
     const slug = createPersonaSlug(item.name, item.age, item.title);
     const idParam = encodeURIComponent(item.id || "");
-    window.open(`/p/${slug}/${idParam}?isPersona=true`, "_blank");
+    window.open(`/p/${slug}/${idParam}`, "_blank");
   };
   
   const handleClickWhatsApp = (e) => {
     e.stopPropagation();
     const slug = createPersonaSlug(item.name, item.age, item.title);
     const idParam = encodeURIComponent(item.id || "");
-    const fullUrl = `${window.location.origin}/p/${slug}/${idParam}?isPersona=true`;
+    const fullUrl = `${window.location.origin}/p/${slug}/${idParam}`;
 
     shareViaSms({
       text: "click here to ask RetireMate",

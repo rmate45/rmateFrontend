@@ -126,6 +126,7 @@ const [showModal, setShowModal] = useState(false);
             onSubmit={onTextSubmit}
             validateAsZip={isValidateZip}
             isAgeInput={isAgeInput}
+            isEmailInput={isEmailInput}
             onValidationError={onValidationError}
             scrollToBottom={scrollToBottom} // Pass scrollToBottom prop
           />

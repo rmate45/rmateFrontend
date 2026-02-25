@@ -42,7 +42,7 @@ const[active,setActive]=useState("")
   const handleQuestionClick = (question) => {
     console.log(question, "inside");
     const idParam = encodeURIComponent(question._id);
-    const url = `/q/Top-Explore-Questions/general/${idParam}?type=explore`;
+    const url = `/q/Top-Explore-Questions/general/${idParam}`;
     window.open(url, "_blank");
 
   }

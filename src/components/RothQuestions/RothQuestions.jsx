@@ -29,7 +29,7 @@ const RothQuestions = () => {
     };
     const handleQuestionClick = (question) => {
         const idParam = encodeURIComponent(question._id);
-        const url = `/q/Top-Explore-Questions/roth-conversions/${idParam}?type=roth`;
+        const url = `/q/Top-Explore-Questions/roth-conversions/${idParam}`;
 
         window.open(url, "_blank");
     };
@@ -37,7 +37,7 @@ const RothQuestions = () => {
         const idParam = encodeURIComponent(question._id);
 
         // IMPORTANT: start with "/" and use origin, not href
-        const path = `/q/Top-Explore-Questions/roth-conversions/${idParam}?type=roth`;
+        const path = `/q/Top-Explore-Questions/roth-conversions/${idParam}`;
         const fullUrl = `${window.location.origin}${path}`;
 
         shareViaSms({
@@ -85,7 +85,7 @@ const RothQuestions = () => {
                     {
                         data.map((item, index) => (
                            
-                                <div key={index} className="relative  rounded-2xl p-5 bg-white flex flex-col" style={{ boxShadow: "rgba(0, 0, 0, 0.15) 0px 4px 15px" }}>
+                                <div onClick={() => handleQuestionClick(item)} key={index} className="relative cursor-pointer rounded-2xl p-5 bg-white flex flex-col" style={{ boxShadow: "rgba(0, 0, 0, 0.15) 0px 4px 15px" }}>
                                     <div className="shrink-0 text-center flex gap-4">
                                         <img
                                             src={item?.image}

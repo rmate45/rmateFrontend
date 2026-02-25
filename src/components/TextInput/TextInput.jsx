@@ -9,6 +9,7 @@ export const TextInput = ({
   validateAsZip = false,
   onValidationError,
   isAgeInput = false,
+  isEmailInput = false,
   scrollToBottom,
   setUserAge,
   question,
@@ -230,6 +231,53 @@ export const TextInput = ({
         }
         onSubmit();
       }
+    } else if (isEmailInput) {
+      // Email validation
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(value.trim())) {
+        setIsValid(false);
+        setValidationMessage("Please enter a valid email address.");
+        onValidationError?.();
+        if (scrollToBottom) {
+          setTimeout(() => {
+            scrollToBottom();
+          }, 100);
+        }
+        return;
+      }
+
+      // Send email to API
+      try {
+        setLoading(true);
+        await api.post("/send-thanks-email", { email: value.trim() });
+        console.log('Thanks email sent to:', value.trim());
+        
+        // Push to GTM
+        if (typeof window !== 'undefined' && window.dataLayer) {
+          window.dataLayer.push({
+            event: "quiz_answer",
+            quiz_question_number: questionNumber,
+            quiz_question_text: question,
+            quiz_answer_text: value,
+          });
+          console.log('GTM Event Pushed (Email):', {
+            event: "quiz_answer",
+            quiz_question_number: questionNumber,
+            quiz_question_text: question,
+            quiz_answer_text: value,
+          });
+        }
+        
+        setIsValid(true);
+        onSubmit();
+      } catch (error) {
+        console.error('Failed to send thanks email:', error);
+        // Still proceed even if email API fails
+        setIsValid(true);
+        onSubmit();
+      } finally {
+        setLoading(false);
+      }
     } else {
       if (value.trim()) {
         setIsValid(true);
@@ -330,8 +378,8 @@ export const TextInput = ({
       <div className="relative">
         <input
           ref={inputRef}
-          type={isAgeInput ? "number" : "text"}
-          inputMode={validateAsZip || isAgeInput ? "numeric" : "text"}
+          type={isAgeInput ? "number" : isEmailInput ? "email" : "text"}
+          inputMode={validateAsZip || isAgeInput ? "numeric" : isEmailInput ? "email" : "text"}
           pattern={validateAsZip || isAgeInput ? "\\d*" : undefined}
           disabled={loading}
           maxLength={validateAsZip ? 6 : isAgeInput ? 3 : undefined}
@@ -367,6 +415,8 @@ export const TextInput = ({
               ? "Enter ZIP code (3–6 digits)"
               : isAgeInput
               ? "Enter your age"
+              : isEmailInput
+              ? "Enter your email address"
               : "Type your answer here..."
           }
           style={{

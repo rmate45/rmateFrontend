@@ -103,9 +103,13 @@ const Quiz = ({ initialCard, initialId, initialType }) => {
   const params = new URLSearchParams(location.search);
   console.log(params, "params");
 
+  // Detect if this is a persona URL by checking the pathname
+  const isPersonaUrl = location.pathname.startsWith('/p/') || 
+                       location.pathname.includes('/persona/');
+
   const urlData = {
     id: initialId || params.get("id") || "",
-    isPersona: params.get("isPersona") === "true" || false,
+    isPersona: isPersonaUrl || false,
     isCustomPersona: params.get("isCustomPersona") === "true" || false,
     type: initialType || params.get("type") || "",
   };
@@ -355,25 +359,43 @@ console.log(urlData,"urlData");
     }
   };
 
+  // Fetch question by ID without knowing the type
+  const fetchQuestionByIdAuto = async (id) => {
+    if (!id) return null;
+
+    // Try each endpoint until one succeeds
+    const endpoints = [
+      { name: 'roth', fetch: () => fetchQuestionRothById(id) },
+      { name: 'explore', fetch: () => fetchQuestionExploreById(id) },
+      { name: 'financial', fetch: () => fetchQuestionFinancialById(id) },
+      { name: 'medicare', fetch: () => fetchQuestionMedicareById(id) },
+    ];
+
+    for (const endpoint of endpoints) {
+      try {
+        const result = await endpoint.fetch();
+        if (result) {
+          console.log(`Question found in ${endpoint.name} endpoint`);
+          return result;
+        }
+      } catch (err) {
+        // Continue to next endpoint
+        console.log(`Question not found in ${endpoint.name}, trying next...`);
+      }
+    }
+
+    console.error('Question not found in any endpoint');
+    return null;
+  };
+
   const initializeFlow = async () => {
     try {
       setLoading(true);
 
       // Handle different question types based on URL parameters
       if (!urlData?.isPersona && urlData.id) {
-        const type = urlData.type;
-        let fetchedData = null;
-        
-        if (type === "roth") {
-          fetchedData = await fetchQuestionRothById(urlData.id);
-        } else if (type === "explore") {
-          fetchedData = await fetchQuestionExploreById(urlData.id);
-        } else if (type === "financial") {
-          fetchedData = await fetchQuestionFinancialById(urlData.id);
-        } else if (type === "medicare") {
-          fetchedData = await fetchQuestionMedicareById(urlData.id);
-
-        }
+        // Auto-detect question type by trying all endpoints
+        const fetchedData = await fetchQuestionByIdAuto(urlData.id);
 
         if (fetchedData) {
           SetGraphTitleQuestion(fetchedData?.question)
