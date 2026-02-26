@@ -1,4 +1,4 @@
-export const QuestionOptions = ({ options, onOptionClick, question, questionNumber }) => {
+export const QuestionOptions = ({ options, onOptionClick, question, questionNumber, sessionId, trackAnswer }) => {
   if (!options || options.length === 0) return null;
 
   const handleOptionClick = (option) => {
@@ -16,6 +16,15 @@ export const QuestionOptions = ({ options, onOptionClick, question, questionNumb
         quiz_question_text: question || "Question",
         quiz_answer_text: option.text,
       });
+    }
+    
+    // Track answer in session
+    if (trackAnswer) {
+      trackAnswer(
+        questionNumber || "unknown",
+        question || "Question",
+        option.text
+      );
     }
     
     // Call the original handler
