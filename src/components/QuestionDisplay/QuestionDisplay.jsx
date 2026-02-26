@@ -18,7 +18,10 @@ export const QuestionDisplay = ({
   scrollUp,
   scrollToBottom, // Add this new prop for scrolling to bottom
   type,
-  setUserAge
+  setUserAge,
+  sessionId,
+  trackAnswer,
+  isLastQuestion,
 }) => {
   const [selectedMultiOptions, setSelectedMultiOptions] = useState([]);
 const [showModal, setShowModal] = useState(false);
@@ -54,9 +57,10 @@ const [showModal, setShowModal] = useState(false);
 
   const handleMultiSelectSubmitClick = () => {
     if (selectedMultiOptions.length > 0) {
+      const selectedTexts = selectedMultiOptions.map(opt => opt.text).join(', ');
+      
       // Push to Google Tag Manager dataLayer
       if (typeof window !== 'undefined' && window.dataLayer) {
-        const selectedTexts = selectedMultiOptions.map(opt => opt.text).join(', ');
         window.dataLayer.push({
           event: "quiz_answer",
           quiz_question_number: currentQuestion?.questionId || "unknown",
@@ -71,6 +75,15 @@ const [showModal, setShowModal] = useState(false);
           quiz_answer_text: selectedTexts,
           quiz_answer_count: selectedMultiOptions.length,
         });
+      }
+
+      // Track answer in session
+      if (trackAnswer) {
+        trackAnswer(
+          currentQuestion?.questionId || "unknown",
+          currentQuestion.questionText,
+          selectedTexts
+        );
       }
       
       onMultiSelectSubmit(selectedMultiOptions);
@@ -112,6 +125,9 @@ const [showModal, setShowModal] = useState(false);
             onSubmit={handlePhoneSubmit}
             onValidationError={onValidationError}
             scrollToBottom={scrollToBottom} // Pass scrollToBottom prop
+            sessionId={sessionId}
+            trackAnswer={trackAnswer}
+            isLastQuestion={isLastQuestion}
           />
         )}
 
@@ -129,6 +145,8 @@ const [showModal, setShowModal] = useState(false);
             isEmailInput={isEmailInput}
             onValidationError={onValidationError}
             scrollToBottom={scrollToBottom} // Pass scrollToBottom prop
+            sessionId={sessionId}
+            trackAnswer={trackAnswer}
           />
         )}
       </div>
@@ -140,6 +158,8 @@ const [showModal, setShowModal] = useState(false);
           onOptionClick={onOptionClick}
           question={currentQuestion.questionText}
           questionNumber={currentQuestion?.questionId}
+          sessionId={sessionId}
+          trackAnswer={trackAnswer}
         />
       )}
 
