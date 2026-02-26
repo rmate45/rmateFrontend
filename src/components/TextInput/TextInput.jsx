@@ -13,7 +13,9 @@ export const TextInput = ({
   scrollToBottom,
   setUserAge,
   question,
-  questionNumber
+  questionNumber,
+  sessionId,
+  trackAnswer,
 }) => {
   const [isValid, setIsValid] = useState(true);
   const [validationMessage, setValidationMessage] = useState(null);
@@ -229,6 +231,12 @@ export const TextInput = ({
             quiz_answer_text: value,
           });
         }
+        
+        // Track answer in session
+        if (trackAnswer) {
+          trackAnswer(questionNumber, question, value);
+        }
+        
         onSubmit();
       }
     } else if (isEmailInput) {
@@ -268,6 +276,11 @@ export const TextInput = ({
           });
         }
         
+        // Track answer in session
+        if (trackAnswer) {
+          trackAnswer(questionNumber, question, value.trim());
+        }
+        
         setIsValid(true);
         onSubmit();
       } catch (error) {
@@ -295,6 +308,11 @@ export const TextInput = ({
             quiz_question_text: question,
             quiz_answer_text: value,
           });
+        }
+        
+        // Track answer in session
+        if (trackAnswer) {
+          trackAnswer(questionNumber, question, value);
         }
         
         onSubmit();

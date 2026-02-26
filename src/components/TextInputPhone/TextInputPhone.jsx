@@ -2,6 +2,7 @@ import { useState, useRef, useEffect } from "react";
 import PhoneInput from "react-phone-input-2";
 import "react-phone-input-2/lib/style.css";
 import sendIcon from "../../assets/send.svg";
+import api from "../../api/api";
 
 export const TextInputPhone = ({
   value,
@@ -9,7 +10,10 @@ export const TextInputPhone = ({
   onSubmit,
   onValidationError,
   question,
-  questionNumber
+  questionNumber,
+  sessionId,
+  trackAnswer,
+  isLastQuestion,
 }) => {
   const [isValid, setIsValid] = useState(true);
   const [validationMessage, setValidationMessage] = useState(null);
@@ -39,7 +43,7 @@ export const TextInputPhone = ({
     return true;
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     if (value) {
       const isPhoneValid = validatePhoneNumber(value);
       if (isPhoneValid) {
@@ -57,6 +61,26 @@ export const TextInputPhone = ({
             quiz_question_text: question || "Phone Number",
             quiz_answer_text: `+${value}`,
           });
+        }
+        
+        // Track answer in session
+        if (trackAnswer) {
+          trackAnswer(
+            questionNumber || "phone",
+            question || "Phone Number",
+            `+${value}`
+          );
+        }
+        
+        // Complete session if this is the last question
+        if (isLastQuestion && sessionId) {
+          try {
+            await api.put("/session/complete", { sessionId });
+            console.log('Session completed:', sessionId);
+          } catch (error) {
+            console.error('Error completing session:', error);
+            // Don't block submission if session complete fails
+          }
         }
         
         onSubmit?.({

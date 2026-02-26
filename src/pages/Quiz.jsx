@@ -173,6 +173,30 @@ console.log(urlData,"urlData");
   console.log(showPendingItems, 'showPendingItems');
   console.log(showStarterQuestions, 'showStarterQuestions');
 
+  // Session tracking state
+  const [sessionId, setSessionId] = useState(null);
+console.log(sessionId,"sessionId")
+  // Helper function to track answer in session
+  const trackAnswer = async (questionId, questionText, answerText) => {
+    if (!sessionId) {
+      console.warn('No sessionId available for tracking answer');
+      return;
+    }
+
+    try {
+      await api.post("/session/answer", {
+        sessionId,
+        questionId,
+        questionText,
+        answerSelected: answerText,
+      });
+      console.log('Answer tracked:', { questionId, questionText, answerText });
+    } catch (error) {
+      console.error('Error tracking answer:', error);
+      // Don't block the flow if tracking fails
+    }
+  };
+
   useEffect(() => {
 
     initializeFlow();
@@ -391,6 +415,20 @@ console.log(urlData,"urlData");
   const initializeFlow = async () => {
     try {
       setLoading(true);
+
+      // Start session tracking
+      try {
+        const sessionResponse = await api.post("/session/start");
+        console.log(sessionResponse,"sessionResponse");
+        
+        if (sessionResponse.data?.data?.sessionId) {
+          setSessionId(sessionResponse.data?.data?.sessionId);
+          console.log('Session started:', sessionResponse.data.sessionId);
+        }
+      } catch (error) {
+        console.error('Error starting session:', error);
+        // Continue even if session tracking fails
+      }
 
       // Handle different question types based on URL parameters
       if (!urlData?.isPersona && urlData.id) {
@@ -1799,6 +1837,9 @@ console.log(urlData,"urlData");
                 onMultiSelectSubmit={handleMultiSelectSubmit}
                 onSkip={handleSkipQuestion}
                 setUserAge={setUserAge}
+                sessionId={sessionId}
+                trackAnswer={trackAnswer}
+                isLastQuestion={currentQuestionIndex === allQuestions.length - 1}
               />
             )}
 
