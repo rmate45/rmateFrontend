@@ -1,6 +1,7 @@
 import React, { useEffect } from "react";
 import Header from "../components/Header/Header";
 import Footer from "../components/Footer/Footer";
+import SeoHelmet from "../components/Seo/SeoHelmet";
 
 const PrivacyPolicy = () => {
   useEffect(() => {
@@ -17,6 +18,11 @@ const PrivacyPolicy = () => {
 
   return (
     <>
+      <SeoHelmet
+        title="Privacy Policy | RetireMate"
+        description="Learn how RetireMate collects, uses, and protects your personal information. Read our full privacy policy from CareMaps Group Inc."
+        url={`${(import.meta.env.VITE_WEBSITE_URL || "https://www.retiremate.com").trim()}/privacy-policy`}
+      />
       <Header onLoginClick={handleLoginClick} alwaysGreen={true} redirectToHome={true} />
       <div className="min-h-screen pt-32 pb-16 px-4 sm:px-6 bg-white">
         <div className="max-w-4xl mx-auto">

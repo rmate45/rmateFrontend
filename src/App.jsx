@@ -15,6 +15,7 @@ import QuizView from "./pages/QuizView.jsx";
 import PrivacyPolicy from "./pages/PrivacyPolicy.jsx";
 import Terms from "./pages/Terms.jsx";
 import YourPrivacyChoices from "./pages/YourPrivacyChoices.jsx";
+import ContactPage from "./pages/ContactPage.jsx";
 
 function App() {
   return (
@@ -63,6 +64,10 @@ function App() {
         <Route
           path="/your-privacy-choices"
           element={<YourPrivacyChoices />}
+        />
+        <Route
+          path="/contact"
+          element={<ContactPage />}
         />
       </Routes>
     </>
