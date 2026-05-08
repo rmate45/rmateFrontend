@@ -151,11 +151,11 @@ const QuestionsToAction = ({
                   <div
                     className="flex h-full"
                     key={q.id}
-                    onClick={() => {
-                      if (onQuestionClick) {
-                        onQuestionClick(q);
-                      }
-                    }}
+                    // onClick={() => {
+                    //   if (onQuestionClick) {
+                    //     onQuestionClick(q);
+                    //   }
+                    // }}
                   >
                     <button
                       className="
@@ -179,15 +179,15 @@ const QuestionsToAction = ({
                         duration-200
                       "
                     >
-                      <p className="text-wrap text-base grow-1 text-left">
+                      <p className="text-wrap text-base grow text-left">
                         {q.text}
                       </p>
 
-                      <div className="flex justify-end w-full">
+                      {/* <div className="flex justify-end w-full">
                         <button className="text-base font-semibold border-2  placeholder-primary px-4 py-2 rounded-full">
                           Ask RetireMate
                         </button>
-                      </div>
+                      </div> */}
                     </button>
                   </div>
                 )}
