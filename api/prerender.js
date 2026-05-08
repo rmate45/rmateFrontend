@@ -156,8 +156,48 @@ async function getPageMetadata(url, queryParams) {
       return defaultMeta;
     }
 
-    return defaultMeta;
-  } catch (err) {
+    // Static pages
+    if (url === "/contact") {
+      return {
+        title: "Contact Us | RetireMate",
+        description: "Get in touch with RetireMate. Reach us at 578 Washington Blvd Ste 693, Marina Del Rey, CA 90292, by email at John@retiremate.com, or by phone at 603-252-2976.",
+        image: defaultMeta.image,
+        url: `${WEBSITE_URL}/contact`,
+        robots: robotsContent,
+      };
+    }
+
+    if (url === "/privacy-policy") {
+      return {
+        title: "Privacy Policy | RetireMate",
+        description: "Learn how RetireMate collects, uses, and protects your personal information. Read our full privacy policy from CareMaps Group Inc.",
+        image: defaultMeta.image,
+        url: `${WEBSITE_URL}/privacy-policy`,
+        robots: robotsContent,
+      };
+    }
+
+    if (url === "/terms") {
+      return {
+        title: "Terms of Use | RetireMate",
+        description: "Read the RetireMate Terms of Use. Understand the rules and guidelines governing your access to and use of RetireMate's retirement guidance services.",
+        image: defaultMeta.image,
+        url: `${WEBSITE_URL}/terms`,
+        robots: robotsContent,
+      };
+    }
+
+    if (url === "/your-privacy-choices") {
+      return {
+        title: "Your Privacy Choices | RetireMate",
+        description: "Understand your privacy rights and how to make privacy-related requests with RetireMate. Learn how to control your personal information.",
+        image: defaultMeta.image,
+        url: `${WEBSITE_URL}/your-privacy-choices`,
+        robots: robotsContent,
+      };
+    }
+
+    return defaultMeta;  } catch (err) {
     return defaultMeta;
   }
 }
