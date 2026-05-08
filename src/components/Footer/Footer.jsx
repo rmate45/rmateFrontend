@@ -10,7 +10,7 @@ const FooterLink = ({ href, children, onClick }) => {
     return (
       <Link
         to={href}
-        className="hover:underline text-white jost font-medium py-4 text-base"
+        className="hover:underline text-white jost font-medium  text-base"
         onClick={onClick}
       >
         {children}
@@ -41,6 +41,7 @@ const Footer = ({
   const defaultCopyrightText = "© 2025 CareMaps Group, Inc";
   
   const defaultLinks = [
+    { id: 1, text: "Contact Us", href: "/contact" },
     { id: 1, text: "Terms", href: "/terms" },
     { id: 2, text: "Privacy", href: "/privacy-policy" },
     { id: 3, text: "Your Privacy Choices", href: "/your-privacy-choices" }
@@ -63,7 +64,7 @@ const Footer = ({
           </div>
         </div>
         
-        <nav className="flex items-center gap-6 text-sm">
+        <nav className="flex items-center gap-6 text-sm flex-wrap py-4">
           {linksToDisplay.map((link, index) => (
             <React.Fragment key={link.id}>
               <FooterLink
@@ -82,7 +83,7 @@ const Footer = ({
                 {link.text}
               </FooterLink>
               {index < linksToDisplay.length - 1 && (
-                <span aria-hidden="true" className="h-10 w-px bg-white/30"></span>
+                <span aria-hidden="true" className="h-8 w-px bg-white/30"></span>
               )}
             </React.Fragment>
           ))}
