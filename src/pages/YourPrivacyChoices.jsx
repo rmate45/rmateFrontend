@@ -2,6 +2,7 @@ import React, { useEffect } from "react";
 import Header from "../components/Header/Header";
 import Footer from "../components/Footer/Footer";
 import { Link } from "react-router-dom";
+import SeoHelmet from "../components/Seo/SeoHelmet";
 
 const YourPrivacyChoices = () => {
   useEffect(() => {
@@ -18,6 +19,11 @@ const YourPrivacyChoices = () => {
 
   return (
     <>
+      <SeoHelmet
+        title="Your Privacy Choices | RetireMate"
+        description="Understand your privacy rights and how to make privacy-related requests with RetireMate. Learn how to control your personal information."
+        url={`${(import.meta.env.VITE_WEBSITE_URL || "https://www.retiremate.com").trim()}/your-privacy-choices`}
+      />
       <Header onLoginClick={handleLoginClick} alwaysGreen={true} redirectToHome={true} />
       <div className="min-h-screen pt-32 pb-16 px-4 sm:px-6 bg-white">
         <div className="max-w-4xl mx-auto">
