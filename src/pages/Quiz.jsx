@@ -20,7 +20,8 @@ function buildPayload(response) {
   const parseMedian = (str) => {
     if (!str) return null;
 
-    const normalized = str.trim().toLowerCase();
+    const trimmed = str.trim();
+    const normalized = trimmed.toLowerCase();
 
     // Special cases
     if (normalized.includes("nothing") || normalized.includes("no income")) {
@@ -30,6 +31,19 @@ function buildPayload(response) {
     if (normalized.includes("less than")) {
       const max = parseInt(str.replace(/\D/g, ""), 10);
       return isNaN(max) ? 0 : Math.round(max / 2); // midpoint between 0 and max
+    }
+
+    // Match typical exact money patterns: $1M+, $2M - $3M, $500,000+
+    if (/^\$[\d,]+(m|M)?(\s*[-–]\s*\$[\d,]+(m|M)?)?(\+)?$/.test(trimmed)) {
+      let processed = trimmed.replace(/M/gi, '000000');
+      const nums = processed
+        .replace(/\$|,|\+|\s/g, '')
+        .split(/[-–]/)
+        .map(n => parseInt(n, 10))
+        .filter(n => !isNaN(n));
+
+      if (nums.length === 1) return nums[0];
+      if (nums.length === 2) return (nums[0] + nums[1]) / 2;
     }
 
     if (normalized.includes("plus")) {
@@ -46,8 +60,9 @@ function buildPayload(response) {
       }
     }
 
-    // Normal ranges like "$51,000 - $100,000"
-    const nums = str
+    // Normal ranges like "$51,000 - $100,000" or "$2M - $3M"
+    const processedStr = str.replace(/M/gi, '000000');
+    const nums = processedStr
       .replace(/\$|,|\+/g, "")
       .replace(/–|—/g, "-") // normalize en dash/em dash
       .split("-")
@@ -74,7 +89,6 @@ function buildPayload(response) {
     otherSavings,
   };
 }
-
 // Predefined starter questions
 const STARTER_QUESTIONS = {
   main: "What is your top concern for retirement planning?",
@@ -104,8 +118,8 @@ const Quiz = ({ initialCard, initialId, initialType }) => {
   console.log(params, "params");
 
   // Detect if this is a persona URL by checking the pathname
-  const isPersonaUrl = location.pathname.startsWith('/p/') || 
-                       location.pathname.includes('/persona/');
+  const isPersonaUrl = location.pathname.startsWith('/p/') ||
+    location.pathname.includes('/persona/');
 
   const urlData = {
     id: initialId || params.get("id") || "",
@@ -113,7 +127,7 @@ const Quiz = ({ initialCard, initialId, initialType }) => {
     isCustomPersona: params.get("isCustomPersona") === "true" || false,
     type: initialType || params.get("type") || "",
   };
-console.log(urlData,"urlData");
+  console.log(urlData, "urlData");
 
   const initialText = location.state?.title || params.get("title") || "";
   console.log(initialText, "initialText");
@@ -165,8 +179,8 @@ console.log(urlData,"urlData");
   const [showPendingItems, setShowPeningItems] = useState(false)
   // console.log(showPendingItems, "showPendingItems");
   const [item, setItem] = useState(null)
-  console.log(item,"item");
-  
+  console.log(item, "item");
+
   const [graphTitleQuestion, SetGraphTitleQuestion] = useState("")
   const [userAge, setUserAge] = useState("")
   // const [userName, SetuserName] = useState("")
@@ -175,7 +189,7 @@ console.log(urlData,"urlData");
 
   // Session tracking state
   const [sessionId, setSessionId] = useState(null);
-console.log(sessionId,"sessionId")
+  console.log(sessionId, "sessionId")
   // Helper function to track answer in session
   const trackAnswer = async (questionId, questionText, answerText) => {
     if (!sessionId) {
@@ -419,8 +433,8 @@ console.log(sessionId,"sessionId")
       // Start session tracking
       try {
         const sessionResponse = await api.post("/session/start");
-        console.log(sessionResponse,"sessionResponse");
-        
+        console.log(sessionResponse, "sessionResponse");
+
         if (sessionResponse.data?.data?.sessionId) {
           setSessionId(sessionResponse.data?.data?.sessionId);
           console.log('Session started:', sessionResponse.data.sessionId);
@@ -672,7 +686,7 @@ console.log(sessionId,"sessionId")
   const handleSkipQuestion = (questionId) => {
     // Add "Skipped" to conversation
     addToConversation("answer", "Skipped");
-    
+
     // Store skipped answer
     const skippedAnswer = {
       questionId: questionId,
@@ -680,15 +694,15 @@ console.log(sessionId,"sessionId")
       value: "",
       skipped: true,
     };
-    
+
     setUserAnswers((prev) => ({
       ...prev,
       [questionId]: skippedAnswer,
     }));
-    
+
     // Clear text input
     setTextInput("");
-    
+
     // Move to next question
     moveToNextQuestion({
       ...userAnswers,
