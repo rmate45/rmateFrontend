@@ -4,11 +4,11 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "vite",
-    "build": "vite build && node scripts/post-build.js",
+    "dev": "node api.js && vite",
+    "build": "node api.js && vite build && node scripts/post-build.js",
     "lint": "eslint .",
     "preview": "vite preview",
-    "start": "node server.js"
+    "start": "node api.js && node server.js"
   },
   "dependencies": {
     "@emotion/react": "^11.14.0",
